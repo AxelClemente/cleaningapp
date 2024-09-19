@@ -1,34 +1,17 @@
 'use client'
 
-import Image from 'next/image'
-
-
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { Header } from './components/Header'
+import { Calendar } from './components/Calendar'
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { toast } from "@/components/ui/use-toast"
 
 export default function Component() {
-  const [selectedDate, setSelectedDate] = useState(2)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [isSmallHouseSelected, setIsSmallHouseSelected] = useState(false)
   const [selectedSmallHouseService, setSelectedSmallHouseService] = useState<string | null>(null)
   const [selectedRegularHouseService, setSelectedRegularHouseService] = useState<string | null>(null)
-
-  const renderCalendarDays = () => {
-    const days = []
-    for (let i = 1; i <= 31; i++) {
-      days.push(
-        <div
-          key={i}
-          className={`flex items-center justify-center w-8 h-8 rounded-full cursor-pointer
-            ${i === selectedDate ? 'bg-green-500 text-white' : ''}
-            ${i === 11 || i === 15 || i === 16 ? 'text-blue-500' : ''}`}
-          onClick={() => setSelectedDate(i)}
-        >
-          {i}
-        </div>
-      )
-    }
-    return days
-  }
 
   const renderServiceOptions = (selectedService: string | null, setSelectedService: (id: string | null) => void) => {
     const services = [
@@ -51,6 +34,19 @@ export default function Component() {
     ))
   }
 
+  const canOpenLocationDialog = () => {
+    return selectedDate && isSmallHouseSelected && selectedSmallHouseService;
+  }
+
+  const handleLocationClick = () => {
+    if (!canOpenLocationDialog()) {
+      toast({
+        title: "Incomplete selection",
+        description: "Please choose the day, house type and service type",
+      })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
@@ -63,29 +59,7 @@ export default function Component() {
           </div>
           <h2 className="text-2xl font-bold mt-4 mb-6">Appointments</h2>
           <div className="flex space-x-4">
-            <div className="w-72 bg-white shadow rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium">AUG 2018</h3>
-                <div className="flex space-x-1">
-                  <button className="p-1 bg-white border border-gray-300 rounded-md">
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <button className="p-1 bg-white border border-gray-300 rounded-md">
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-7 gap-2 text-center">
-                <div>S</div>
-                <div>M</div>
-                <div>T</div>
-                <div>W</div>
-                <div>T</div>
-                <div>F</div>
-                <div>S</div>
-                {renderCalendarDays()}
-              </div>
-            </div>
+            <Calendar onSelectDate={setSelectedDate} />
             <div className="flex-1 space-y-6">
               <div className="bg-white shadow rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
@@ -94,6 +68,7 @@ export default function Component() {
                       type="checkbox"
                       id="smallHouse"
                       className="sr-only peer"
+                      onChange={(e) => setIsSmallHouseSelected(e.target.checked)}
                     />
                     <label
                       htmlFor="smallHouse"
@@ -107,9 +82,23 @@ export default function Component() {
                     </label>
                     Small House
                   </h3>
-                  <button className="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium">
-                    Add Slots
-                  </button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button
+                        onClick={handleLocationClick}
+                        className={`px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium
+                          ${canOpenLocationDialog() ? '' : 'opacity-50 cursor-not-allowed'}`}
+                        disabled={!canOpenLocationDialog()}
+                      >
+                        Location
+                      </button>
+                    </DialogTrigger>
+                    {canOpenLocationDialog() && (
+                      <DialogContent>
+                        <p>Please select your location</p>
+                      </DialogContent>
+                    )}
+                  </Dialog>
                 </div>
                 <p className="text-sm text-gray-500 mb-4">1 room, 1 bathroom</p>
                 <div className="grid grid-cols-1 gap-2">
@@ -123,7 +112,7 @@ export default function Component() {
                     Regular House
                   </h3>
                   <button className="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium">
-                    Add Slots
+                    Location
                   </button>
                 </div>
                 <p className="text-sm text-gray-500 mb-4">Select a service type</p>
