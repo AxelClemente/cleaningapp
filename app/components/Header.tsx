@@ -1,0 +1,68 @@
+import { Menu } from 'lucide-react'
+import Image from 'next/image'
+import { signIn } from 'next-auth/react'
+import { useState } from 'react'
+import { Button } from '@/components/Button'
+import { useToast } from '@/components/ui/use-toast'
+
+interface HeaderProps {
+  doctorName: string
+  clinicName: string
+}
+
+export function Header({ doctorName, clinicName }: HeaderProps) {
+  const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
+
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true)
+    try {
+      const result = await signIn('google', { callbackUrl: '/dashboard' })
+      if (result?.error) {
+        toast({
+          title: 'Error',
+          description: 'No se pudo iniciar sesión con Google',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión con Google:', error)
+      toast({
+        title: 'Error',
+        description: 'Ocurrió un error al intentar iniciar sesión',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <header className="p-4 flex items-center justify-between border-b">
+      <div className="flex items-center space-x-2">
+        <Image
+          alt="Logo"
+          className="h-12 w-12 rounded-full"
+          src="/placeholder.svg"
+          width={50}
+          height={50}
+        />
+        <div>
+          <h2 className="text-sm font-medium">{doctorName}</h2>
+          <p className="text-sm text-gray-500">{clinicName}</p>
+        </div>
+      </div>
+      <div className="flex space-x-2">
+        <Button variant="outline" onClick={() => signIn()}>
+          Log In
+        </Button>
+        <Button variant="outline" onClick={handleGoogleSignUp} disabled={isLoading}>
+          {isLoading ? 'Cargando...' : 'Registrarse con Google'}
+        </Button>
+        <Button variant="outline" size="sm">
+          <Menu className="h-4 w-4" />
+        </Button>
+      </div>
+    </header>
+  )
+}
