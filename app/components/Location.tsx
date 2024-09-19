@@ -74,12 +74,10 @@ export function Location({ onSelectLocation }: LocationProps) {
     if (geocoder.current && mapInstanceRef.current && markerRef.current) {
       geocoder.current.geocode({ address: value }, (results, status) => {
         if (status === google.maps.GeocoderStatus.OK && results?.[0]?.geometry?.location) {
-          const newCenter = {
-            lat: results[0].geometry.location.lat(),
-            lng: results[0].geometry.location.lng()
-          };
-          setMapCenter(newCenter);
+          const newCenter = results[0].geometry.location;
+          setMapCenter({ lat: newCenter.lat(), lng: newCenter.lng() });
           mapInstanceRef.current?.setCenter(newCenter);
+          mapInstanceRef.current?.setZoom(15);
           markerRef.current?.setPosition(newCenter);
         }
       });
