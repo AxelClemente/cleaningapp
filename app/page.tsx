@@ -6,12 +6,14 @@ import { Header } from './components/Header'
 import { Calendar } from './components/Calendar'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
+import { Location } from './components/Location'
 
 export default function Component() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [isSmallHouseSelected, setIsSmallHouseSelected] = useState(false)
   const [selectedSmallHouseService, setSelectedSmallHouseService] = useState<string | null>(null)
   const [selectedRegularHouseService, setSelectedRegularHouseService] = useState<string | null>(null)
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null)
 
   const renderServiceOptions = (selectedService: string | null, setSelectedService: (id: string | null) => void) => {
     const services = [
@@ -45,6 +47,11 @@ export default function Component() {
         description: "Please choose the day, house type and service type",
       })
     }
+  }
+
+  const handleSelectLocation = (location: string) => {
+    setSelectedLocation(location)
+    // Aquí puedes agregar lógica adicional si es necesario
   }
 
   return (
@@ -94,8 +101,8 @@ export default function Component() {
                       </button>
                     </DialogTrigger>
                     {canOpenLocationDialog() && (
-                      <DialogContent>
-                        <p>Please select your location</p>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <Location onSelectLocation={handleSelectLocation} />
                       </DialogContent>
                     )}
                   </Dialog>
