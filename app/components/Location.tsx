@@ -3,10 +3,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Combobox } from '@headlessui/react'
+import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "./Button";
 
 interface LocationProps {
   onSelectLocation: (location: string) => void;
+  onConfirm: (location: string) => void;
 }
 
 const mapContainerStyle = {
@@ -14,7 +16,7 @@ const mapContainerStyle = {
   height: '400px'
 }
 
-export function Location({ onSelectLocation }: LocationProps) {
+export function Location({ onSelectLocation, onConfirm }: LocationProps) {
   const [address, setAddress] = useState('')
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([])
   const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>({ lat: 40.4168, lng: -3.7038 })
@@ -88,7 +90,7 @@ export function Location({ onSelectLocation }: LocationProps) {
 
   const handleConfirmLocation = () => {
     onSelectLocation(address);
-    setIsAddressSelected(false);
+    onConfirm(address);
   };
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -117,14 +119,16 @@ export function Location({ onSelectLocation }: LocationProps) {
       </Combobox>
 
       <div ref={mapRef} style={mapContainerStyle}></div>
-      <button
-        onClick={handleConfirmLocation}
-        disabled={!isAddressSelected}
-        className={`px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium w-full
-          ${isAddressSelected ? '' : 'opacity-50 cursor-not-allowed'}`}
-      >
-        Confirm Location
-      </button>
+      <DialogClose asChild>
+        <button
+          onClick={handleConfirmLocation}
+          disabled={!isAddressSelected}
+          className={`px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium w-full
+            ${isAddressSelected ? '' : 'opacity-50 cursor-not-allowed'}`}
+        >
+          Confirm Location
+        </button>
+      </DialogClose>
     </div>
   )
 }

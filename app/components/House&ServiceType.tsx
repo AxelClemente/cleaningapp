@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Location } from './Location'
+import { ServiceSummary } from './ServiceSummary'
 
 interface HouseAndServiceTypeProps {
   houseType: 'small' | 'regular' | 'chalet' | 'finca'
@@ -21,6 +22,8 @@ export function HouseAndServiceType({
   const [isHouseSelected, setIsHouseSelected] = useState(false)
   const [selectedService, setSelectedService] = useState<string | null>(null)
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null)
+  const [isServiceSummaryOpen, setIsServiceSummaryOpen] = useState(false)
+  const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
 
   const renderServiceOptions = () => {
     const services = [
@@ -51,7 +54,9 @@ export function HouseAndServiceType({
   }
 
   const handleLocationClick = () => {
-    if (!canOpenLocationDialog()) {
+    if (canOpenLocationDialog()) {
+      setIsLocationDialogOpen(true);
+    } else {
       toast({
         title: "Incomplete selection",
         description: "Please choose the day, house type and service type",
@@ -61,7 +66,8 @@ export function HouseAndServiceType({
 
   const handleSelectLocation = (location: string) => {
     setSelectedLocation(location)
-    // Add additional logic if needed
+    setIsLocationDialogOpen(false)
+    setIsServiceSummaryOpen(true)
   }
 
   const handleHouseSelection = (selected: boolean) => {
@@ -93,7 +99,7 @@ export function HouseAndServiceType({
            houseType === 'regular' ? 'Regular House' :
            houseType === 'chalet' ? 'Chalet' : 'Finca'}
         </h3>
-        <Dialog>
+        <Dialog open={isLocationDialogOpen} onOpenChange={setIsLocationDialogOpen}>
           <DialogTrigger asChild>
             <button
               onClick={handleLocationClick}
@@ -106,7 +112,10 @@ export function HouseAndServiceType({
           </DialogTrigger>
           {canOpenLocationDialog() && (
             <DialogContent className="sm:max-w-[425px]">
-              <Location onSelectLocation={handleSelectLocation} />
+              <Location 
+                onSelectLocation={setSelectedLocation} 
+                onConfirm={handleSelectLocation}
+              />
             </DialogContent>
           )}
         </Dialog>
@@ -120,6 +129,14 @@ export function HouseAndServiceType({
       <div className="grid grid-cols-1 gap-2">
         {renderServiceOptions()}
       </div>
+      <ServiceSummary
+        isOpen={isServiceSummaryOpen}
+        onClose={() => setIsServiceSummaryOpen(false)}
+        calendarData={selectedDate ? selectedDate.toDateString() : ''}
+        houseType={houseType}
+        serviceType={selectedService ? [selectedService] : []}
+        location={selectedLocation || ''}
+      />
     </div>
   )
 }
