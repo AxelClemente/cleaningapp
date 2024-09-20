@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Combobox } from '@headlessui/react'
+import { Button } from "./Button";
 
 interface LocationProps {
   onSelectLocation: (location: string) => void;
@@ -22,6 +23,7 @@ export function Location({ onSelectLocation }: LocationProps) {
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null)
   const geocoder = useRef<google.maps.Geocoder | null>(null)
   const markerRef = useRef<google.maps.Marker | null>(null)
+  const [isAddressSelected, setIsAddressSelected] = useState(false)
 
   useEffect(() => {
     const loader = new Loader({
@@ -69,7 +71,7 @@ export function Location({ onSelectLocation }: LocationProps) {
 
   const handleSelectAddress = useCallback((value: string) => {
     setAddress(value);
-    onSelectLocation(value);
+    setIsAddressSelected(true);
     
     if (geocoder.current && mapInstanceRef.current && markerRef.current) {
       geocoder.current.geocode({ address: value }, (results, status) => {
@@ -82,7 +84,12 @@ export function Location({ onSelectLocation }: LocationProps) {
         }
       });
     }
-  }, [onSelectLocation]);
+  }, []);
+
+  const handleConfirmLocation = () => {
+    onSelectLocation(address);
+    setIsAddressSelected(false);
+  };
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -108,7 +115,16 @@ export function Location({ onSelectLocation }: LocationProps) {
           ))}
         </Combobox.Options>
       </Combobox>
+
       <div ref={mapRef} style={mapContainerStyle}></div>
+      <button
+        onClick={handleConfirmLocation}
+        disabled={!isAddressSelected}
+        className={`px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium w-full
+          ${isAddressSelected ? '' : 'opacity-50 cursor-not-allowed'}`}
+      >
+        Confirm Location
+      </button>
     </div>
   )
 }
