@@ -41,9 +41,9 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
     <header className="p-4 flex items-center justify-between border-b">
       <div className="flex items-center space-x-2">
         <Image
-          alt="Logo"
+          alt="logo1.png"
           className="h-12 w-12 rounded-full"
-          src="/placeholder.svg"
+          src="/images/logo1.png"
           width={50}
           height={50}
         />
@@ -57,7 +57,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
           Log In
         </Button>
         <Button variant="outline" onClick={handleGoogleSignUp} disabled={isLoading}>
-          {isLoading ? 'Cargando...' : 'Registrarse con Google'}
+          {isLoading ? 'Cargando...' : 'Sign up'}
         </Button>
         <Button variant="outline" size="sm">
           <Menu className="h-4 w-4" />

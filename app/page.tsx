@@ -16,19 +16,19 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
-        <Header doctorName="Dr. Axel Clemente" clinicName="Kids Care Clinic" />
+        <Header doctorName="Express Cleaning Mallorca" clinicName="Holiday rentals specialists" />
         <div className="p-4">
           <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <span>Home</span>
+            <span>Schedule your cleaning services!</span>
             <ChevronRight className="h-4 w-4" />
-            <span>Appointments</span>
+            
           </div>
           <h2 className="text-2xl font-bold mt-4 mb-6">Appointments</h2>
           <div className="flex space-x-4">
             <Calendar onSelectDate={setSelectedDate} />
             <div className="flex-1 space-y-6">
               <HouseAndServiceType
-                houseType="small"
+                houseType="Small"
                 onSelectService={setSelectedSmallHouseService}
                 onSelectHouse={setIsSmallHouseSelected}
                 selectedDate={selectedDate}
