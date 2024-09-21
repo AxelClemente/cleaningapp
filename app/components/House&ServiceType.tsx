@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Location } from './Location'
 import { ServiceSummary } from './ServiceSummary'
-import { Home, Building, Castle, Warehouse, Bed, Bath } from 'lucide-react'
+import { Home, Building, Castle, Warehouse, Bed, Bath, User } from 'lucide-react'
 
 interface HouseAndServiceTypeProps {
   houseType: 'small' | 'regular' | 'chalet' | 'finca'
@@ -47,10 +47,29 @@ export function HouseAndServiceType({
   };
 
   const renderServiceOptions = () => {
+    const serviceConfig = {
+      small: {
+        Express: { duration: '4 hours', people: 1 },
+        Deep: { duration: '4 hours', people: 2 },
+      },
+      regular: {
+        Express: { duration: '5 hours', people: 1 },
+        Deep: { duration: '4 hours', people: 2 }, // Changed from 5 hours to 4 hours
+      },
+      chalet: {
+        Express: { duration: '4 hours', people: 2 },
+        Deep: { duration: '5 hours', people: 2 },
+      },
+      finca: {
+        Express: { duration: '5 hours', people: 2 },
+        Deep: { duration: '4 hours', people: 3 },
+      },
+    }
+
     const services = [
-      { id: 'Express', name: 'Express, 1 Pers', duration: '4 hour' },
-      { id: 'Deep', name: 'Deep, 2 People', duration: '4 hours' },
-      { id: 'Custom', name: 'Custom, 2+', duration: 'Flexible' },
+      { id: 'Express', name: 'Express', ...serviceConfig[houseType].Express },
+      { id: 'Deep', name: 'Deep', ...serviceConfig[houseType].Deep },
+      { id: 'Custom', name: 'Custom', duration: 'Flexible', people: null },
     ]
 
     return services.map((service) => (
@@ -61,12 +80,23 @@ export function HouseAndServiceType({
           onSelectService(service.id)
           setPrice(calculatePrice(houseType, service.id))
         }}
-        className={`w-full px-4 py-3 text-left text-sm font-medium rounded-md
-          ${selectedService === service.id ? 'bg-green-500 text-white' : 'bg-white border border-gray-300 text-gray-700'}
-          hover:bg-gray-50`}
+        className={`w-full px-4 py-3 text-left text-sm font-medium rounded-md transition-colors duration-150
+          ${selectedService === service.id 
+            ? 'bg-green-500 text-white hover:bg-green-600' 
+            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}
+        `}
       >
         <div className="font-semibold">{service.name}</div>
-        <div className="text-xs opacity-75">{service.duration}</div>
+        <div className="text-xs opacity-75 flex items-center">
+          {service.duration}
+          {service.people && (
+            <span className="ml-2 flex items-center">
+              {Array(service.people).fill(0).map((_, index) => (
+                <User key={index} className="w-3 h-3 inline-block ml-0.5" />
+              ))}
+            </span>
+          )}
+        </div>
         {service.id !== 'Custom' && (
           <div className="text-xs mt-1">
             {calculatePrice(houseType, service.id)?.toFixed(2)}€
@@ -137,13 +167,13 @@ export function HouseAndServiceType({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => handleHouseSelection(!isHouseSelected)}
-          className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-200
+          className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-150
             ${isHouseSelected 
-              ? 'bg-green-100 text-green-700' 
-              : 'bg-white text-gray-700 border border-gray-300 shadow-sm'}
-            hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500`}
+              ? 'bg-green-500 text-white hover:bg-green-600' 
+              : 'bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-50'}
+            focus:outline-none focus:ring-2 focus:ring-green-500`}
         >
-          <div className={`p-2 rounded-full ${isHouseSelected ? 'bg-green-500 text-white' : 'bg-white text-gray-500'}`}>
+          <div className={`p-2 rounded-full ${isHouseSelected ? 'bg-white text-green-500' : 'bg-gray-100 text-gray-500'}`}>
             {getHouseIcon(houseType)}
           </div>
           <span className="text-sm font-medium">
