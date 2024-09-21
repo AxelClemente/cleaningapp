@@ -5,9 +5,10 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Location } from './Location'
 import { ServiceSummary } from './ServiceSummary'
+import { Home, Building, Castle, Warehouse } from 'lucide-react'
 
 interface HouseAndServiceTypeProps {
-  houseType: 'Small' | 'regular' | 'chalet' | 'finca'
+  houseType: 'small' | 'regular' | 'chalet' | 'finca'
   onSelectService: (service: string | null) => void
   onSelectHouse: (selected: boolean) => void
   selectedDate: Date | null
@@ -20,7 +21,7 @@ interface PriceMap {
 }
 
 const priceMap: PriceMap = {
-  Small: { Express: 99.22, Deep: 150, Custom: null },
+  small: { Express: 99.22, Deep: 150, Custom: null },
   regular: { Express: 135.22, Deep: 200, Custom: null },
   chalet: { Express: 198.44, Deep: 250, Custom: null },
   finca: { Express: 400, Deep: 500, Custom: null },
@@ -101,6 +102,21 @@ export function HouseAndServiceType({
     onSelectHouse(selected)
   }
 
+  const getHouseIcon = (type: string) => {
+    switch (type) {
+      case 'small':
+        return <Home className="w-5 h-5" />;
+      case 'regular':
+        return <Building className="w-5 h-5" />;
+      case 'chalet':
+        return <Castle className="w-5 h-5" />;
+      case 'finca':
+        return <Warehouse className="w-5 h-5" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="bg-white shadow rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
@@ -113,15 +129,13 @@ export function HouseAndServiceType({
           />
           <label
             htmlFor={`${houseType}House`}
-            className="w-6 h-6 rounded-full bg-yellow-500 mr-2 cursor-pointer
+            className="w-8 h-8 rounded-full bg-gray-200 mr-2 cursor-pointer
                flex items-center justify-center
-               peer-checked:bg-green-500 peer-checked:ring-2 ring-offset-2 ring-green-500"
+               peer-checked:bg-green-500 peer-checked:text-white transition-colors duration-200"
           >
-            <svg className="w-3 h-3 text-white hidden peer-checked:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            {getHouseIcon(houseType)}
           </label>
-          {houseType === 'Small' ? 'Small House' : 
+          {houseType === 'small' ? 'Small House' : 
            houseType === 'regular' ? 'Regular House' :
            houseType === 'chalet' ? 'Chalet' : 'Finca'}
         </h3>
@@ -147,7 +161,7 @@ export function HouseAndServiceType({
         </Dialog>
       </div>
       <p className="text-sm text-gray-500 mb-4">
-        {houseType === 'Small' ? '1 room, 1 bathroom' : 
+        {houseType === 'small' ? '1 room, 1 bathroom' : 
          houseType === 'regular' ? '2-3 rooms, 2 bathrooms' :
          houseType === 'chalet' ? '3-4 rooms, 2-3 bathrooms' : 
          '4+ rooms, 3+ bathrooms'}

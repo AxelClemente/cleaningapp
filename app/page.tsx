@@ -1,17 +1,37 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import { Header } from './components/Header'
 import { Calendar } from './components/Calendar'
 import { HouseAndServiceType } from './components/House&ServiceType'
 
+const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
+type HouseType = typeof houseTypes[number]
+
 export default function Component() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [isSmallHouseSelected, setIsSmallHouseSelected] = useState(false)
-  const [isRegularHouseSelected, setIsRegularHouseSelected] = useState(false)
-  const [selectedSmallHouseService, setSelectedSmallHouseService] = useState<string | null>(null)
-  const [selectedRegularHouseService, setSelectedRegularHouseService] = useState<string | null>(null)
+  const [currentHouseTypeIndex, setCurrentHouseTypeIndex] = useState(0)
+  const [selectedServices, setSelectedServices] = useState<Record<HouseType, string | null>>({
+    small: null,
+    regular: null,
+    chalet: null,
+    finca: null,
+  })
+
+  const currentHouseType = houseTypes[currentHouseTypeIndex]
+
+  const handleSelectService = (service: string | null) => {
+    setSelectedServices(prev => ({ ...prev, [currentHouseType]: service }))
+  }
+
+  const handleNextHouseType = () => {
+    setCurrentHouseTypeIndex((prev) => (prev + 1) % houseTypes.length)
+  }
+
+  const handlePreviousHouseType = () => {
+    setCurrentHouseTypeIndex((prev) => (prev - 1 + houseTypes.length) % houseTypes.length)
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -21,36 +41,29 @@ export default function Component() {
           <div className="flex items-center space-x-2 text-sm text-gray-500">
             <span>Schedule your cleaning services!</span>
             <ChevronRight className="h-4 w-4" />
-            
           </div>
           <h2 className="text-2xl font-bold mt-4 mb-6">Appointments</h2>
           <div className="flex space-x-4">
             <Calendar onSelectDate={setSelectedDate} />
             <div className="flex-1 space-y-6">
-              <HouseAndServiceType
-                houseType="Small"
-                onSelectService={setSelectedSmallHouseService}
-                onSelectHouse={setIsSmallHouseSelected}
-                selectedDate={selectedDate}
-              />
-              <HouseAndServiceType
-                houseType="regular"
-                onSelectService={setSelectedRegularHouseService}
-                onSelectHouse={setIsRegularHouseSelected}
-                selectedDate={selectedDate}
-              />
-              <HouseAndServiceType
-                houseType="chalet"
-                onSelectService={setSelectedRegularHouseService}
-                onSelectHouse={setIsRegularHouseSelected}
-                selectedDate={selectedDate}
-              />
-              <HouseAndServiceType
-                houseType="finca"
-                onSelectService={setSelectedRegularHouseService}
-                onSelectHouse={setIsRegularHouseSelected}
-                selectedDate={selectedDate}
-              />
+              <div className="relative">
+                <HouseAndServiceType
+                  houseType={currentHouseType}
+                  onSelectService={handleSelectService}
+                  onSelectHouse={() => {}}
+                  selectedDate={selectedDate}
+                />
+                <div className="absolute top-1/2 -translate-y-1/2 left-0 -ml-4">
+                  <button onClick={handlePreviousHouseType} className="p-1 bg-white rounded-full shadow">
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                </div>
+                <div className="absolute top-1/2 -translate-y-1/2 right-0 -mr-4">
+                  <button onClick={handleNextHouseType} className="p-1 bg-white rounded-full shadow">
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </div>
+              </div>
               <div className="bg-white shadow rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium flex items-center">
