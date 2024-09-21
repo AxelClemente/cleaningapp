@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/Button"
 import { Input } from "@/components/Input"
 import { Textarea } from "@/components/Textarea"
+import { CheckoutButton } from "@/components/Checkout-button"
 import * as Select from '@radix-ui/react-select'
 import { ChevronDownIcon, CheckIcon } from '@radix-ui/react-icons'
 
@@ -67,7 +68,10 @@ export function ServiceSummary({
           </ul>
           <p><strong>Dirección:</strong> {location}</p>
           {price !== null && (
-            <p><strong>Precio total:</strong> {price.toFixed(2)}€</p>
+            <div className="mt-4">
+              <p><strong>Precio total:</strong> {price.toFixed(2)}€</p>
+              <CheckoutButton amount={price.toFixed(2)} />
+            </div>
           )}
           
           <div>
@@ -110,7 +114,7 @@ export function ServiceSummary({
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex justify-between items-center">
           <Button onClick={onClose}>Cerrar</Button>
         </DialogFooter>
       </DialogContent>
