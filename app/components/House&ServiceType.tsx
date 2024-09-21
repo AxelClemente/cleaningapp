@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Location } from './Location'
 import { ServiceSummary } from './ServiceSummary'
-import { Home, Building, Castle, Warehouse } from 'lucide-react'
+import { Home, Building, Castle, Warehouse, Bed, Bath } from 'lucide-react'
 
 interface HouseAndServiceTypeProps {
   houseType: 'small' | 'regular' | 'chalet' | 'finca'
@@ -107,38 +107,51 @@ export function HouseAndServiceType({
       case 'small':
         return <Home className="w-5 h-5" />;
       case 'regular':
-        return <Building className="w-5 h-5" />;
-      case 'chalet':
-        return <Castle className="w-5 h-5" />;
-      case 'finca':
         return <Warehouse className="w-5 h-5" />;
+      case 'chalet':
+        return <Building className="w-5 h-5" />;
+      case 'finca':
+        return <Castle className="w-5 h-5" />;
       default:
         return null;
     }
   };
 
+  function HouseDetails({ rooms, bathrooms }: { rooms: string; bathrooms: string }) {
+    return (
+      <div className="flex items-center space-x-2 text-sm text-gray-500 mt-2 mb-4 ml-2">
+        <div className="flex items-center">
+          <Bed className="w-4 h-4 mr-1" />
+          <span>{rooms}</span>
+        </div>
+        <div className="flex items-center ml-4">
+          <Bath className="w-4 h-4 mr-1" />
+          <span>{bathrooms}</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-white shadow rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium flex items-center">
-          <input
-            type="checkbox"
-            id={`${houseType}House`}
-            className="sr-only peer"
-            onChange={(e) => handleHouseSelection(e.target.checked)}
-          />
-          <label
-            htmlFor={`${houseType}House`}
-            className="w-8 h-8 rounded-full bg-gray-200 mr-2 cursor-pointer
-               flex items-center justify-center
-               peer-checked:bg-green-500 peer-checked:text-white transition-colors duration-200"
-          >
+        <button
+          onClick={() => handleHouseSelection(!isHouseSelected)}
+          className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-200
+            ${isHouseSelected 
+              ? 'bg-green-100 text-green-700' 
+              : 'bg-white text-gray-700 border border-gray-300 shadow-sm'}
+            hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500`}
+        >
+          <div className={`p-2 rounded-full ${isHouseSelected ? 'bg-green-500 text-white' : 'bg-white text-gray-500'}`}>
             {getHouseIcon(houseType)}
-          </label>
-          {houseType === 'small' ? 'Small House' : 
-           houseType === 'regular' ? 'Regular House' :
-           houseType === 'chalet' ? 'Chalet' : 'Finca'}
-        </h3>
+          </div>
+          <span className="text-sm font-medium">
+            {houseType === 'small' ? 'Small House' : 
+             houseType === 'regular' ? 'Regular House' :
+             houseType === 'chalet' ? 'Chalet' : 'Finca'}
+          </span>
+        </button>
         <Dialog open={isLocationDialogOpen} onOpenChange={setIsLocationDialogOpen}>
           <DialogTrigger asChild>
             <button
@@ -160,13 +173,21 @@ export function HouseAndServiceType({
           )}
         </Dialog>
       </div>
-      <p className="text-sm text-gray-500 mb-4">
-        {houseType === 'small' ? '1 room, 1 bathroom' : 
-         houseType === 'regular' ? '2-3 rooms, 2 bathrooms' :
-         houseType === 'chalet' ? '3-4 rooms, 2-3 bathrooms' : 
-         '4+ rooms, 3+ bathrooms'}
-      </p>
-      <div className="grid grid-cols-1 gap-2">
+      <HouseDetails 
+        rooms={
+          houseType === 'small' ? '1' : 
+          houseType === 'regular' ? '2' :
+          houseType === 'chalet' ? '3' : 
+          '4+'
+        }
+        bathrooms={
+          houseType === 'small' ? '1' : 
+          houseType === 'regular' ? '2' :
+          houseType === 'chalet' ? '3' : 
+          '3+'
+        }
+      />
+      <div className="grid grid-cols-1 gap-2 mt-2">
         {renderServiceOptions()}
       </div>
       {price !== null && (

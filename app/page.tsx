@@ -39,7 +39,7 @@ export default function Component() {
         <Header doctorName="Express Cleaning Mallorca" clinicName="Holiday rentals specialists" />
         <div className="p-4">
           <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <span>Schedule your cleaning services!</span>
+            <span>Select your home type, choose your cleaning service, and pick your location!</span>
             <ChevronRight className="h-4 w-4" />
           </div>
           <h2 className="text-2xl font-bold mt-4 mb-6">Appointments</h2>
@@ -54,12 +54,12 @@ export default function Component() {
                   selectedDate={selectedDate}
                 />
                 <div className="absolute top-1/2 -translate-y-1/2 left-0 -ml-4">
-                  <button onClick={handlePreviousHouseType} className="p-1 bg-white rounded-full shadow">
+                  <button onClick={handlePreviousHouseType} className="p-1/2 bg-white rounded-full shadow">
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                 </div>
                 <div className="absolute top-1/2 -translate-y-1/2 right-0 -mr-4">
-                  <button onClick={handleNextHouseType} className="p-1 bg-white rounded-full shadow">
+                  <button onClick={handleNextHouseType} className="p-1/2 bg-white rounded-full shadow">
                     <ChevronRight className="h-6 w-6" />
                   </button>
                 </div>
