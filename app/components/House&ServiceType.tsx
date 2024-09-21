@@ -5,7 +5,9 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Location } from './Location'
 import { ServiceSummary } from './ServiceSummary'
-import { Home, Building, Castle, Warehouse, Bed, Bath, User } from 'lucide-react'
+import { Home, Building, Castle, Warehouse, Bed, Bath, User, Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Button } from "@/components/Button"
 
 interface HouseAndServiceTypeProps {
   houseType: 'small' | 'regular' | 'chalet' | 'finca'
@@ -27,6 +29,14 @@ const priceMap: PriceMap = {
   finca: { Express: 400, Deep: 500, Custom: null },
 };
 
+const serviceDescriptions: Record<ServiceType, string> = {
+  Express: "Quick cleaning focusing on essential areas.",
+  Deep: "Thorough cleaning of all areas, including hard-to-reach spots.",
+  Custom: "Tailored cleaning service based on your specific needs."
+};
+
+type ServiceType = 'Express' | 'Deep' | 'Custom';
+
 export function HouseAndServiceType({
   houseType,
   onSelectService,
@@ -41,6 +51,8 @@ export function HouseAndServiceType({
   const [comment, setComment] = useState('')
   const [entryMethods, setEntryMethods] = useState<string[]>([])
   const [price, setPrice] = useState<number | null>(null)
+  const [isServiceInfoOpen, setIsServiceInfoOpen] = useState(false);
+  const [selectedServiceInfo, setSelectedServiceInfo] = useState<string | null>(null);
 
   const calculatePrice = (house: string, service: string) => {
     return priceMap[house]?.[service] ?? null;
@@ -73,36 +85,57 @@ export function HouseAndServiceType({
     ]
 
     return services.map((service) => (
-      <button
-        key={service.id}
-        onClick={() => {
-          setSelectedService(service.id)
-          onSelectService(service.id)
-          setPrice(calculatePrice(houseType, service.id))
-        }}
-        className={`w-full px-4 py-3 text-left text-sm font-medium rounded-md transition-colors duration-150
-          ${selectedService === service.id 
-            ? 'bg-green-500 text-white hover:bg-green-600' 
-            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}
-        `}
-      >
-        <div className="font-semibold">{service.name}</div>
-        <div className="text-xs opacity-75 flex items-center">
-          {service.duration}
-          {service.people && (
-            <span className="ml-2 flex items-center">
-              {Array(service.people).fill(0).map((_, index) => (
-                <User key={index} className="w-3 h-3 inline-block ml-0.5" />
-              ))}
-            </span>
-          )}
-        </div>
-        {service.id !== 'Custom' && (
-          <div className="text-xs mt-1">
-            {calculatePrice(houseType, service.id)?.toFixed(2)}€
+      <div key={service.id} className="relative">
+        <button
+          onClick={() => {
+            setSelectedService(service.id)
+            onSelectService(service.id)
+            setPrice(calculatePrice(houseType, service.id))
+          }}
+          className={`w-full px-4 py-3 text-left text-sm font-medium rounded-md transition-colors duration-150
+            ${selectedService === service.id 
+              ? 'bg-green-500 text-white hover:bg-green-600' 
+              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}
+          `}
+        >
+          <div className="font-semibold">{service.name}</div>
+          <div className="text-xs opacity-75 flex items-center">
+            {service.duration}
+            {service.people && (
+              <span className="ml-2 flex items-center">
+                {Array(service.people).fill(0).map((_, index) => (
+                  <User key={index} className="w-3 h-3 inline-block ml-0.5" />
+                ))}
+              </span>
+            )}
           </div>
-        )}
-      </button>
+          {service.id !== 'Custom' && (
+            <div className="text-xs mt-1">
+              {calculatePrice(houseType, service.id)?.toFixed(2)}€
+            </div>
+          )}
+        </button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="absolute right-2 top-2 p-1" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedServiceInfo(service.id as ServiceType);
+                  setIsServiceInfoOpen(true);
+                }}
+              >
+                <Info className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{serviceDescriptions[service.id as ServiceType]}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
     ))
   }
 
@@ -240,6 +273,13 @@ export function HouseAndServiceType({
         setComment={setComment}
         price={price}  // Add this line
       />
+      <Dialog open={isServiceInfoOpen} onOpenChange={setIsServiceInfoOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <h2 className="text-lg font-semibold mb-4">{selectedServiceInfo} Service Details</h2>
+          <p>{serviceDescriptions[selectedServiceInfo as ServiceType] ?? 'No description available.'}</p>
+          {/* Aquí puedes añadir más detalles sobre el servicio seleccionado */}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
