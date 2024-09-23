@@ -2,22 +2,18 @@ import NextAuth, { DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "../../../app/lib/mongodb";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Session } from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user?: {
-      id?: string;
+      id: string;
     } & DefaultSession["user"]
-  }
-  interface User {
-    id?: string;
   }
 }
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -30,39 +26,16 @@ export default NextAuth({
     signIn: "/auth/signin",
   },
   callbacks: {
-    async session({ session, user }) {
+    async session({ session, user }: { session: Session; user: AdapterUser }) {
       if (session.user) {
         session.user.id = user.id;
       }
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async signIn({ user, account, profile }) {
-      if (account?.provider === "google" && user.email) {
-        await prisma.user.upsert({
-          where: { email: user.email },
-          update: {
-            googleId: account.providerAccountId,
-            accessToken: account.access_token,
-          } as any, // Usamos 'as any' para evitar el error de TypeScript
-          create: {
-            name: user.name ?? '',
-            email: user.email,
-            googleId: account.providerAccountId,
-            accessToken: account.access_token,
-          } as any, // Usamos 'as any' para evitar el error de TypeScript
-        });
-      }
-      return true;
-    },
-    async redirect({ url, baseUrl }) {
-      // Redirige siempre a la página principal después de la autenticación
-      return baseUrl;
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      return `${baseUrl}/dashboard`;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);
