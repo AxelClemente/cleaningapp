@@ -6,6 +6,8 @@ import { Button } from '../components/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Location } from './Location'
 
 export function WorkerForm() {
   const { data: session } = useSession()
@@ -16,9 +18,15 @@ export function WorkerForm() {
   const [accountNumber, setAccountNumber] = useState('')
   const [profilePicture, setProfilePicture] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
 
   const handleLocationClick = () => {
-    console.log('Getting location...')
+    setIsLocationDialogOpen(true)
+  }
+
+  const handleSelectLocation = (selectedLocation: string) => {
+    setLocation(selectedLocation)
+    setIsLocationDialogOpen(false)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,7 +64,6 @@ export function WorkerForm() {
         />
       </div>
       <div className="md:w-1/2 p-8">
-        <h2 className="text-2xl font-bold mb-6">You're just one step away from becoming part of our community!</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="block text-left">Name</Label>
@@ -79,7 +86,17 @@ export function WorkerForm() {
             <Label htmlFor="location" className="block text-left">Address</Label>
             <div className="flex space-x-2">
               <Input id="location" value={location} readOnly className="flex-grow" />
-              <Button type="button" onClick={handleLocationClick}>Location</Button>
+              <Dialog open={isLocationDialogOpen} onOpenChange={setIsLocationDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button type="button" onClick={handleLocationClick}>Location</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <Location 
+                    onSelectLocation={handleSelectLocation} 
+                    onConfirm={handleSelectLocation}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
           <div className="space-y-2">

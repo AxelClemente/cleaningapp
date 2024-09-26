@@ -64,7 +64,7 @@ const DashboardPage: FC = () => {
                 <CardTitle>Hire a Cleaning Service</CardTitle>
               </CardHeader>
               <CardContent>
-                Find the best cleaning service tailored to your needs.
+                Find the best cleaning service in your area.
               </CardContent>
             </Card>
             <Card 

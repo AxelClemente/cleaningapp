@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '../components/Button'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { Button as GhostButton } from '../components/Button'
 
 interface HeaderProps {
   doctorName: string
@@ -37,6 +38,10 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSignIn = () => {
+    signIn('google', { callbackUrl: '/dashboard' })
   }
 
   const toggleMenu = () => {
@@ -99,20 +104,39 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
             className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-10 top-full"
           >
             <div className="py-1">
-              <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Dashboard
-              </a>
-              <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Profile
-              </a>
-              {status === 'authenticated' && (
-                <button 
-                  onClick={handleSignOut}
-                  disabled={isLoading}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  {isLoading ? 'Cargando...' : 'Log out'}
-                </button>
+              {status === 'authenticated' ? (
+                <>
+                  <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Dashboard
+                  </Link>
+                  <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Profile
+                  </Link>
+                  <button 
+                    onClick={handleSignOut}
+                    disabled={isLoading}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {isLoading ? 'Cargando...' : 'Log out'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={handleSignIn}
+                    className="w-full justify-start rounded-none px-4 py-2 text-sm font-normal"
+                    variant="ghost"
+                  >
+                    Sign In 
+                  </Button>
+                  <Button
+                    onClick={handleSignIn}
+                    className="w-full justify-start rounded-none px-4 py-2 text-sm font-normal"
+                    variant="ghost"
+                  >
+                    Sign Up 
+                  </Button>
+                </>
               )}
             </div>
           </div>
