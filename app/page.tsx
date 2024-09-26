@@ -107,14 +107,16 @@ export default function Component() {
           </div>
         </div>
         
-        {/* Add ClientSummary with consistent padding */}
-        <div className="mt-8 px-4 pb-4">
-          <ClientSummary 
-            clientName={session?.user?.name || "Guest"}
-            reservations={mockReservations}
-            refunds={mockRefunds}
-          />
-        </div>
+        {/* Conditionally render ClientSummary */}
+        {session?.user && (
+          <div className="mt-8 px-4 pb-4">
+            <ClientSummary 
+              clientName={session.user.name || "Guest"}
+              reservations={mockReservations}
+              refunds={mockRefunds}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

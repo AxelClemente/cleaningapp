@@ -1,10 +1,19 @@
+'use client'
+
 import { Menu } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { Button } from '../components/Button'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface HeaderProps {
   doctorName: string
@@ -16,6 +25,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
   const { toast } = useToast()
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleGoogleSignUp = async () => {
     setIsLoading(true)
@@ -60,13 +70,15 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
   return (
     <header className="p-4 flex items-center justify-between border-b">
       <div className="flex items-center space-x-2">
-        <Image
-          alt="logo1.png"
-          className="h-12 w-12 rounded-full"
-          src="/images/logo1.png"
-          width={50}
-          height={50}
-        />
+        <Link href="/">
+          <Image
+            alt="logo1.png"
+            className="h-12 w-12 rounded-full cursor-pointer"
+            src="/images/logo1.png"
+            width={50}
+            height={50}
+          />
+        </Link>
         <div>
           <h2 className="text-sm font-medium">{doctorName}</h2>
           <p className="text-sm text-gray-500">{clinicName}</p>
@@ -87,9 +99,26 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
             </Button>
           </>
         )}
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          onClick={() => {
+            setIsMenuOpen(!isMenuOpen)
+            console.log('Menu clicked', isMenuOpen)
+          }}
+        >
           <Menu className="h-4 w-4" />
+          <span className="sr-only">Open menu</span>
         </Button>
+        {isMenuOpen && (
+          <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md">
+            <div className="py-1">
+              <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Dashboard
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   )
