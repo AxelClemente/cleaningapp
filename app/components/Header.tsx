@@ -4,16 +4,10 @@ import { Menu } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '../components/Button'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 interface HeaderProps {
   doctorName: string
@@ -26,29 +20,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  const handleGoogleSignUp = async () => {
-    setIsLoading(true)
-    try {
-      const result = await signIn('google', { callbackUrl: '/dashboard' })
-      if (result?.error) {
-        toast({
-          title: 'Error',
-          description: 'No se pudo iniciar sesión con Google',
-          variant: 'destructive',
-        })
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión con Google:', error)
-      toast({
-        title: 'Error',
-        description: 'Ocurrió un error al intentar iniciar sesión',
-        variant: 'destructive',
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const handleSignOut = async () => {
     setIsLoading(true)
@@ -67,6 +39,23 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
     }
   }
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
   return (
     <header className="p-4 flex items-center justify-between border-b">
       <div className="flex items-center space-x-2">
@@ -84,38 +73,47 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
           <p className="text-sm text-gray-500">{clinicName}</p>
         </div>
       </div>
-      <div className="flex space-x-2">
-        {status === 'authenticated' ? (
-          <Button variant="outline" onClick={handleSignOut} disabled={isLoading}>
-            {isLoading ? 'Cargando...' : 'Log out'}
-          </Button>
-        ) : (
-          <>
-            <Button variant="outline" onClick={() => signIn()}>
-              Log In
-            </Button>
-            <Button variant="outline" onClick={handleGoogleSignUp} disabled={isLoading}>
-              {isLoading ? 'Cargando...' : 'Sign up'}
-            </Button>
-          </>
-        )}
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={() => {
-            setIsMenuOpen(!isMenuOpen)
-            console.log('Menu clicked', isMenuOpen)
-          }}
-        >
-          <Menu className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
-        </Button>
+      <div className="flex items-center space-x-4 relative" ref={menuRef}>
+        <div className="flex items-center border rounded-full p-1">
+          <button 
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={toggleMenu}
+          >
+            <Menu className="h-5 w-5 text-gray-500" />
+          </button>
+          <div className="w-px h-5 bg-gray-300 mx-1"></div>
+          <button 
+            className="relative w-8 h-8 rounded-full overflow-hidden focus:outline-none"
+            onClick={toggleMenu}
+          >
+            <Image
+              src="/images/profile.png" // Reemplaza con la ruta de la imagen de perfil
+              alt="Profile"
+              layout="fill"
+              objectFit="cover"
+            />
+          </button>
+        </div>
         {isMenuOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md">
+          <div 
+            className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-10 top-full"
+          >
             <div className="py-1">
               <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Dashboard
               </a>
+              <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Profile
+              </a>
+              {status === 'authenticated' && (
+                <button 
+                  onClick={handleSignOut}
+                  disabled={isLoading}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  {isLoading ? 'Cargando...' : 'Log out'}
+                </button>
+              )}
             </div>
           </div>
         )}
