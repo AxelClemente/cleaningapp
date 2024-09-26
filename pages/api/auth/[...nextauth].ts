@@ -27,8 +27,13 @@ export const authOptions = {
   },
   callbacks: {
     async session({ session, user }: { session: Session; user: AdapterUser }) {
+      console.log("Session callback called");
       if (session.user) {
         session.user.id = user.id;
+        session.user.name = user.name; // Incluimos el nombre del usuario en la sesión
+        console.log(`Este es el nombre del usuario identificado: ${user.name}`);
+      } else {
+        console.log("Session user is undefined");
       }
       return session;
     },
