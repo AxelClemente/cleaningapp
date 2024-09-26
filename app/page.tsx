@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import { Header } from './components/Header'
 import { Calendar } from './components/Calendar'
@@ -10,6 +11,7 @@ const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
 
 export default function Component() {
+  const { data: session } = useSession()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [currentHouseTypeIndex, setCurrentHouseTypeIndex] = useState(0)
   const [selectedServices, setSelectedServices] = useState<Record<HouseType, string | null>>({
@@ -36,7 +38,10 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
-        <Header doctorName="Express Cleaning Mallorca" clinicName="A Local Small Business Dedicated To You!" />
+        <Header 
+          doctorName={session?.user?.name || "Express Cleaning Mallorca"} 
+          clinicName="A Local Small Business Dedicated To You!" 
+        />
         <div className="p-4">
           <div className="flex items-center space-x-2 text-sm text-gray-500">
             <span>Select your home type, cleaning service and pick your location!</span>
