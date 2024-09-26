@@ -28,14 +28,14 @@ interface ClientSummaryProps {
 export function ClientSummary({ clientName, reservations, refunds }: ClientSummaryProps) {
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">¡Qué bien tenerte por aquí de nuevo, {clientName}!</h1>
+      <h1 className="text-2xl font-bold mb-6">{clientName}, client dashboard </h1>
 
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Tus reservas</h2>
-          <Button variant="link">Todas las reservas ({reservations.length})</Button>
+          <Button variant="link">All reservations ({reservations.length})</Button>
         </div>
-        <Button variant="outline" className="mb-4">Empiezan pronto ({reservations.length})</Button>
+        <Button variant="outline" className="mb-4">In progress ({reservations.length})</Button>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {reservations.map((reservation) => (
             <Card key={reservation.id}>
@@ -53,17 +53,17 @@ export function ClientSummary({ clientName, reservations, refunds }: ClientSumma
                 <p className="text-sm">{reservation.propertyInfo}</p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">Escribir</Button>
+                <Button variant="outline" className="w-full">Message</Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       </section>
 
-      <section>
+      <section className="mt-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Tu solicitud de reembolso</h2>
-          <Button variant="link">Solicitudes recientes ({refunds.length})</Button>
+          <h2 className="text-xl font-semibold">Records</h2>
+          <Button variant="link">Historical data ({refunds.length})</Button>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {refunds.map((refund) => (
@@ -79,10 +79,10 @@ export function ClientSummary({ clientName, reservations, refunds }: ClientSumma
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm font-medium">En curso</p>
+                <p className="text-sm font-medium">Completed</p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">Accede a la solicitud de reembolso</Button>
+                <Button variant="outline" className="w-full">Receipt</Button>
               </CardFooter>
             </Card>
           ))}

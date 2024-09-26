@@ -107,8 +107,8 @@ export default function Component() {
           </div>
         </div>
         
-        {/* Add ClientSummary at the bottom */}
-        <div className="mt-8">
+        {/* Add ClientSummary with consistent padding */}
+        <div className="mt-8 px-4 pb-4">
           <ClientSummary 
             clientName={session?.user?.name || "Guest"}
             reservations={mockReservations}
