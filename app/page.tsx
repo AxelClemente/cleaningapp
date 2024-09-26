@@ -6,6 +6,7 @@ import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import { Header } from './components/Header'
 import { Calendar } from './components/Calendar'
 import { HouseAndServiceType } from './components/House&ServiceType'
+import { ClientSummary } from './components/Client-summary'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
@@ -34,6 +35,28 @@ export default function Component() {
   const handlePreviousHouseType = () => {
     setCurrentHouseTypeIndex((prev) => (prev - 1 + houseTypes.length) % houseTypes.length)
   }
+
+  // Mock data for ClientSummary
+  const mockReservations = [
+    {
+      id: '1',
+      guestName: 'John Doe',
+      dates: '15 May - 20 May',
+      propertyInfo: 'Villa Sunshine',
+      avatarUrl: '/path/to/john-avatar.jpg'
+    },
+    // Add more mock reservations as needed
+  ]
+
+  const mockRefunds = [
+    {
+      id: '1',
+      guestName: 'Jane Smith',
+      dates: '1 Jun - 5 Jun',
+      avatarUrl: '/path/to/jane-avatar.jpg'
+    },
+    // Add more mock refunds as needed
+  ]
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -82,6 +105,15 @@ export default function Component() {
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Add ClientSummary at the bottom */}
+        <div className="mt-8">
+          <ClientSummary 
+            clientName={session?.user?.name || "Guest"}
+            reservations={mockReservations}
+            refunds={mockRefunds}
+          />
         </div>
       </div>
     </div>
