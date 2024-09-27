@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, FC, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '../components/Button'
 import { Input } from '@/components/ui/input'
@@ -8,19 +8,37 @@ import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Location } from './Location'
+import { WorkerProfile } from '@/types/interfaces'
 
-export function WorkerForm() {
-  const { data: session } = useSession()
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [location, setLocation] = useState('')
-  const [bankName, setBankName] = useState('')
-  const [accountHolder, setAccountHolder] = useState('')
-  const [accountNumber, setAccountNumber] = useState('')
-  const [profilePicture, setProfilePicture] = useState<File | null>(null)
+interface WorkerFormProps {
+  existingData?: WorkerProfile | null;
+}
+
+export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
+  const [phoneNumber, setPhoneNumber] = useState(existingData?.phoneNumber || '')
+  const [location, setLocation] = useState(existingData?.location || '')
+  const [bankName, setBankName] = useState(existingData?.bankName || '')
+  const [accountHolder, setAccountHolder] = useState(existingData?.accountHolder || '')
+  const [accountNumber, setAccountNumber] = useState(existingData?.accountNumber || '')
+  const [profilePictureUrl, setProfilePictureUrl] = useState(existingData?.profilePicture || '')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (existingData) {
+      setPhoneNumber(existingData.phoneNumber || '')
+      setLocation(existingData.location || '')
+      setBankName(existingData.bankName || '')
+      setAccountHolder(existingData.accountHolder || '')
+      setAccountNumber(existingData.accountNumber || '')
+      setProfilePictureUrl(existingData.profilePicture || '')
+    }
+  }, [existingData]);
+
+  const { data: session } = useSession()
+  const [profilePicture, setProfilePicture] = useState<File | null>(null)
 
   const handleLocationClick = () => {
     setIsLocationDialogOpen(true)
@@ -31,7 +49,7 @@ export function WorkerForm() {
     setIsLocationDialogOpen(false)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
     setSuccess(false)
@@ -158,6 +176,15 @@ export function WorkerForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="profilePicture" className="block text-left">Profile Picture</Label>
+            {profilePictureUrl && (
+              <Image
+                src={profilePictureUrl}
+                alt="Profile Picture"
+                width={100}
+                height={100}
+                className="mb-2 rounded-full"
+              />
+            )}
             <div 
               className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer"
               onDragOver={handleDragOver}
@@ -177,7 +204,9 @@ export function WorkerForm() {
               onChange={handleFileChange}
             />
           </div>
-          <Button type="submit" className="w-full mt-4">Submit</Button>
+          <Button type="submit" className="w-full mt-4">
+            {existingData ? 'Update Profile' : 'Submit'}
+          </Button>
         </form>
         {error && <p className="text-red-500 mt-4">{error}</p>}
         {success && <p className="text-green-500 mt-4">Worker registered successfully!</p>}

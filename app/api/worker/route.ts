@@ -75,3 +75,35 @@ export async function POST(request: Request) {
     await prisma.$disconnect()
   }
 }
+
+export async function GET(request: Request) {
+  console.log('GET /api/worker called');
+  try {
+    const session = await getServerSession(authOptions);
+    console.log('Session:', session);
+
+    if (!session || !session.user?.email) {
+      console.log('No session or email found');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      include: { worker: true },
+    });
+    console.log('User found:', user);
+
+    if (!user || !user.worker) {
+      console.log('No worker profile found for user');
+      return NextResponse.json({ error: 'Worker profile not found' }, { status: 404 });
+    }
+
+    console.log('Worker profile found:', user.worker);
+    return NextResponse.json(user.worker);
+  } catch (error) {
+    console.error('Error fetching worker profile:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}

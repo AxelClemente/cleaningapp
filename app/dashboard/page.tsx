@@ -1,17 +1,35 @@
 'use client'
 
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PersonIcon, ReaderIcon } from '@radix-ui/react-icons';
 import { useSession } from 'next-auth/react';
 import { Header } from '@/components/Header'; // Importamos el componente Header existente
 import { WorkerForm } from '@/components/Worker-form';
+import { getWorkerProfile } from '../lib/utils'; // Asumimos que existe esta función
+import { WorkerProfile } from '../types/interfaces'; // Updated import path
 
 const DashboardPage: FC = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [showWorkerForm, setShowWorkerForm] = useState(false);
+  const [workerProfile, setWorkerProfile] = useState<WorkerProfile | null>(null);
+
+  useEffect(() => {
+    console.log('useEffect triggered, showWorkerForm:', showWorkerForm);
+    if (showWorkerForm) {
+      getWorkerProfile().then(profile => {
+        console.log('Profile received in component:', profile);
+        if (profile) {
+          setWorkerProfile(profile);
+          console.log('Worker profile set in state');
+        } else {
+          console.log('No profile received');
+        }
+      });
+    }
+  }, [showWorkerForm]);
 
   const handleCardClick = (path: string) => {
     router.push(path);
@@ -31,6 +49,9 @@ const DashboardPage: FC = () => {
 
   const fullName = session?.user?.name || 'Usuario';
   const firstName = fullName.split(' ')[0];
+
+  // Añade este console.log para ver el estado actual
+  console.log('Current workerProfile state:', workerProfile);
 
   return (
     <div>
@@ -81,7 +102,7 @@ const DashboardPage: FC = () => {
             </Card>
           </div>
         ) : (
-          <WorkerForm />
+          <WorkerForm existingData={workerProfile ? {...workerProfile, phone: workerProfile.phone || ''} : undefined} />
         )}
       </div>
     </div>
