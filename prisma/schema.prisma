@@ -19,5 +19,20 @@ model User {
   accessToken   String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  worker        Worker?
+}
+
+model Worker {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique @db.ObjectId
+  phoneNumber    String
+  location       String
+  bankName       String
+  accountHolder  String
+  accountNumber  String
+  profilePicture String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 

@@ -19,6 +19,8 @@ export function WorkerForm() {
   const [profilePicture, setProfilePicture] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<boolean>(false)
 
   const handleLocationClick = () => {
     setIsLocationDialogOpen(true)
@@ -29,9 +31,52 @@ export function WorkerForm() {
     setIsLocationDialogOpen(false)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted')
+    setError(null)
+    setSuccess(false)
+
+    // Validación básica
+    if (!phoneNumber || !location || !bankName || !accountHolder || !accountNumber) {
+      setError('Please fill in all required fields')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('phoneNumber', phoneNumber)
+    formData.append('location', location)
+    formData.append('bankName', bankName)
+    formData.append('accountHolder', accountHolder)
+    formData.append('accountNumber', accountNumber)
+    if (profilePicture) {
+      formData.append('profilePicture', profilePicture)
+    }
+
+    try {
+      const response = await fetch('/api/worker', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to register worker')
+      }
+
+      console.log('Worker registered successfully:', data.worker)
+      setSuccess(true)
+      setError(null)
+      // Opcional: Limpiar el formulario después del éxito
+      // clearForm()
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('An unexpected error occurred')
+      }
+      setSuccess(false)
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,6 +179,8 @@ export function WorkerForm() {
           </div>
           <Button type="submit" className="w-full mt-4">Submit</Button>
         </form>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        {success && <p className="text-green-500 mt-4">Worker registered successfully!</p>}
       </div>
     </div>
   )
