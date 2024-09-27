@@ -6,71 +6,42 @@ import { authOptions } from '../../../pages/api/auth/[...nextauth]'
 const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
-  console.log('Worker registration request received')
-
   try {
     const session = await getServerSession(authOptions)
-    console.log('Session:', session)
-
     if (!session || !session.user?.email) {
-      console.log('Unauthorized: No valid session')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const formData = await request.formData()
-    console.log('Form data received:', Object.fromEntries(formData))
+    const body = await request.json()
 
-    const phoneNumber = formData.get('phoneNumber') as string
-    const location = formData.get('location') as string
-    const bankName = formData.get('bankName') as string
-    const accountHolder = formData.get('accountHolder') as string
-    const accountNumber = formData.get('accountNumber') as string
-    const profilePicture = formData.get('profilePicture') as File | null
-
-    // Validación de campos requeridos
-    if (!phoneNumber || !location || !bankName || !accountHolder || !accountNumber) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
+    // Asegúrate de que todos los campos necesarios estén presentes
+    if (!body.phoneNumber || !body.location /* ... otros campos requeridos */) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
+    // Busca el usuario existente
+    const existingUser = await prisma.user.findUnique({
       where: { email: session.user.email },
     })
 
-    if (!user) {
-      console.log('User not found:', session.user.email)
+    if (!existingUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    console.log('User found:', user.id)
-
-    let profilePictureUrl = null
-    if (profilePicture) {
-      // Implement image upload logic here
-      profilePictureUrl = '/placeholder-profile-picture.jpg'
-    }
-
-    const workerData = {
-      userId: user.id,
-      phoneNumber,
-      location,
-      bankName,
-      accountHolder,
-      accountNumber,
-      profilePicture: profilePictureUrl,
-    }
-
-    console.log('Attempting to create worker with data:', workerData)
-
-    const worker = await prisma.worker.create({
-      data: workerData,
+    // Crea el nuevo trabajador y conéctalo con el usuario existente
+    const newWorker = await prisma.worker.create({
+      data: {
+        ...body,
+        user: {
+          connect: { id: existingUser.id }
+        }
+      },
     })
 
-    console.log('Worker created successfully:', worker)
-
-    return NextResponse.json({ success: true, worker })
+    return NextResponse.json(newWorker)
   } catch (error) {
     console.error('Error in worker registration:', error)
-    return NextResponse.json({ error: 'Failed to register worker', details: error }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to register worker' }, { status: 500 })
   } finally {
     await prisma.$disconnect()
   }
@@ -105,5 +76,37 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Worker ID is required' }, { status: 400 })
+    }
+
+    const body = await request.json()
+
+    console.log('Updating worker with ID:', id)
+
+    const updatedWorker = await prisma.worker.update({
+      where: { id },
+      data: body,
+    })
+
+    return NextResponse.json(updatedWorker)
+  } catch (error) {
+    console.error('Error updating worker:', error)
+    return NextResponse.json({ error: 'Failed to update worker' }, { status: 500 })
+  } finally {
+    await prisma.$disconnect()
   }
 }

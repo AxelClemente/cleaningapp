@@ -54,39 +54,46 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
     setError(null)
     setSuccess(false)
 
-    // Validación básica
+    // Basic validation
     if (!phoneNumber || !location || !bankName || !accountHolder || !accountNumber) {
       setError('Please fill in all required fields')
       return
     }
 
-    const formData = new FormData()
-    formData.append('phoneNumber', phoneNumber)
-    formData.append('location', location)
-    formData.append('bankName', bankName)
-    formData.append('accountHolder', accountHolder)
-    formData.append('accountNumber', accountNumber)
-    if (profilePicture) {
-      formData.append('profilePicture', profilePicture)
-    }
-
     try {
-      const response = await fetch('/api/worker', {
-        method: 'POST',
-        body: formData,
+      const isUpdating = !!existingData?.id
+      const url = isUpdating 
+        ? `/api/worker?id=${existingData.id}` 
+        : '/api/worker'
+      const method = isUpdating ? 'PUT' : 'POST'
+
+      console.log('Submitting to:', url, 'with method:', method) // Añade este log
+
+      const workerData = {
+        phoneNumber,
+        location,
+        bankName,
+        accountHolder,
+        accountNumber,
+      }
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workerData),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to register worker')
+        throw new Error(data.error || 'Failed to process worker data')
       }
 
-      console.log('Worker registered successfully:', data.worker)
+      console.log('Worker data processed successfully:', data.worker)
       setSuccess(true)
       setError(null)
-      // Opcional: Limpiar el formulario después del éxito
-      // clearForm()
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message)
