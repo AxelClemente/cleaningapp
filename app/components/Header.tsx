@@ -22,6 +22,23 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const [isWorker, setIsWorker] = useState(false)
+
+  useEffect(() => {
+    async function checkWorkerStatus() {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch(`/api/worker?email=${encodeURIComponent(session.user.email)}&checkWorkerStatus=true`)
+          const data = await response.json()
+          setIsWorker(data.isWorker)
+        } catch (error) {
+          console.error('Error checking worker status:', error)
+        }
+      }
+    }
+
+    checkWorkerStatus()
+  }, [session])
 
   const handleSignOut = async () => {
     setIsLoading(true)
@@ -79,6 +96,15 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
         </div>
       </div>
       <div className="flex items-center space-x-4 relative" ref={menuRef}>
+      {status === 'authenticated' && isWorker && (
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+          >
+            <Link href="/dashboard-worker">Jobs</Link>
+          </Button>
+        )}
         <div className="flex items-center border rounded-full p-1">
           <button 
             className="p-1 hover:bg-gray-100 rounded-full"
@@ -106,11 +132,19 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
             <div className="py-1">
               {status === 'authenticated' ? (
                 <>
+                  <Link href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Home
+                  </Link>
                   <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Dashboard
                   </Link>
+                  {isWorker && (
+                    <Link href="/jobs" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Jobs
+                    </Link>
+                  )}
                   <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Profile
+                    Account
                   </Link>
                   <button 
                     onClick={handleSignOut}
@@ -122,6 +156,9 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                 </>
               ) : (
                 <>
+                  <Link href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Home
+                  </Link>
                   <Button
                     onClick={handleSignIn}
                     className="w-full justify-start rounded-none px-4 py-2 text-sm font-normal"

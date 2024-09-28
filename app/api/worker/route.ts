@@ -48,41 +48,53 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  console.log('GET /api/worker called');
-  try {
-    const session = await getServerSession(authOptions);
-    console.log('Session:', session);
+  const { searchParams } = new URL(request.url)
+  const email = searchParams.get('email')
+  const checkWorkerStatus = searchParams.get('checkWorkerStatus')
 
+  if (checkWorkerStatus === 'true' && email) {
+    try {
+      const worker = await prisma.worker.findFirst({
+        where: { user: { email } },
+      })
+
+      return NextResponse.json({ isWorker: !!worker })
+    } catch (error) {
+      console.error('Error checking worker status:', error)
+      return NextResponse.json({ error: 'Failed to check worker status' }, { status: 500 })
+    } finally {
+      await prisma.$disconnect()
+    }
+  }
+
+  // Existing GET logic for fetching worker profile
+  try {
+    const session = await getServerSession(authOptions)
     if (!session || !session.user?.email) {
-      console.log('No session or email found');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       include: { worker: true },
-    });
-    console.log('User found:', user);
+    })
 
     if (!user || !user.worker) {
-      console.log('No worker profile found for user');
-      return NextResponse.json({ error: 'Worker profile not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Worker profile not found' }, { status: 404 })
     }
 
-    // Combinar la información del usuario y del trabajador
     const workerProfile = {
-      ...user.worker,
+      ...(typeof user.worker === 'object' ? user.worker : {}),
       name: user.name,
       email: user.email,
-    };
+    }
 
-    console.log('Worker profile found:', workerProfile);
-    return NextResponse.json(workerProfile);
+    return NextResponse.json(workerProfile)
   } catch (error) {
-    console.error('Error fetching worker profile:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('Error fetching worker profile:', error)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
