@@ -10,6 +10,7 @@ import { Header } from '../components/Header'
 export default function DashboardWorker() {
   const { data: session } = useSession()
   const [workerData, setWorkerData] = useState<WorkerProfile | null>(null)
+  const [activeTab, setActiveTab] = useState('available')
 
   useEffect(() => {
     const fetchWorkerData = async () => {
@@ -26,6 +27,31 @@ export default function DashboardWorker() {
 
   if (!workerData) return <div>Loading...</div>
 
+  const renderJobs = () => {
+    const jobs = activeTab === 'available' 
+      ? ['KJ', 'RO', 'DJ'] // Available jobs
+      : ['Completed Job', 'Pending Job'] // History jobs
+
+    return jobs.map((initial, index) => (
+      <div key={index} className="flex items-start border-l-4 border-blue-500 pl-4 py-2">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${
+          activeTab === 'available' ? 'bg-green-500' : 'bg-yellow-500'
+        }`}>
+          {initial}
+        </div>
+        <div className="ml-4">
+          <h4 className="font-semibold">Job title would go here...</h4>
+          <p className="text-sm text-gray-600">Job description would go here if needed.</p>
+          <div className="flex items-center text-sm text-gray-500 mt-1">
+            <span>$150.00</span>
+            <span className="mx-2">•</span>
+            <span>2 days ago</span>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-6xl mx-auto">
@@ -40,7 +66,7 @@ export default function DashboardWorker() {
             <div className="md:w-1/3 p-6 bg-gray-50">
               <div className="text-center mb-6">
                 <Image
-                  src={workerData.profilePicture || '/default-avatar.png'}
+                  src={workerData.profilePicture || '/images/profile.png'}
                   alt={workerData.name}
                   width={120}
                   height={120}
@@ -77,28 +103,25 @@ export default function DashboardWorker() {
             </div>
             <div className="md:w-2/3 p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold">Jobs (5)</h3>
+                <h3 className="text-xl font-semibold">Jobs</h3>
                 <button className="bg-blue-500 text-white px-3 py-1 rounded">+ Add</button>
               </div>
+              <div className="flex border-b mb-4">
+                <button
+                  className={`py-2 px-4 ${activeTab === 'available' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('available')}
+                >
+                  Available
+                </button>
+                <button
+                  className={`py-2 px-4 ${activeTab === 'history' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('history')}
+                >
+                  History
+                </button>
+              </div>
               <div className="space-y-4">
-                {['KJ', 'Completed Job', 'RO', 'Pending Job', 'DJ'].map((initial, index) => (
-                  <div key={index} className="flex items-start border-l-4 border-blue-500 pl-4 py-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${
-                      index % 2 === 0 ? 'bg-green-500' : 'bg-yellow-500'
-                    }`}>
-                      {initial}
-                    </div>
-                    <div className="ml-4">
-                      <h4 className="font-semibold">Job title would go here...</h4>
-                      <p className="text-sm text-gray-600">Job description would go here if needed.</p>
-                      <div className="flex items-center text-sm text-gray-500 mt-1">
-                        <span>$150.00</span>
-                        <span className="mx-2">•</span>
-                        <span>2 days ago</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {renderJobs()}
               </div>
             </div>
           </div>
