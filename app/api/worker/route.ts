@@ -69,8 +69,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Worker profile not found' }, { status: 404 });
     }
 
-    console.log('Worker profile found:', user.worker);
-    return NextResponse.json(user.worker);
+    // Combinar la información del usuario y del trabajador
+    const workerProfile = {
+      ...user.worker,
+      name: user.name,
+      email: user.email,
+    };
+
+    console.log('Worker profile found:', workerProfile);
+    return NextResponse.json(workerProfile);
   } catch (error) {
     console.error('Error fetching worker profile:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

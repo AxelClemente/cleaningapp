@@ -2,6 +2,7 @@
 
 import { useState, useRef, FC, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from '../components/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,6 +16,7 @@ interface WorkerFormProps {
 }
 
 export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
+  const router = useRouter()
   const [phoneNumber, setPhoneNumber] = useState(existingData?.phoneNumber || '')
   const [location, setLocation] = useState(existingData?.location || '')
   const [bankName, setBankName] = useState(existingData?.bankName || '')
@@ -94,6 +96,10 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
       console.log('Worker data processed successfully:', data.worker)
       setSuccess(true)
       setError(null)
+      // Redirigir al dashboard después de un breve retraso
+      setTimeout(() => {
+        router.push('/dashboard-worker')
+      }, 1500)
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message)
