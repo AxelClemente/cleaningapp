@@ -1,8 +1,8 @@
 'use client'
 
-import { Button } from "../components/Button"
+import { Button } from "./Button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 
@@ -15,7 +15,7 @@ interface Reservation {
   status: string;
   avatarUrl: string;
   serviceType: string;
-  location: string; // Added this line
+  location: string;
 }
 
 interface ClientSummaryProps {

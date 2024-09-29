@@ -34,6 +34,8 @@ export async function GET(request: Request) {
       userName: user.name,
       calendarData: order.calendarData,
       houseType: order.houseType,
+      serviceType: order.serviceType, // Añadimos esta línea
+      location: order.location, // Añadimos esta línea
       price: order.price,
       status: order.status,
       avatarUrl: user.image || '',
