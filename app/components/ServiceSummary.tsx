@@ -19,7 +19,7 @@ interface ServiceSummaryProps {
   onClose: () => void;
   calendarData: string;
   houseType: string;
-  serviceType: string[];
+  serviceType: string; // Cambiamos de string[] a string
   location: string;
   phoneNumber: string;
   setPhoneNumber: (value: string) => void;
@@ -97,7 +97,6 @@ export function ServiceSummary({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          // Use email instead of id, as we're finding the user by email in the API
           userEmail: session.user.email,
           houseType,
           calendarData,
@@ -107,6 +106,7 @@ export function ServiceSummary({
           comment,
           price,
           status: 'Open',
+          serviceType: serviceType // Asegúrate de que esto sea un string
         }),
       });
 
@@ -216,8 +216,7 @@ export function ServiceSummary({
               <div className="flex justify-between items-center">
                 <div>
                   <h4 className="text-sm font-medium text-gray-200 mb-2">Type of service</h4>
-                  <h3 className="text-xl font-bold">{serviceType[0]}</h3>
-                  <p>{serviceType.length > 1 ? `+${serviceType.length - 1} servicios` : ''}</p>
+                  <h3 className="text-xl font-bold">{serviceType}</h3>
                 </div>
                 {price !== null && (
                   <div className="text-right">

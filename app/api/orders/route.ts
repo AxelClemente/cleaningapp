@@ -3,45 +3,91 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
     return NextResponse.json({ error: "Not authenticated or user email not found" }, { status: 401 });
   }
 
-  try {
-    const body = await request.json();
-    console.log('Received body:', body);
+  const { searchParams } = new URL(request.url);
+  const email = searchParams.get('email');
 
-    // Buscar el usuario por email
+  if (!email) {
+    return NextResponse.json({ error: "Email parameter is required" }, { status: 400 });
+  }
+
+  try {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: email },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const order = await prisma.order.create({
-      data: {
-        userId: user.id, // Usar el id del usuario encontrado
-        houseType: body.houseType,
-        calendarData: body.calendarData,
-        location: body.location,
-        phoneNumber: body.phoneNumber,
-        entryMethod: body.entryMethod,
-        comment: body.comment,
-        price: body.price,
-        status: body.status,
-      }
+    const orders = await prisma.order.findMany({
+      where: { userId: user.id },
     });
 
-    console.log('Created order:', order);
+    const formattedOrders = orders.map(order => ({
+      id: order.id,
+      userName: user.name,
+      calendarData: order.calendarData,
+      houseType: order.houseType,
+      price: order.price,
+      status: order.status,
+      avatarUrl: user.image || '',
+    }));
 
-    return NextResponse.json(order, { status: 201 });
+    return NextResponse.json(formattedOrders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Error fetching orders', details: errorMessage }, { status: 500 });
+  }
+}
+
+// Existing POST function
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    console.log("Received body:", body);
+
+    const { userEmail, houseType, calendarData, location, phoneNumber, entryMethod, comment, price, status, serviceType } = body;
+
+    // Verifica que serviceType sea un string
+    if (typeof serviceType !== 'string') {
+      return NextResponse.json({ error: 'serviceType must be a string' }, { status: 400 });
+    }
+
+    // Encuentra el usuario por email
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Crea la orden
+    const order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        houseType,
+        serviceType, // Ahora estamos seguros de que es un string
+        calendarData: typeof calendarData === 'string' ? calendarData : JSON.stringify(calendarData),
+        location,
+        phoneNumber,
+        entryMethod,
+        comment,
+        price,
+        status,
+      },
+    });
+
+    return NextResponse.json(order);
   } catch (error) {
     console.error('Error creating order:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: 'Error creating order', details: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create order', details: error.message }, { status: 500 });
   }
 }

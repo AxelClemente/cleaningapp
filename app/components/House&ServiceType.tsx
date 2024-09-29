@@ -263,7 +263,7 @@ export function HouseAndServiceType({
         onClose={() => setIsServiceSummaryOpen(false)}
         calendarData={selectedDate ? selectedDate.toDateString() : ''}
         houseType={houseType}
-        serviceType={selectedService ? [selectedService] : []}
+        serviceType={selectedService || ''} // Cambiamos esto
         location={selectedLocation || ''}
         phoneNumber=""
         setPhoneNumber={() => {}}

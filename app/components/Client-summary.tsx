@@ -3,33 +3,42 @@
 import { Button } from "../components/Button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar"
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface Reservation {
   id: string
-  guestName: string
-  dates: string
-  propertyInfo: string
-  avatarUrl: string
-}
-
-interface Refund {
-  id: string
-  guestName: string
-  dates: string
+  userName: string
+  calendarData: string
+  houseType: string
+  price: number
+  status: string
   avatarUrl: string
 }
 
 interface ClientSummaryProps {
   clientName: string
-  reservations: Reservation[]
-  refunds: Refund[]
 }
 
-export function ClientSummary({ clientName, reservations, refunds }: ClientSummaryProps) {
+export function ClientSummary({ clientName }: ClientSummaryProps) {
+  const [reservations, setReservations] = useState<Reservation[]>([])
+  const { data: session } = useSession()
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      if (session?.user?.email) {
+        const response = await fetch(`/api/orders?email=${session.user.email}`)
+        if (response.ok) {
+          const data = await response.json()
+          setReservations(data)
+        }
+      }
+    }
+    fetchReservations()
+  }, [session])
+
   return (
     <div className="space-y-6">
-      
-
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Tus reservas</h2>
@@ -41,48 +50,20 @@ export function ClientSummary({ clientName, reservations, refunds }: ClientSumma
             <Card key={reservation.id}>
               <CardHeader className="flex flex-row items-center gap-4">
                 <Avatar>
-                  <AvatarImage src={reservation.avatarUrl} alt={reservation.guestName} />
-                  <AvatarFallback>{reservation.guestName[0]}</AvatarFallback>
+                  <AvatarImage src={reservation.avatarUrl} alt={reservation.userName} />
+                  <AvatarFallback>{reservation.userName[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <CardTitle>{reservation.guestName}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{reservation.dates}</p>
+                  <CardTitle>{reservation.userName}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{reservation.calendarData}</p>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm">{reservation.propertyInfo}</p>
+                <p className="text-sm">{reservation.houseType}</p>
+                <p className="text-sm font-medium mt-2">Price: €{reservation.price.toFixed(2)}</p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">Message</Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Records</h2>
-          <Button variant="link">Historical data ({refunds.length})</Button>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {refunds.map((refund) => (
-            <Card key={refund.id}>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <Avatar>
-                  <AvatarImage src={refund.avatarUrl} alt={refund.guestName} />
-                  <AvatarFallback>{refund.guestName[0]}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle>{refund.guestName}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{refund.dates}</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm font-medium">Completed</p>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" className="w-full">Receipt</Button>
+                <Button variant="outline" className="w-full">{reservation.status}</Button>
               </CardFooter>
             </Card>
           ))}

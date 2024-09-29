@@ -37,17 +37,18 @@ model Worker {
 }
 
 model Order {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String  @db.ObjectId
-  houseType   String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  houseType    String
+  serviceType  String   // Añadimos este campo
   calendarData Json
-  location    String
-  phoneNumber String
-  entryMethod String
-  comment     String?
-  price       Float
-  status      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  location     String
+  phoneNumber  String
+  entryMethod  String
+  comment      String?
+  price        Float
+  status       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
