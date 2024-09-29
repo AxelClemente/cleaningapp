@@ -28,40 +28,37 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   callbacks: {
-    async session({ session, token }: { session: Session; token: JWT | null }) {
-      console.log("Session Callback - Session:", session);
-      console.log("Session Callback - Token:", token);
-      if (session.user && token) {
-        session.user.id = token.sub ?? '';
-        session.user.isWorker = (token.isWorker as boolean) ?? false;
-      }
-      return session;
-    },
-    async jwt({ token, user }: { token: JWT; user?: AdapterUser }) {
-      console.log("JWT Callback - Token:", token);
-      console.log("JWT Callback - User:", user);
+    async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.isWorker = await checkIfUserIsWorker(user.id);
       }
       return token;
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        session.user.isWorker = token.isWorker as boolean;
+      }
+      return session;
+    },
+    async redirect({ url, baseUrl }) {
       return `${baseUrl}/dashboard`;
     },
   },
 };
 
-async function checkIfUserIsWorker(email: string): Promise<boolean> {
+async function checkIfUserIsWorker(userId: string): Promise<boolean> {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/worker?email=${encodeURIComponent(email)}&checkWorkerStatus=true`)
+    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/worker?userId=${encodeURIComponent(userId)}&checkWorkerStatus=true`);
     if (!response.ok) {
-      throw new Error('Failed to check worker status')
+      throw new Error('Failed to check worker status');
     }
-    const data = await response.json()
-    return data.isWorker
+    const data = await response.json();
+    return data.isWorker;
   } catch (error) {
-    console.error('Error checking worker status:', error)
-    return false
+    console.error('Error checking worker status:', error);
+    return false;
   }
 }
 

@@ -8,11 +8,20 @@ const prisma = new PrismaClient()
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    console.log("Worker API - Session:", session)
+
+    if (!session || !session.user) {
+      console.log("Worker API - No session or user found")
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
     }
 
     const body = await request.json()
+
+    // Verify that the userId from the request matches the session user's id
+    if (body.userId !== session.user.id) {
+      console.log("Worker API - User ID mismatch")
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    }
 
     // Asegúrate de que todos los campos necesarios estén presentes
     if (!body.phoneNumber || !body.location /* ... otros campos requeridos */) {
@@ -21,7 +30,7 @@ export async function POST(request: Request) {
 
     // Busca el usuario existente
     const existingUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user.email ?? '' },
     })
 
     if (!existingUser) {
@@ -37,6 +46,8 @@ export async function POST(request: Request) {
         }
       },
     })
+
+    console.log("Worker API - Worker created successfully:", newWorker)
 
     return NextResponse.json(newWorker)
   } catch (error) {

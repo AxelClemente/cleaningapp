@@ -10,6 +10,9 @@ import { Input } from "@/components/Input"
 import { Textarea } from "@/components/Textarea"
 import { CheckoutButton } from "@/components/Checkout-button"
 import { Home, Building, Castle, Warehouse, Bed, Bath, Phone, Key, MessageSquare, CalendarIcon, MapPinIcon } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from "next-auth/react";
 
 interface ServiceSummaryProps {
   isOpen: boolean;
@@ -25,6 +28,7 @@ interface ServiceSummaryProps {
   comment: string;
   setComment: (value: string) => void;
   price: number | null;
+  userId: string;
 }
 
 export function ServiceSummary({
@@ -40,8 +44,22 @@ export function ServiceSummary({
   setEntryMethods,
   comment,
   setComment,
-  price
+  price,
+  userId
 }: ServiceSummaryProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push('/login'); // Redirect to login if not authenticated
+    }
+  }, [status, router]);
+
+  console.log("Session status:", status);
+  console.log("Session data:", session);
+
   const handleEntryMethodChange = (method: string) => {
     setEntryMethods(prevMethods => 
       prevMethods.includes(method)
@@ -63,6 +81,51 @@ export function ServiceSummary({
         return <Castle className={iconClass} />;
       default:
         return <Home className={iconClass} />;
+    }
+  };
+
+  const handlePayment = async () => {
+    setIsLoading(true);
+    try {
+      if (status !== "authenticated" || !session?.user?.email) {
+        throw new Error("User not authenticated");
+      }
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Use email instead of id, as we're finding the user by email in the API
+          userEmail: session.user.email,
+          houseType,
+          calendarData,
+          location,
+          phoneNumber,
+          entryMethod: entryMethods.join(', '),
+          comment,
+          price,
+          status: 'Open',
+        }),
+      });
+
+      console.log("API response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log("API error data:", errorData);
+        throw new Error(errorData.error || 'Failed to create order');
+      }
+
+      const data = await response.json();
+      console.log('Order created:', data);
+      router.push('/');
+    } catch (error) {
+      console.error('Error creating order:', error);
+      // You might want to set an error state here and display it to the user
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -167,7 +230,17 @@ export function ServiceSummary({
           </div>
         </div>
         <DialogFooter className="flex justify-between items-center mt-4">
-          <Button onClick={onClose} variant="outline" className="h-9 px-3 text-sm">Cerrar</Button>
+          <div className="flex space-x-2">
+            <Button onClick={onClose} variant="outline" className="h-9 px-3 text-sm">Cerrar</Button>
+            <Button 
+              onClick={handlePayment} 
+              variant="outline" 
+              className="h-9 px-3 text-sm"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Procesando...' : 'Pay'}
+            </Button>
+          </div>
           {price !== null && <CheckoutButton amount={price.toFixed(2)} />}
         </DialogFooter>
       </DialogContent>

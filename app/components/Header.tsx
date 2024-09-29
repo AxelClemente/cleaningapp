@@ -100,7 +100,6 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
           <Button
             variant="outline"
             size="sm"
-            asChild
           >
             <Link href="/dashboard-worker">Jobs</Link>
           </Button>
@@ -139,7 +138,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                     Dashboard
                   </Link>
                   {isWorker && (
-                    <Link href="/jobs" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <Link href="/dashboard-worker" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       Jobs
                     </Link>
                   )}

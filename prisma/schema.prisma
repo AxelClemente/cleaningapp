@@ -36,3 +36,18 @@ model Worker {
   updatedAt      DateTime @updatedAt
 }
 
+model Order {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String  @db.ObjectId
+  houseType   String
+  calendarData Json
+  location    String
+  phoneNumber String
+  entryMethod String
+  comment     String?
+  price       Float
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

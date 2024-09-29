@@ -112,7 +112,8 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setProfilePicture(e.target.files[0])
+      const file = e.target.files[0]
+      setProfilePictureUrl(URL.createObjectURL(file))
     }
   }
 
@@ -123,7 +124,8 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setProfilePicture(e.dataTransfer.files[0])
+      const file = e.dataTransfer.files[0]
+      setProfilePictureUrl(URL.createObjectURL(file))
     }
   }
 
@@ -206,7 +208,7 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
             >
               <p className="text-gray-500">Please upload an image file (jpg, png, or gif).</p>
               <p className="text-blue-500 hover:underline">Choose file or drop here</p>
-              {profilePicture && <p className="mt-2 text-green-500">{profilePicture.name} selected</p>}
+              {profilePictureUrl && <p className="mt-2 text-green-500">Image selected</p>}
             </div>
             <input
               ref={fileInputRef}
