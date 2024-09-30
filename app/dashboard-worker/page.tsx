@@ -6,11 +6,12 @@ import Image from 'next/image'
 import { WorkerProfile } from '@/types/interfaces'
 import { Star, MapPin, Phone, Mail } from 'lucide-react'
 import { Header } from '../components/Header'
+import { ClientSummary } from '../components/Card-order'
 
 export default function DashboardWorker() {
   const { data: session } = useSession()
   const [workerData, setWorkerData] = useState<WorkerProfile | null>(null)
-  const [activeTab, setActiveTab] = useState('available')
+  const [activeTab, setActiveTab] = useState('open')
 
   useEffect(() => {
     const fetchWorkerData = async () => {
@@ -28,28 +29,7 @@ export default function DashboardWorker() {
   if (!workerData) return <div>Loading...</div>
 
   const renderJobs = () => {
-    const jobs = activeTab === 'available' 
-      ? ['KJ', 'RO', 'DJ'] // Available jobs
-      : ['Completed Job', 'Pending Job'] // History jobs
-
-    return jobs.map((initial, index) => (
-      <div key={index} className="flex items-start border-l-4 border-blue-500 pl-4 py-2">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${
-          activeTab === 'available' ? 'bg-green-500' : 'bg-yellow-500'
-        }`}>
-          {initial}
-        </div>
-        <div className="ml-4">
-          <h4 className="font-semibold">Job title would go here...</h4>
-          <p className="text-sm text-gray-600">Job description would go here if needed.</p>
-          <div className="flex items-center text-sm text-gray-500 mt-1">
-            <span>$150.00</span>
-            <span className="mx-2">•</span>
-            <span>2 days ago</span>
-          </div>
-        </div>
-      </div>
-    ))
+    return <ClientSummary activeTab={activeTab} />
   }
 
   return (
@@ -108,16 +88,16 @@ export default function DashboardWorker() {
               </div>
               <div className="flex border-b mb-4">
                 <button
-                  className={`py-2 px-4 ${activeTab === 'available' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
-                  onClick={() => setActiveTab('available')}
+                  className={`py-2 px-4 ${activeTab === 'open' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('open')}
                 >
-                  Available
+                  Open
                 </button>
                 <button
-                  className={`py-2 px-4 ${activeTab === 'history' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
-                  onClick={() => setActiveTab('history')}
+                  className={`py-2 px-4 ${activeTab === 'completed' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('completed')}
                 >
-                  History
+                  Completed
                 </button>
               </div>
               <div className="space-y-4">

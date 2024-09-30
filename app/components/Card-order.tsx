@@ -22,7 +22,12 @@ interface Reservation {
   comment: string; // New property
 }
 
-export function ClientSummary() {
+interface ClientSummaryProps {
+  activeTab?: string;
+  clientName?: string;
+}
+
+export function ClientSummary({ activeTab = 'open', clientName }: ClientSummaryProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const { data: session } = useSession()
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
@@ -33,7 +38,6 @@ export function ClientSummary() {
         const response = await fetch(`/api/orders?email=${session.user.email}`)
         if (response.ok) {
           const data = await response.json()
-          console.log('Reservations data:', data) // Añade esta línea
           setReservations(data)
         }
       }
@@ -41,10 +45,15 @@ export function ClientSummary() {
     fetchReservations()
   }, [session])
 
+  const filteredReservations = reservations.filter(reservation => 
+    activeTab === 'open' ? reservation.status === 'Open' : reservation.status !== 'Open'
+  )
+
   return (
     <div className="space-y-6">
+      {clientName && <h2 className="text-2xl font-bold mb-4">Welcome back, {clientName}!</h2>}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {reservations.map((reservation) => (
+        {filteredReservations.map((reservation) => (
           <Card 
             key={reservation.id} 
             className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
