@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
@@ -27,19 +27,32 @@ interface CardOrderModalProps {
   onClose: () => void;
 }
 
-export function CardOrderModal({ reservation, onClose }: CardOrderModalProps) {
+export function CardOrderModal({ reservation: initialReservation, onClose }: CardOrderModalProps) {
+  const [reservation, setReservation] = useState(initialReservation);
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
   type StatusType = typeof statusSteps[number];
 
   const getStatusColor = (status: StatusType, currentStatus: StatusType) => {
     const index = statusSteps.indexOf(status);
     const currentIndex = statusSteps.indexOf(currentStatus);
-    return index <= currentIndex ? 'bg-green-500' : 'bg-gray-300';
+    if (index === currentIndex) return 'bg-yellow-500';
+    return index < currentIndex ? 'bg-green-500' : 'bg-gray-300';
   };
 
-  const handleAccept = () => {
-    // Aquí puedes agregar cualquier lógica adicional antes de cerrar el modal
-    onClose();
+  const handleAccept = async () => {
+    try {
+      // Actualizar el estado en la base de datos
+      await updateReservationStatus(reservation.id, 'Progress');
+      
+      // Actualizar el estado local
+      setReservation({ ...reservation, status: 'Progress' });
+      
+      // Cerrar el modal después de un breve retraso para mostrar el cambio
+      setTimeout(onClose, 500);
+    } catch (error) {
+      console.error('Error updating reservation status:', error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+    }
   };
 
   return (
@@ -120,6 +133,7 @@ export function CardOrderModal({ reservation, onClose }: CardOrderModalProps) {
               <Button 
                 className="w-full" 
                 onClick={handleAccept}
+                disabled={reservation.status !== 'Open'}
               >
                 Accept
               </Button>

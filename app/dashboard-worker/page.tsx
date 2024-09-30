@@ -94,6 +94,12 @@ export default function DashboardWorker() {
                   Open
                 </button>
                 <button
+                  className={`py-2 px-4 ${activeTab === 'inProgress' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('inProgress')}
+                >
+                  In Progress
+                </button>
+                <button
                   className={`py-2 px-4 ${activeTab === 'completed' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
                   onClick={() => setActiveTab('completed')}
                 >
