@@ -1,11 +1,11 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { HomeIcon } from '@heroicons/react/24/outline'
-import { Home, MapPin } from 'lucide-react'
+import { Home, MapPin, Calendar } from 'lucide-react'
+import { CardOrderModal } from '../components/Card-order-modal'
 
 interface Reservation {
   id: string;
@@ -17,11 +17,15 @@ interface Reservation {
   price: number;
   avatarUrl: string;
   status: string;
+  calendarData: string;
+  entryMethod: string; // New property
+  comment: string; // New property
 }
 
 export function ClientSummary() {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const { data: session } = useSession()
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -41,7 +45,11 @@ export function ClientSummary() {
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {reservations.map((reservation) => (
-          <Card key={reservation.id} className="overflow-hidden">
+          <Card 
+            key={reservation.id} 
+            className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
+            onClick={() => setSelectedReservation(reservation)}
+          >
             <div className="relative">
               <img 
                 src="/images/cuarto.jpg" 
@@ -69,9 +77,13 @@ export function ClientSummary() {
                 <Home className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{reservation.houseType} House</span>
               </div>
-              <div className="flex items-center space-x-1 mb-2">
+              <div className="flex items-center space-x-1 mb-1">
                 <MapPin className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{reservation.location}</span>
+              </div>
+              <div className="flex items-center space-x-1 mb-2">
+                <Calendar className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-700">{reservation.calendarData}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{reservation.duration}</span>
@@ -81,6 +93,12 @@ export function ClientSummary() {
           </Card>
         ))}
       </div>
+      {selectedReservation && (
+        <CardOrderModal 
+          reservation={selectedReservation} 
+          onClose={() => setSelectedReservation(null)}
+        />
+      )}
     </div>
   )
 }

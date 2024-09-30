@@ -34,11 +34,13 @@ export async function GET(request: Request) {
       userName: user.name,
       calendarData: order.calendarData,
       houseType: order.houseType,
-      serviceType: order.serviceType, // Añadimos esta línea
-      location: order.location, // Añadimos esta línea
+      serviceType: order.serviceType,
+      location: order.location,
       price: order.price,
       status: order.status,
       avatarUrl: user.image || '',
+      entryMethod: order.entryMethod, // Add this line
+      comment: order.comment, // Add this line
     }));
 
     return NextResponse.json(formattedOrders);
