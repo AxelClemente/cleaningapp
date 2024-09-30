@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, Key, MessageSquare } from 'lucide-react'
 import { Button } from "../components/Button"
+import { updateReservationStatus } from '@/lib/api';
 
 interface Reservation {
   id: string;
@@ -41,14 +42,17 @@ export function CardOrderModal({ reservation: initialReservation, onClose }: Car
 
   const handleAccept = async () => {
     try {
-      // Actualizar el estado en la base de datos
-      await updateReservationStatus(reservation.id, 'Progress');
+      const result = await updateReservationStatus(reservation.id, 'Progress');
       
-      // Actualizar el estado local
-      setReservation({ ...reservation, status: 'Progress' });
-      
-      // Cerrar el modal después de un breve retraso para mostrar el cambio
-      setTimeout(onClose, 500);
+      if (result.success) {
+        // Actualizar el estado local
+        setReservation({ ...reservation, status: 'Progress' });
+        
+        // Cerrar el modal después de un breve retraso para mostrar el cambio
+        setTimeout(onClose, 500);
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error('Error updating reservation status:', error);
       // Aquí podrías mostrar un mensaje de error al usuario
