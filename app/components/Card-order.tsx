@@ -16,7 +16,7 @@ interface Reservation {
   duration: string;
   price: number;
   avatarUrl: string;
-  status: string;
+  status: "Open" | "Progress" | "Completed";
   calendarData: string;
   entryMethod: string; // New property
   comment: string; // New property
@@ -27,7 +27,7 @@ interface ClientSummaryProps {
   clientName?: string;
 }
 
-export function ClientSummary({ activeTab = 'open', clientName }: ClientSummaryProps) {
+export function ClientSummary({ activeTab, clientName }: ClientSummaryProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const { data: session } = useSession()
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
@@ -45,9 +45,11 @@ export function ClientSummary({ activeTab = 'open', clientName }: ClientSummaryP
     fetchReservations()
   }, [session])
 
-  const filteredReservations = reservations.filter(reservation => 
-    activeTab === 'open' ? reservation.status === 'Open' : reservation.status !== 'Open'
-  )
+  const filteredReservations = activeTab
+  ? reservations.filter(reservation => 
+      activeTab === 'open' ? reservation.status === 'Open' : reservation.status !== 'Open'
+    )
+  : reservations;
 
   return (
     <div className="space-y-6">

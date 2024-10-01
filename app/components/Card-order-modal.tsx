@@ -40,16 +40,16 @@ export function CardOrderModal({ reservation: initialReservation, onClose }: Car
     return index < currentIndex ? 'bg-green-500' : 'bg-gray-300';
   };
 
-  const handleAccept = async () => {
+  const handleStatusUpdate = async () => {
     try {
-      const result = await updateReservationStatus(reservation.id, 'Progress');
+      const newStatus = reservation.status === 'Open' ? 'Progress' : 'Completed';
+      const result = await updateReservationStatus(reservation.id, newStatus);
       
       if (result.success) {
-        // Actualizar el estado local
-        setReservation({ ...reservation, status: 'Progress' });
-        
-        // Cerrar el modal después de un breve retraso para mostrar el cambio
-        setTimeout(onClose, 500);
+        setReservation({ ...reservation, status: newStatus });
+        if (newStatus === 'Completed') {
+          setTimeout(onClose, 500);
+        }
       } else {
         throw new Error(result.error);
       }
@@ -136,10 +136,10 @@ export function CardOrderModal({ reservation: initialReservation, onClose }: Car
             <div className="mt-6">
               <Button 
                 className="w-full" 
-                onClick={handleAccept}
-                disabled={reservation.status !== 'Open'}
+                onClick={handleStatusUpdate}
+                disabled={reservation.status === 'Completed'}
               >
-                Accept
+                {reservation.status === 'Open' ? 'Accept' : 'Complete'}
               </Button>
             </div>
           </CardContent>
