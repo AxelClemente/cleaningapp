@@ -89,7 +89,13 @@ export function ClientSummary({ activeTab, clientName }: ClientSummaryProps) {
                   </Avatar>
                   <span className="text-sm font-medium">{reservation.serviceType} Service</span>
                 </div>
-                <div className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-300">
+                <div className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                  reservation.status === 'Open'
+                    ? 'bg-green-100 text-green-800 border border-green-300'
+                    : reservation.status === 'Progress'
+                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                    : 'bg-red-100 text-red-800 border border-red-300'
+                }`}>
                   {reservation.status}
                 </div>
               </div>
