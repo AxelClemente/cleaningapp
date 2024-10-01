@@ -21,6 +21,7 @@ export default function Component() {
     chalet: null,
     finca: null,
   })
+  const [activeTab, setActiveTab] = useState('open')
 
   const currentHouseType = houseTypes[currentHouseTypeIndex]
 
@@ -88,8 +89,29 @@ export default function Component() {
         {/* Conditionally render ClientSummary */}
         {session?.user && (
           <div className="mt-8 px-4 pb-4">
+            <div className="flex border-b mb-4">
+              <button
+                className={`py-2 px-4 ${activeTab === 'open' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                onClick={() => setActiveTab('open')}
+              >
+                Open
+              </button>
+              <button
+                className={`py-2 px-4 ${activeTab === 'inProgress' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                onClick={() => setActiveTab('inProgress')}
+              >
+                In Progress
+              </button>
+              <button
+                className={`py-2 px-4 ${activeTab === 'completed' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                onClick={() => setActiveTab('completed')}
+              >
+                Completed
+              </button>
+            </div>
             <ClientSummary 
               clientName={session.user.name || "Guest"}
+              activeTab={activeTab}
             />
           </div>
         )}
