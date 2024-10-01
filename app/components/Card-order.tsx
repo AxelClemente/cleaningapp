@@ -46,10 +46,19 @@ export function ClientSummary({ activeTab, clientName }: ClientSummaryProps) {
   }, [session])
 
   const filteredReservations = activeTab
-  ? reservations.filter(reservation => 
-      activeTab === 'open' ? reservation.status === 'Open' : reservation.status !== 'Open'
-    )
-  : reservations;
+    ? reservations.filter(reservation => {
+        switch (activeTab) {
+          case 'open':
+            return reservation.status === 'Open';
+          case 'inProgress':
+            return reservation.status === 'Progress';
+          case 'completed':
+            return reservation.status === 'Completed';
+          default:
+            return true;
+        }
+      })
+    : reservations;
 
   return (
     <div className="space-y-6">
