@@ -78,7 +78,7 @@ const DashboardPage: FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card
               className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => handleCardClick('/')}
+              onClick={() => handleCardClick('/HomeDashboard')}
             >
               <CardHeader>
                 <PersonIcon className="w-6 h-6" />
