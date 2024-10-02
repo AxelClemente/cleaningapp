@@ -8,7 +8,6 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '../components/Button'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
-import { Button as GhostButton } from '../components/Button'
 
 interface HeaderProps {
   doctorName: string

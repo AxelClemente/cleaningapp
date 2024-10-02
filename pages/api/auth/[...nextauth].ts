@@ -24,9 +24,10 @@ export const authOptions: NextAuthOptions = {
   ],
   adapter: MongoDBAdapter(clientPromise),
   secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/auth/signin",
-  },
+  // Elimina la siguiente línea
+  // pages: {
+  //   signIn: "/auth/signin",
+  // },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
