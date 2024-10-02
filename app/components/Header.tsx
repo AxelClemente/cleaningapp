@@ -133,7 +133,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                   <Link href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Home
                   </Link>
-                  <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Link href="/HomeDashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Dashboard
                   </Link>
                   {isWorker && (
@@ -143,6 +143,12 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                   )}
                   <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Account
+                  </Link>
+                  <Link href="/HomeDashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Hire Service
+                  </Link>
+                  <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Join as a Cleaner
                   </Link>
                   <button 
                     onClick={handleSignOut}
@@ -156,6 +162,12 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                 <>
                   <Link href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Home
+                  </Link>
+                  <Link href="/hire-service" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Hire Service
+                  </Link>
+                  <Link href="/join-as-cleaner" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Join as a Cleaner
                   </Link>
                   <Button
                     onClick={handleSignIn}

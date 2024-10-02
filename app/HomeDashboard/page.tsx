@@ -41,8 +41,8 @@ export default function Component() {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
         <Header 
-          doctorName={session?.user?.name || "Express Cleaning Mallorca"} 
-          clinicName="A Local Small Business Dedicated To You!" 
+          doctorName={session?.user?.name || "TidyTeam"} 
+          clinicName="we connect expert cleaners with homes in your neighborhood" 
         />
         <div className="p-4">
           <div className="flex items-center space-x-2 text-sm text-gray-500">
