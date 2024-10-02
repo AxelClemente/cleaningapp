@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import Image from 'next/image'
-import { SignInButton } from './components/SignInButton'
 import { useState } from 'react'
-import { Modal } from './components/About'
+import { Header } from './components/Header'
+
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -31,7 +30,7 @@ export default function HomePage() {
             href="/HomeDashboard" 
             className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
           >
-            Go to Dashboard
+            Dashboard
           </Link>
         </div>
       </main>
