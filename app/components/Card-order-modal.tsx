@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, Key, MessageSquare } from 'lucide-react'
-import { Button } from "../components/Button"
+import { Button } from "@/components/Button"
 import { updateReservationStatus } from '@/lib/api';
 
 interface Reservation {
@@ -26,10 +26,10 @@ interface Reservation {
 interface CardOrderModalProps {
   reservation: Reservation;
   onClose: () => void;
-  isMainPage?: boolean; // New prop to indicate if we're on the main page
+  isMainPage: boolean;
 }
 
-export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage = false }: CardOrderModalProps) {
+export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage }: CardOrderModalProps) {
   const [reservation, setReservation] = useState(initialReservation);
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
   type StatusType = typeof statusSteps[number];
@@ -62,6 +62,13 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
 
   const showAcceptButton = !isMainPage && reservation.status === 'Open';
   const showCompleteButton = reservation.status === 'Progress';
+  const showCancelButton = isMainPage && reservation.status === 'Open';
+
+  const handleCancel = () => {
+    // Implement cancel logic here
+    console.log('Reservation cancelled');
+    onClose();
+  };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -137,7 +144,7 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
               <span className="text-gray-500">{reservation.duration}</span>
               <span className="font-semibold">${reservation.price.toFixed(2)}</span>
             </div>
-            <div className="mt-6">
+            <div className="mt-6 space-y-2">
               {(showAcceptButton || showCompleteButton) && (
                 <Button 
                   className="w-full" 
@@ -145,6 +152,14 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
                   disabled={reservation.status === 'Completed'}
                 >
                   {showAcceptButton ? 'Accept' : 'Complete'}
+                </Button>
+              )}
+              {showCancelButton && (
+                <Button 
+                  className="w-full bg-red-500 hover:bg-red-600" 
+                  onClick={handleCancel}
+                >
+                  Cancel
                 </Button>
               )}
             </div>
