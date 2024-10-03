@@ -112,6 +112,7 @@ export default function Component() {
             <ClientSummary 
               clientName={session.user.name || "Guest"}
               activeTab={activeTab}
+              isMainPage={true} // This is the main page
             />
           </div>
         )}

@@ -29,7 +29,11 @@ export default function DashboardWorker() {
   if (!workerData) return <div>Loading...</div>
 
   const renderJobs = () => {
-    return <ClientSummary activeTab={activeTab} />
+    return <ClientSummary 
+      activeTab={activeTab} 
+      clientName={workerData.name || 'Worker Name'}
+      isMainPage={false} // This is not the main page
+    />
   }
 
   return (

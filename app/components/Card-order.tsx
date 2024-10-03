@@ -23,11 +23,12 @@ interface Reservation {
 }
 
 interface ClientSummaryProps {
-  activeTab?: string;
-  clientName?: string;
+  clientName: string;
+  activeTab: string;
+  isMainPage: boolean; // New prop
 }
 
-export function ClientSummary({ activeTab, clientName }: ClientSummaryProps) {
+export function ClientSummary({ clientName, activeTab, isMainPage }: ClientSummaryProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const { data: session } = useSession()
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
@@ -123,6 +124,7 @@ export function ClientSummary({ activeTab, clientName }: ClientSummaryProps) {
         <CardOrderModal 
           reservation={selectedReservation} 
           onClose={() => setSelectedReservation(null)}
+          isMainPage={isMainPage} // Pass the prop to CardOrderModal
         />
       )}
     </div>

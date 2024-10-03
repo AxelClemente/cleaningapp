@@ -26,9 +26,10 @@ interface Reservation {
 interface CardOrderModalProps {
   reservation: Reservation;
   onClose: () => void;
+  isMainPage?: boolean; // New prop to indicate if we're on the main page
 }
 
-export function CardOrderModal({ reservation: initialReservation, onClose }: CardOrderModalProps) {
+export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage = false }: CardOrderModalProps) {
   const [reservation, setReservation] = useState(initialReservation);
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
   type StatusType = typeof statusSteps[number];
@@ -58,6 +59,9 @@ export function CardOrderModal({ reservation: initialReservation, onClose }: Car
       // Aquí podrías mostrar un mensaje de error al usuario
     }
   };
+
+  const showAcceptButton = !isMainPage && reservation.status === 'Open';
+  const showCompleteButton = reservation.status === 'Progress';
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -134,13 +138,15 @@ export function CardOrderModal({ reservation: initialReservation, onClose }: Car
               <span className="font-semibold">${reservation.price.toFixed(2)}</span>
             </div>
             <div className="mt-6">
-              <Button 
-                className="w-full" 
-                onClick={handleStatusUpdate}
-                disabled={reservation.status === 'Completed'}
-              >
-                {reservation.status === 'Open' ? 'Accept' : 'Complete'}
-              </Button>
+              {(showAcceptButton || showCompleteButton) && (
+                <Button 
+                  className="w-full" 
+                  onClick={handleStatusUpdate}
+                  disabled={reservation.status === 'Completed'}
+                >
+                  {showAcceptButton ? 'Accept' : 'Complete'}
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
