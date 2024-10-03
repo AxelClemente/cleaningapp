@@ -17,8 +17,8 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <div className="mx-8 sm:mx-16 md:mx-24 lg:mx-32">
         <Header 
-          doctorName={session?.user?.name || "Express Cleaning Mallorca"}
-          clinicName="A Local Small Business Dedicated To You!"
+          doctorName={`Hi again ${session?.user?.name || "Express Cleaning Mallorca"}`}
+          clinicName="Building a community where cleaners and clients come together as a team!"
         />
       </div>
       <main className="flex-grow flex flex-col justify-center items-center">

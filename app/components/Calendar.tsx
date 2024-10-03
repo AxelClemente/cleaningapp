@@ -54,8 +54,8 @@ export function Calendar({ onSelectDate }: CalendarProps) {
               className={`
                 flex items-center justify-center w-8 h-8 rounded-full text-sm
                 ${!isSameMonth(day, currentMonth) ? 'text-gray-300' : ''}
-                ${isToday(day) ? 'bg-blue-500 text-white' : ''}
-                ${isSelected ? 'bg-green-500 text-white' : ''}
+                ${isToday(day) ? 'bg-[#d7ceff] text-white' : ''}
+                ${isSelected ? 'bg-[#724fff] text-white' : ''}
                 ${isDisabled ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100'}
               `}
             >

@@ -94,7 +94,7 @@ export function HouseAndServiceType({
           }}
           className={`w-full px-4 py-3 text-left text-sm font-medium rounded-md transition-colors duration-150
             ${selectedService === service.id 
-              ? 'bg-green-500 text-white hover:bg-green-600' 
+              ? 'bg-[#724fff] text-white hover:bg-[#d7ceff]' 
               : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}
           `}
         >
@@ -202,11 +202,11 @@ export function HouseAndServiceType({
           onClick={() => handleHouseSelection(!isHouseSelected)}
           className={`flex items-center space-x-2 p-2 rounded-md transition-colors duration-150
             ${isHouseSelected 
-              ? 'bg-green-500 text-white hover:bg-green-600' 
+              ? 'bg-[#724fff] text-white hover:bg-[#d7ceff]' 
               : 'bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-50'}
             focus:outline-none focus:ring-2 focus:ring-green-500`}
         >
-          <div className={`p-2 rounded-full ${isHouseSelected ? 'bg-white text-green-500' : 'bg-gray-100 text-gray-500'}`}>
+          <div className={`p-2 rounded-full ${isHouseSelected ? 'bg-white text-[#724fff]' : 'bg-gray-100 text-gray-500'}`}>
             {getHouseIcon(houseType)}
           </div>
           <span className="text-sm font-medium">
