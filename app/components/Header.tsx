@@ -99,8 +99,9 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
           <Button
             variant="outline"
             size="sm"
+            className="bg-[#724fff] hover:bg-[#6240e3] text-white border-none"
           >
-            <Link href="/dashboard-worker">Jobs</Link>
+            <Link href="/dashboard-worker" className="text-white hover:text-white">Jobs</Link>
           </Button>
         )}
         <div className="flex items-center border rounded-full p-1">
@@ -137,14 +138,14 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                     Dashboard
                   </Link>
                   {isWorker && (
-                    <Link href="/dashboard-worker" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <Link href="/dashboard-worker" className="block px-4 py-2 text-sm text-[#724fff] hover:bg-gray-100">
                       Jobs
                     </Link>
                   )}
                   <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Account
                   </Link>
-                  <Link href="/HomeDashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Link href="/HomeDashboard" className="block px-4 py-2 text-sm text-[#724fff] hover:bg-gray-100">
                     Hire Service
                   </Link>
                   <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -163,7 +164,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
                   <Link href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Home
                   </Link>
-                  <Link href="/hire-service" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <Link href="/hire-service" className="block px-4 py-2 text-sm text-[#724fff] hover:bg-gray-100">
                     Hire Service
                   </Link>
                   <Link href="/join-as-cleaner" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

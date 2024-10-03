@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { Header } from './components/Header'
-
+import { PlayIcon } from 'lucide-react' // Assuming this is the correct import for PlayIcon
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -22,16 +22,25 @@ export default function HomePage() {
         />
       </div>
       <main className="flex-grow flex flex-col justify-center items-center">
-        <h1 className="text-4xl font-bold mb-6">Welcome to TidyTeam </h1>
+        <h1 className="text-4xl font-bold mb-6">Welcome to TidyTeam</h1>
         <p className="text-xl mb-8">We connect expert cleaners with homes in your neighborhood!</p>
-        <div className="flex space-x-4">
-         
+        <div className="flex items-center space-x-4">
           <Link 
             href="/HomeDashboard" 
-            className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="px-6 py-3 bg-[#724fff] text-white rounded-full font-semibold hover:bg-[#6240e3] transition-colors"
           >
-            Dashboard
+            Schedule a Cleaning Service
           </Link>
+          <button 
+            className="flex items-center text-gray-700 font-semibold hover:text-[#724fff] transition-colors"
+            onClick={handleOpenModal} // Changed from handleOpenDemo to handleOpenModal
+          >
+            <span className="w-8 h-8 bg-[#724fff] text-white rounded-full flex items-center justify-center mr-2">
+              <PlayIcon className="w-4 h-4" />
+            </span>
+            Watch demo
+          </button>
+          <span className="ml-2 text-gray-400 text-sm">2 min</span>
         </div>
       </main>
     </div>
