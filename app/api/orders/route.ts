@@ -125,3 +125,32 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Failed to update order', details: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const orderId = searchParams.get('orderId');
+
+    if (!orderId) {
+      return NextResponse.json({ error: "orderId is required" }, { status: 400 });
+    }
+
+    const deletedOrder = await prisma.order.delete({
+      where: { id: orderId },
+    });
+
+    if (!deletedOrder) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Order successfully deleted" });
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    return NextResponse.json({ error: 'Failed to delete order', details: error.message }, { status: 500 });
+  }
+}

@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, Key, MessageSquare } from 'lucide-react'
 import { Button } from "@/components/Button"
 import { updateReservationStatus } from '@/lib/api';
+import { useToast } from "./ui/use-toast";
 
 interface Reservation {
   id: string;
@@ -31,6 +32,7 @@ interface CardOrderModalProps {
 
 export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage }: CardOrderModalProps) {
   const [reservation, setReservation] = useState(initialReservation);
+  const { toast } = useToast();
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
   type StatusType = typeof statusSteps[number];
 
@@ -64,10 +66,32 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
   const showCompleteButton = reservation.status === 'Progress';
   const showCancelButton = isMainPage && reservation.status === 'Open';
 
-  const handleCancel = () => {
-    // Implement cancel logic here
-    console.log('Reservation cancelled');
-    onClose();
+  const handleCancel = async () => {
+    try {
+      const response = await fetch(`/api/orders?orderId=${reservation.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel the order');
+      }
+
+      toast({
+        title: "Cleaning request canceled",
+        description: "Your cleaning request has been successfully canceled.",
+        duration: 3000,
+      });
+
+      onClose();
+    } catch (error) {
+      console.error('Error canceling order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel the cleaning request. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
   };
 
   return (
