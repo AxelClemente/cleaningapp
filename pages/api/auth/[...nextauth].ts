@@ -1,12 +1,7 @@
 import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
-import { Session } from "next-auth";
-import { AdapterUser } from "next-auth/adapters";
-import { JWT } from "next-auth/jwt";
-
-const prisma = new PrismaClient();
+import prisma from "../../../libs/prisma";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -18,33 +13,49 @@ declare module "next-auth" {
 }
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
-  adapter: PrismaAdapter(prisma), // Cambiado a PrismaAdapter
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      console.log('SignIn callback:', { user, account, profile });
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      console.log('JWT callback - input:', { token, user, account });
       if (user) {
         token.id = user.id;
         token.isWorker = await checkIfUserIsWorker(user.id);
       }
+      console.log('JWT callback - output:', token);
       return token;
     },
     async session({ session, token }) {
+      console.log('Session callback - input:', { session, token });
       if (session.user && token) {
         session.user.id = token.id as string;
         session.user.isWorker = token.isWorker as boolean;
       }
+      console.log('Session callback - output:', session);
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      return `${baseUrl}/dashboard`;
+  },
+  events: {
+    async createUser(message) {
+      console.log('User created:', message);
+    },
+    async linkAccount(message) {
+      console.log('Account linked:', message);
+    },
+    async signIn(message) {
+      console.log('User signed in:', message);
     },
   },
+  // ... resto de la configuración
 };
 
 async function checkIfUserIsWorker(userId: string): Promise<boolean> {
