@@ -1,10 +1,12 @@
 import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "@/lib/mongodb";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
 import { Session } from "next-auth";
 import { AdapterUser } from "next-auth/adapters";
 import { JWT } from "next-auth/jwt";
+
+const prisma = new PrismaClient();
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -22,12 +24,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: PrismaAdapter(prisma), // Cambiado a PrismaAdapter
   secret: process.env.NEXTAUTH_SECRET,
-  // Elimina la siguiente línea
-  // pages: {
-  //   signIn: "/auth/signin",
-  // },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -64,3 +62,4 @@ async function checkIfUserIsWorker(userId: string): Promise<boolean> {
 }
 
 export default NextAuth(authOptions);
+
