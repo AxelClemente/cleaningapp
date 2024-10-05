@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { Home, MapPin, Calendar, Key, MessageSquare } from 'lucide-react'
+import { Home, MapPin, Calendar, Key, MessageSquare, User } from 'lucide-react'
 import { Button } from "@/components/Button"
 import { updateReservationStatus } from '@/lib/api';
 import { useToast } from "./ui/use-toast";
@@ -164,9 +164,12 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
                 </div>
               )}
             </div>
-            <div className="flex justify-between text-sm mt-4">
-              <span className="text-gray-500">{reservation.duration}</span>
-              <span className="font-semibold">${reservation.price.toFixed(2)}</span>
+            <div className="flex justify-between items-center mt-4">
+              <div className="flex items-center space-x-1">
+                <User className="h-4 w-4 text-gray-400" />
+                <span className="text-sm text-gray-500">{reservation.userName}</span>
+              </div>
+              <span className="text-sm font-semibold">${reservation.price.toFixed(2)}</span>
             </div>
             <div className="mt-6 space-y-2">
               {(showAcceptButton || showCompleteButton) && (

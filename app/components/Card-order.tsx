@@ -33,6 +33,11 @@ export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps)
   const { data: session } = useSession()
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
 
+  const truncateLocation = (location: string) => {
+    const words = location.split(' ');
+    return words.slice(0, 4).join(' ') + (words.length > 2 ? '...' : '');
+  };
+
   useEffect(() => {
     const fetchReservations = async () => {
       // Removed the check for session.user.email
@@ -105,15 +110,19 @@ export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps)
               </div>
               <div className="flex items-center space-x-1 mb-1">
                 <MapPin className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">{reservation.location}</span>
+                <span className="text-sm text-gray-700" title={reservation.location}>
+                  {truncateLocation(reservation.location)}
+                </span>
               </div>
-              <div className="flex items-center space-x-1 mb-2">
+              <div className="flex items-center space-x-1 mb-1">
                 <Calendar className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{reservation.calendarData}</span>
               </div>
-              <div className="flex items-center space-x-1 mb-2">
-                <User className="w-4 h-4 mr-1 text-gray-400" />
-                <span className="text-sm text-gray-400">{reservation.userName}</span>
+              <div className="flex items-center justify-between space-x-1 mb-1 mt-2">
+                <div className="flex items-center space-x-1">
+                  <User className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">{reservation.userName}</span>
+                </div>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{reservation.duration}</span>
