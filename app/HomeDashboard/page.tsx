@@ -6,7 +6,7 @@ import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import { Header } from '../components/Header'
 import { Calendar } from '../components/Calendar'
 import { HouseAndServiceType } from '../components/House&ServiceType'
-import { ClientSummary } from '../components/Card-order'
+import { CardOrder } from '../components/Card-order'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
@@ -109,7 +109,7 @@ export default function Component() {
                 Completed
               </button>
             </div>
-            <ClientSummary 
+            <CardOrder 
               clientName={session.user.name || "Guest"}
               activeTab={activeTab}
               isMainPage={true} // This is the main page

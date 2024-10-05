@@ -6,7 +6,7 @@ import {
   DialogFooter
 } from "@/components/ui/dialog"
 import { Button } from "@/components/Button"
-import { Input } from "@/components/Input"
+import { CustomInput } from "./Input"
 import { Textarea } from "@/components/Textarea"
 import { CheckoutButton } from "@/components/Checkout-button"
 import { Home, Building, Castle, Warehouse, Bed, Bath, Phone, Key, MessageSquare, CalendarIcon, MapPinIcon } from 'lucide-react'
@@ -50,6 +50,8 @@ export function ServiceSummary({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+  console.log("Rendering ServiceSummary");
+  console.log("Current phoneNumber:", phoneNumber);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -129,6 +131,20 @@ export function ServiceSummary({
     }
   };
 
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log("Typed value:", value);
+    
+    // Allow only digits, '+', '-', '(', ')', and spaces
+    const isValid = /^[0-9+\-() ]*$/.test(value);
+    console.log("Is valid:", isValid);
+  
+    if (isValid) {
+      setPhoneNumber(value);
+      console.log("Phone number set:", value);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
@@ -166,11 +182,12 @@ export function ServiceSummary({
             </div>
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4 text-gray-500" />
-              <Input
+              <CustomInput
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={handlePhoneNumberChange}
                 className="h-8 text-sm border-gray-200 focus:border-gray-300 focus:ring-gray-300"
                 placeholder="Número de teléfono"
+                type="tel"
               />
             </div>
             <div>

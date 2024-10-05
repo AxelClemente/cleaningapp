@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { WorkerProfile } from '@/types/interfaces'
 import { Star, MapPin, Phone, Mail } from 'lucide-react'
 import { Header } from '../components/Header'
-import { ClientSummary } from '../components/Card-order'
+import { CardOrder } from '../components/Card-order'
 
 export default function DashboardWorker() {
   const { data: session } = useSession()
@@ -29,7 +29,7 @@ export default function DashboardWorker() {
   if (!workerData) return <div>Loading...</div>
 
   const renderJobs = () => {
-    return <ClientSummary 
+    return <CardOrder 
       activeTab={activeTab} 
       clientName={workerData.name || 'Worker Name'}
       isMainPage={false} // This is not the main page

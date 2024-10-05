@@ -22,13 +22,13 @@ interface Reservation {
   comment: string; // New property
 }
 
-interface ClientSummaryProps {
+interface CardOrderProps {
   clientName: string;
   activeTab: string;
   isMainPage: boolean; // New prop
 }
 
-export function ClientSummary({ clientName, activeTab, isMainPage }: ClientSummaryProps) {
+export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const { data: session } = useSession()
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
