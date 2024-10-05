@@ -33,6 +33,7 @@ export default function DashboardWorker() {
       activeTab={activeTab} 
       clientName={workerData.name || 'Worker Name'}
       isMainPage={false} // This is not the main page
+      filterByUserId={false}
     />
   }
 

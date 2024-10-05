@@ -11,6 +11,11 @@ import { CardOrder } from '../components/Card-order'
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
 
+interface Reservation {
+  userId: string;
+  // Add other properties as needed
+}
+
 export default function Component() {
   const { data: session } = useSession()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -31,7 +36,7 @@ export default function Component() {
         if (response.ok) {
           const allReservations = await response.json()
           const filteredReservations = allReservations.filter(
-            (reservation) => reservation.userId === session.user.id
+            (reservation: Reservation) => reservation.userId === session.user.id
           )
           setUserReservations(filteredReservations)
         }
@@ -132,7 +137,7 @@ export default function Component() {
               clientId={session.user.id || ""}
               activeTab={activeTab}
               isMainPage={true}
-              reservations={userReservations}
+              filterByUserId={true}
             />
           </div>
         )}

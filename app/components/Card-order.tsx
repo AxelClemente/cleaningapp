@@ -27,25 +27,27 @@ interface CardOrderProps {
   clientId?: string;
   activeTab: string;
   isMainPage: boolean;
-  reservations?: Reservation[];
+  filterByUserId?: boolean;
 }
 
-export function CardOrder({ clientName, clientId, activeTab, isMainPage, reservations: propReservations }: CardOrderProps) {
-  const [reservations, setReservations] = useState<Reservation[]>(propReservations || [])
-  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
+export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterByUserId = false }: CardOrderProps) {
+  const [reservations, setReservations] = useState<Reservation[]>([])
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 
   useEffect(() => {
     const fetchReservations = async () => {
-      if (!propReservations) {
-        const response = await fetch('/api/orders')
-        if (response.ok) {
-          const data = await response.json()
+      const response = await fetch('/api/orders')
+      if (response.ok) {
+        const data = await response.json()
+        if (filterByUserId && clientId) {
+          setReservations(data.filter((reservation: Reservation) => reservation.userId === clientId))
+        } else {
           setReservations(data)
         }
       }
     }
     fetchReservations()
-  }, [propReservations])
+  }, [clientId, filterByUserId])
 
   const truncateLocation = (location: string) => {
     const words = location.split(' ');
