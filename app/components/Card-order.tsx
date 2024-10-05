@@ -9,6 +9,7 @@ import { CardOrderModal } from '../components/Card-order-modal'
 
 interface Reservation {
   id: string;
+  userId: string; // Add this line
   userName: string;
   houseType: string;
   serviceType: string;
@@ -24,11 +25,12 @@ interface Reservation {
 
 interface CardOrderProps {
   clientName: string;
+  clientId: string; // Add this line
   activeTab: string;
   isMainPage: boolean; // New prop
 }
 
-export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps) {
+export function CardOrder({ clientName, clientId, activeTab, isMainPage }: CardOrderProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const { data: session } = useSession()
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
@@ -67,7 +69,11 @@ export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps)
 
   return (
     <div className="space-y-6">
-      {clientName && <h2 className="text-2xl font-bold mb-4">Welcome back, {clientName}!</h2>}
+      {clientName && (
+        <div>
+          <h2 className="text-2xl font-bold mb-1">Welcome back, {clientName}!</h2>
+        </div>
+      )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredReservations.map((reservation) => (
           <Card 
@@ -123,6 +129,7 @@ export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps)
                   <User className="h-4 w-4 text-gray-400" />
                   <span className="text-sm text-gray-700">{reservation.userName}</span>
                 </div>
+                <span className="text-xs text-gray-400">ID: {reservation.userId}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{reservation.duration}</span>

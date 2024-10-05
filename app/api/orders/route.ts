@@ -19,6 +19,7 @@ export async function GET(request: Request) {
 
       return {
         id: order.id,
+        userId: order.userId, // Add this line
         userName: user?.name || 'Unknown',
         calendarData: order.calendarData,
         houseType: order.houseType,

@@ -112,6 +112,7 @@ export default function Component() {
             </div>
             <CardOrder 
               clientName={session.user.name || "Guest"}
+              clientId={session.user.id || ""} // Add this line
               activeTab={activeTab}
               isMainPage={true} // This is the main page
             />
