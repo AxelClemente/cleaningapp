@@ -22,6 +22,7 @@ export default function Component() {
     finca: null,
   })
   const [activeTab, setActiveTab] = useState('open')
+  console.log("User ID:", session?.user?.id)
 
   const currentHouseType = houseTypes[currentHouseTypeIndex]
 

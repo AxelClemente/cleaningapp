@@ -2,6 +2,9 @@ import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "../../../libs/prisma";
+import { Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -32,14 +35,21 @@ export const authOptions: NextAuthOptions = {
         token.isWorker = await checkIfUserIsWorker(user.id);
       }
       console.log('JWT callback - output:', token);
-      return token;
+      return {
+        ...token,
+        id: token.id
+      };
     },
-    async session({ session, token }) {
-      console.log('Session callback - input:', { session, token });
-      if (session.user && token) {
-        session.user.id = token.id as string;
-        session.user.isWorker = token.isWorker as boolean;
+    async session({ session, token, user }: { session: Session; token: JWT | null; user: AdapterUser }): Promise<Session> {
+      console.log('Session callback - input:', { session, token, user });
+
+      if (session.user) {
+        session.user.id = user.id;
+        // Opcionalmente, puedes agregar más campos del usuario a la sesión si los necesitas
+        // session.user.role = user.role;
+        // session.user.permissions = user.permissions;
       }
+
       console.log('Session callback - output:', session);
       return session;
     },

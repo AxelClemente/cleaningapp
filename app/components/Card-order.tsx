@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { useSession } from 'next-auth/react'
-import { Home, MapPin, Calendar } from 'lucide-react'
+import { Home, MapPin, Calendar, User } from 'lucide-react'
 import { CardOrderModal } from '../components/Card-order-modal'
 
 interface Reservation {
@@ -110,6 +110,10 @@ export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps)
               <div className="flex items-center space-x-1 mb-2">
                 <Calendar className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{reservation.calendarData}</span>
+              </div>
+              <div className="flex items-center space-x-1 mb-2">
+                <User className="w-4 h-4 mr-1 text-gray-400" />
+                <span className="text-sm text-gray-400">{reservation.userName}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{reservation.duration}</span>
