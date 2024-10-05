@@ -35,16 +35,15 @@ export function CardOrder({ clientName, activeTab, isMainPage }: CardOrderProps)
 
   useEffect(() => {
     const fetchReservations = async () => {
-      if (session?.user?.email) {
-        const response = await fetch(`/api/orders?email=${session.user.email}`)
-        if (response.ok) {
-          const data = await response.json()
-          setReservations(data)
-        }
+      // Removed the check for session.user.email
+      const response = await fetch('/api/orders')
+      if (response.ok) {
+        const data = await response.json()
+        setReservations(data)
       }
     }
     fetchReservations()
-  }, [session])
+  }, []) // Removed session from the dependency array
 
   const filteredReservations = activeTab
     ? reservations.filter(reservation => {

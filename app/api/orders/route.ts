@@ -9,38 +9,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Not authenticated or user email not found" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
-
-  if (!email) {
-    return NextResponse.json({ error: "Email parameter is required" }, { status: 400 });
-  }
-
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
+    const orders = await prisma.order.findMany();
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const formattedOrders = await Promise.all(orders.map(async (order) => {
+      const user = await prisma.user.findUnique({
+        where: { id: order.userId },
+      });
 
-    const orders = await prisma.order.findMany({
-      where: { userId: user.id },
-    });
-
-    const formattedOrders = orders.map(order => ({
-      id: order.id,
-      userName: user.name,
-      calendarData: order.calendarData,
-      houseType: order.houseType,
-      serviceType: order.serviceType,
-      location: order.location,
-      price: order.price,
-      status: order.status,
-      avatarUrl: user.image || '',
-      entryMethod: order.entryMethod, // Add this line
-      comment: order.comment, // Add this line
+      return {
+        id: order.id,
+        userName: user?.name || 'Unknown',
+        calendarData: order.calendarData,
+        houseType: order.houseType,
+        serviceType: order.serviceType,
+        location: order.location,
+        price: order.price,
+        status: order.status,
+        avatarUrl: user?.image || '',
+        entryMethod: order.entryMethod,
+        comment: order.comment,
+      };
     }));
 
     return NextResponse.json(formattedOrders);
