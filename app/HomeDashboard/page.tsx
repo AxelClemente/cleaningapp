@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react'
 import { Header } from '../components/Header'
@@ -22,7 +22,24 @@ export default function Component() {
     finca: null,
   })
   const [activeTab, setActiveTab] = useState('open')
-  console.log("User ID:", session?.user?.id)
+  const [userReservations, setUserReservations] = useState([])
+
+  useEffect(() => {
+    const fetchUserReservations = async () => {
+      if (session?.user?.id) {
+        const response = await fetch('/api/orders')
+        if (response.ok) {
+          const allReservations = await response.json()
+          const filteredReservations = allReservations.filter(
+            (reservation) => reservation.userId === session.user.id
+          )
+          setUserReservations(filteredReservations)
+        }
+      }
+    }
+
+    fetchUserReservations()
+  }, [session])
 
   const currentHouseType = houseTypes[currentHouseTypeIndex]
 
@@ -88,7 +105,7 @@ export default function Component() {
         </div>
         
         {/* Conditionally render ClientSummary */}
-        {session?.user && (
+        {session?.user && userReservations.length > 0 && (
           <div className="mt-8 px-4 pb-4">
             <div className="flex border-b mb-4">
               <button
@@ -112,9 +129,10 @@ export default function Component() {
             </div>
             <CardOrder 
               clientName={session.user.name || "Guest"}
-              clientId={session.user.id || ""} // Add this line
+              clientId={session.user.id || ""}
               activeTab={activeTab}
-              isMainPage={true} // This is the main page
+              isMainPage={true}
+              reservations={userReservations}
             />
           </div>
         )}

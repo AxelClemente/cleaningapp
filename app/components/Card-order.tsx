@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { useSession } from 'next-auth/react'
 import { Home, MapPin, Calendar, User } from 'lucide-react'
-import { CardOrderModal } from '../components/Card-order-modal'
+import { CardOrderModal } from './Card-order-modal'
 
 interface Reservation {
   id: string;
-  userId: string; // Add this line
+  userId: string;
   userName: string;
   houseType: string;
   serviceType: string;
@@ -19,38 +18,39 @@ interface Reservation {
   avatarUrl: string;
   status: "Open" | "Progress" | "Completed";
   calendarData: string;
-  entryMethod: string; // New property
-  comment: string; // New property
+  entryMethod: string;
+  comment: string;
 }
 
 interface CardOrderProps {
   clientName: string;
-  clientId: string; // Add this line
+  clientId?: string;
   activeTab: string;
-  isMainPage: boolean; // New prop
+  isMainPage: boolean;
+  reservations?: Reservation[];
 }
 
-export function CardOrder({ clientName, clientId, activeTab, isMainPage }: CardOrderProps) {
-  const [reservations, setReservations] = useState<Reservation[]>([])
-  const { data: session } = useSession()
+export function CardOrder({ clientName, clientId, activeTab, isMainPage, reservations: propReservations }: CardOrderProps) {
+  const [reservations, setReservations] = useState<Reservation[]>(propReservations || [])
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null)
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      if (!propReservations) {
+        const response = await fetch('/api/orders')
+        if (response.ok) {
+          const data = await response.json()
+          setReservations(data)
+        }
+      }
+    }
+    fetchReservations()
+  }, [propReservations])
 
   const truncateLocation = (location: string) => {
     const words = location.split(' ');
     return words.slice(0, 4).join(' ') + (words.length > 2 ? '...' : '');
   };
-
-  useEffect(() => {
-    const fetchReservations = async () => {
-      // Removed the check for session.user.email
-      const response = await fetch('/api/orders')
-      if (response.ok) {
-        const data = await response.json()
-        setReservations(data)
-      }
-    }
-    fetchReservations()
-  }, []) // Removed session from the dependency array
 
   const filteredReservations = activeTab
     ? reservations.filter(reservation => {
@@ -143,7 +143,7 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage }: CardO
         <CardOrderModal 
           reservation={selectedReservation} 
           onClose={() => setSelectedReservation(null)}
-          isMainPage={isMainPage} // Pass the prop to CardOrderModal
+          isMainPage={isMainPage}
         />
       )}
     </div>
