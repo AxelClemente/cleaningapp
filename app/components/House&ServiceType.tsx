@@ -180,7 +180,7 @@ export function HouseAndServiceType({
 
   const handleHouseSelection = (selected: boolean) => {
     setIsHouseSelected(selected)
-    onSelectHouse(selected)
+    onSelectHouse()
   }
 
   const getHouseIcon = (type: string) => {
