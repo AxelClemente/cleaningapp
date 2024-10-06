@@ -66,18 +66,21 @@ export async function POST(req: Request) {
     // Crea la orden
     const order = await prisma.order.create({
       data: {
-        userId: user.id,
+        user: { connect: { id: user.id } }, // Conecta la orden al usuario existente
         houseType,
-        serviceType, // Ahora estamos seguros de que es un string
+        serviceType,
         calendarData: typeof calendarData === 'string' ? calendarData : JSON.stringify(calendarData),
         location,
         phoneNumber,
         entryMethod,
         comment,
-        price,
+        price: price !== null ? parseFloat(price) : null, // Asegúrate de que price sea un número o null
         status,
       },
     });
+
+    console.log("User found:", user);
+    console.log("Order created:", order);
 
     return NextResponse.json(order);
   } catch (error) {

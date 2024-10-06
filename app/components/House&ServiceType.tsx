@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Location } from './Location'
@@ -10,10 +10,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Button } from "@/components/Button"
 
 interface HouseAndServiceTypeProps {
-  houseType: 'small' | 'regular' | 'chalet' | 'finca'
-  onSelectService: (service: string | null) => void
-  onSelectHouse: (selected: boolean) => void
-  selectedDate: Date | null
+  houseType: string;
+  onSelectService: (service: string | null) => void;
+  onSelectHouse: () => void;
+  selectedDate: Date | null;
+  onLocationConfirmed: (location: string) => void;
+  onPriceCalculated: (price: number) => void; // Añade esta línea
 }
 
 interface PriceMap {
@@ -41,7 +43,9 @@ export function HouseAndServiceType({
   houseType,
   onSelectService,
   onSelectHouse,
-  selectedDate
+  selectedDate,
+  onLocationConfirmed,
+  onPriceCalculated, // Añade esta línea
 }: HouseAndServiceTypeProps) {
   const [isHouseSelected, setIsHouseSelected] = useState(false)
   const [selectedService, setSelectedService] = useState<string | null>(null)
@@ -54,8 +58,16 @@ export function HouseAndServiceType({
   const [isServiceInfoOpen, setIsServiceInfoOpen] = useState(false);
   const [selectedServiceInfo, setSelectedServiceInfo] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (houseType && selectedService) {
+      const calculatedPrice = calculatePrice(houseType, selectedService);
+      onPriceCalculated(calculatedPrice);
+    }
+  }, [houseType, selectedService, onPriceCalculated]);
+
   const calculatePrice = (house: string, service: string) => {
-    return priceMap[house]?.[service] ?? null;
+    const calculatedPrice = priceMap[house]?.[service] ?? 0;
+    return calculatedPrice;
   };
 
   const renderServiceOptions = () => {
@@ -157,7 +169,7 @@ export function HouseAndServiceType({
   const handleSelectLocation = (location: string) => {
     setSelectedLocation(location)
     setIsLocationDialogOpen(false)
-    setIsServiceSummaryOpen(true)
+    onLocationConfirmed(location) // This will trigger the opening of ServiceSummary
   }
 
   const handleHouseSelection = (selected: boolean) => {
@@ -263,7 +275,7 @@ export function HouseAndServiceType({
         onClose={() => setIsServiceSummaryOpen(false)}
         calendarData={selectedDate ? selectedDate.toDateString() : ''}
         houseType={houseType}
-        serviceType={selectedService || ''} // Cambiamos esto
+        serviceType={selectedService || ''}
         location={selectedLocation || ''}
         phoneNumber=""
         setPhoneNumber={() => {}}
@@ -271,7 +283,10 @@ export function HouseAndServiceType({
         setEntryMethods={setEntryMethods}
         comment={comment}
         setComment={setComment}
-        price={price}  // Add this line
+        price={price || 0}  // Aseguramos que price sea siempre un número
+        userId=""  // Añade esta línea
+        image=""   // Añade esta línea
+        setImage={() => {}}  // Añade esta línea
       />
       <Dialog open={isServiceInfoOpen} onOpenChange={setIsServiceInfoOpen}>
         <DialogContent className="sm:max-w-[425px]">

@@ -7,6 +7,7 @@ import { Header } from '../components/Header'
 import { Calendar } from '../components/Calendar'
 import { HouseAndServiceType } from '../components/House&ServiceType'
 import { CardOrder } from '../components/Card-order'
+import { ServiceSummary } from '../components/ServiceSummary'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
@@ -28,6 +29,12 @@ export default function Component() {
   })
   const [activeTab, setActiveTab] = useState('open')
   const [userReservations, setUserReservations] = useState([])
+  const [isServiceSummaryOpen, setIsServiceSummaryOpen] = useState(false)
+  const [location, setLocation] = useState('')
+  const [entryMethods, setEntryMethods] = useState<string[]>([])
+  const [price, setPrice] = useState<number | null>(null)
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [comment, setComment] = useState('')
 
   useEffect(() => {
     const fetchUserReservations = async () => {
@@ -60,6 +67,11 @@ export default function Component() {
     setCurrentHouseTypeIndex((prev) => (prev - 1 + houseTypes.length) % houseTypes.length)
   }
 
+  const handleLocationConfirmed = (confirmedLocation: string) => {
+    setLocation(confirmedLocation)
+    setIsServiceSummaryOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
@@ -82,6 +94,8 @@ export default function Component() {
                   onSelectService={handleSelectService}
                   onSelectHouse={() => {}}
                   selectedDate={selectedDate}
+                  onLocationConfirmed={handleLocationConfirmed}
+                  onPriceCalculated={setPrice} // Añade esta línea
                 />
                 <div className="absolute top-1/2 -translate-y-1/2 left-0 -ml-4">
                   <button onClick={handlePreviousHouseType} className="p-1/2 bg-white rounded-full shadow">
@@ -141,6 +155,23 @@ export default function Component() {
             />
           </div>
         )}
+        
+        <ServiceSummary
+          isOpen={isServiceSummaryOpen}
+          onClose={() => setIsServiceSummaryOpen(false)}
+          calendarData={selectedDate ? selectedDate.toDateString() : ''}
+          houseType={currentHouseType}
+          serviceType={selectedServices[currentHouseType] || ''}
+          location={location}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          entryMethods={entryMethods}
+          setEntryMethods={setEntryMethods}
+          price={price}
+          comment={comment}
+          setComment={setComment}
+          userId={session?.user?.id || ''} // Añade esta línea
+        />
       </div>
     </div>
   )

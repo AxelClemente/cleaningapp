@@ -13,6 +13,7 @@ import { Home, Building, Castle, Warehouse, Bed, Bath, Phone, Key, MessageSquare
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
+import ImageUpload from './ImageUpload';
 
 interface ServiceSummaryProps {
   isOpen: boolean;
@@ -27,8 +28,10 @@ interface ServiceSummaryProps {
   setEntryMethods: React.Dispatch<React.SetStateAction<string[]>>;
   comment: string;
   setComment: (value: string) => void;
-  price: number | null;
+  price: number;
   userId: string;
+  image: string;
+  setImage: (value: string) => void;
 }
 
 export function ServiceSummary({
@@ -40,12 +43,14 @@ export function ServiceSummary({
   location,
   phoneNumber,
   setPhoneNumber,
-  entryMethods,
+  entryMethods = [], // Provide a default empty array
   setEntryMethods,
   comment,
   setComment,
   price,
-  userId
+  userId,
+  image,
+  setImage
 }: ServiceSummaryProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -93,6 +98,11 @@ export function ServiceSummary({
         throw new Error("User not authenticated");
       }
 
+      // Validación de datos
+      if (!houseType || !serviceType || !calendarData || !location || !phoneNumber || entryMethods.length === 0 || price <= 0) {
+        throw new Error("Please fill in all required fields and ensure price is calculated");
+      }
+
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -106,9 +116,9 @@ export function ServiceSummary({
           phoneNumber,
           entryMethod: entryMethods.join(', '),
           comment,
-          price,
+          price: price.toFixed(2), // Ahora siempre será un número
           status: 'Open',
-          serviceType: serviceType // Asegúrate de que esto sea un string
+          serviceType
         }),
       });
 
@@ -125,7 +135,8 @@ export function ServiceSummary({
       router.push('/');
     } catch (error) {
       console.error('Error creating order:', error);
-      // You might want to set an error state here and display it to the user
+      // Muestra el error al usuario
+      alert(error.message || 'An error occurred while creating the order');
     } finally {
       setIsLoading(false);
     }
@@ -201,7 +212,7 @@ export function ServiceSummary({
                     <input
                       type="checkbox"
                       id={`entryMethod-${method}`}
-                      checked={entryMethods.includes(method)}
+                      checked={entryMethods?.includes(method) || false}
                       onChange={() => handleEntryMethodChange(method)}
                       className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                     />
@@ -212,6 +223,17 @@ export function ServiceSummary({
                 ))}
               </div>
             </div>
+
+            <div>
+              <label className="flex items-center space-x-2 mb-1">
+                <span>Subir imagen</span>
+              </label>
+              <ImageUpload
+                value={image}
+                onChange={(value) => setImage(value)}
+              />
+            </div>
+
             <div>
               <label htmlFor="comment" className="flex items-center space-x-2 mb-1">
                 <MessageSquare className="w-4 h-4 text-gray-500" />
@@ -235,7 +257,7 @@ export function ServiceSummary({
                   <h4 className="text-sm font-medium text-gray-200 mb-2">Type of service</h4>
                   <h3 className="text-xl font-bold">{serviceType}</h3>
                 </div>
-                {price !== null && (
+                {price !== null && price !== undefined && (
                   <div className="text-right">
                     <p className="text-sm">Total:</p>
                     <p className="text-2xl font-bold">{price.toFixed(2)}€</p>
@@ -245,8 +267,8 @@ export function ServiceSummary({
             </div>
           </div>
         </div>
-        <DialogFooter className="flex justify-between items-center mt-4">
-          <div className="flex space-x-2">
+        <DialogFooter className="flex flex-col items-stretch mt-4">
+          <div className="flex justify-between mb-4">
             <Button onClick={onClose} variant="outline" className="h-9 px-3 text-sm">Cerrar</Button>
             <Button 
               onClick={handlePayment} 
