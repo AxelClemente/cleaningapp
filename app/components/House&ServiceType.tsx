@@ -39,6 +39,12 @@ const serviceDescriptions: Record<ServiceType, string> = {
 
 type ServiceType = 'Express' | 'Deep' | 'Custom';
 
+// Define the valid house types
+type HouseType = 'small' | 'regular' | 'chalet' | 'finca';
+
+// Ensure houseType is of type HouseType
+const houseType: HouseType = 'small'; // Replace with actual value or state
+
 export function HouseAndServiceType({
   houseType,
   onSelectService,
@@ -70,32 +76,32 @@ export function HouseAndServiceType({
     return calculatedPrice;
   };
 
+  // Definir el tipo para serviceConfig
+  interface ServiceConfig {
+    [key: string]: {
+      Express: { duration: string; people: number };
+      Deep: { duration: string; people: number };
+    };
+  }
+
+  // Asegurar que serviceConfig está tipado correctamente
+  const serviceConfig: ServiceConfig = {
+    small: { Express: { duration: '2h', people: 1 }, Deep: { duration: '4h', people: 2 } },
+    regular: { Express: { duration: '3h', people: 2 }, Deep: { duration: '5h', people: 3 } },
+    chalet: { Express: { duration: '4h', people: 3 }, Deep: { duration: '6h', people: 4 } },
+    finca: { Express: { duration: '5h', people: 4 }, Deep: { duration: '7h', people: 5 } },
+  };
+
+  // Use a different name or prefix it with an underscore if it's intentionally unused
+  const _houseType: keyof ServiceConfig = 'small'; // Replace with actual value or state
+
+  const services = [
+    { id: 'Express', name: 'Express', ...serviceConfig[_houseType].Express },
+    { id: 'Deep', name: 'Deep', ...serviceConfig[_houseType].Deep },
+    { id: 'Custom', name: 'Custom', duration: 'Flexible', people: null },
+  ];
+
   const renderServiceOptions = () => {
-    const serviceConfig = {
-      small: {
-        Express: { duration: '4 hours', people: 1 },
-        Deep: { duration: '4 hours', people: 2 },
-      },
-      regular: {
-        Express: { duration: '5 hours', people: 1 },
-        Deep: { duration: '4 hours', people: 2 }, // Changed from 5 hours to 4 hours
-      },
-      chalet: {
-        Express: { duration: '4 hours', people: 2 },
-        Deep: { duration: '5 hours', people: 2 },
-      },
-      finca: {
-        Express: { duration: '5 hours', people: 2 },
-        Deep: { duration: '4 hours', people: 3 },
-      },
-    }
-
-    const services = [
-      { id: 'Express', name: 'Express', ...serviceConfig[houseType].Express },
-      { id: 'Deep', name: 'Deep', ...serviceConfig[houseType].Deep },
-      { id: 'Custom', name: 'Custom', duration: 'Flexible', people: null },
-    ]
-
     return services.map((service) => (
       <div key={service.id} className="relative">
         <button
