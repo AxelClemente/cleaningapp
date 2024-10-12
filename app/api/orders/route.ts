@@ -30,6 +30,7 @@ export async function GET(request: Request) {
         avatarUrl: user?.image || '',
         entryMethod: order.entryMethod,
         comment: order.comment,
+        images: order.images, // Add this line
       };
     }));
 
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log("Received body:", body);
 
-    const { userEmail, houseType, calendarData, location, phoneNumber, entryMethod, comment, price, status, serviceType } = body;
+    const { userEmail, houseType, calendarData, location, phoneNumber, entryMethod, comment, price, status, serviceType, images } = body;
 
     // Verifica que serviceType sea un string
     if (typeof serviceType !== 'string') {
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
         comment,
         price: price !== null ? parseFloat(price) : null, // Asegúrate de que price sea un número o null
         status,
+        images: images || [], // Add this line
       },
     });
 

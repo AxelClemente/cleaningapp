@@ -1,10 +1,12 @@
+
 'use client'
 
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { Header } from './components/Header'
-import { PlayIcon } from 'lucide-react' // Assuming this is the correct import for PlayIcon
+import { PlayIcon, CloudIcon } from 'lucide-react' // Añadimos CloudIcon
+import { ActionButtonCloudinary } from './components/ActionButtonCloudinary'
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -12,6 +14,18 @@ export default function HomePage() {
 
   const handleOpenModal = () => setIsModalOpen(true)
   const handleCloseModal = () => setIsModalOpen(false)
+
+  const handleUpload = (error: any, result: any, widget: any) => {
+    if (error) {
+      console.error("Upload error:", error);
+      return;
+    }
+    console.log("Upload result:", result);
+    console.log("Widget info:", widget);
+  }
+
+  // Obtener el valor del preset desde la variable de entorno
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -33,7 +47,7 @@ export default function HomePage() {
           </Link>
           <button 
             className="flex items-center text-gray-700 font-semibold hover:text-[#724fff] transition-colors"
-            onClick={handleOpenModal} // Changed from handleOpenDemo to handleOpenModal
+            onClick={handleOpenModal}
           >
             <span className="w-8 h-8 bg-[#724fff] text-white rounded-full flex items-center justify-center mr-2">
               <PlayIcon className="w-4 h-4" />
@@ -41,6 +55,13 @@ export default function HomePage() {
             Watch demo
           </button>
           <span className="ml-2 text-gray-400 text-sm">2 min</span>
+          
+          <ActionButtonCloudinary
+            uploadPreset={uploadPreset ?? ''}
+            onUpload={handleUpload}
+            icon={CloudIcon}
+            text="Open Cloudinary"
+          />
         </div>
       </main>
     </div>

@@ -46,7 +46,7 @@ model Order {
   user         User     @relation(fields: [userId], references: [id])
   userId       String   @db.ObjectId
   houseType    String
-  serviceType  String   // Añadimos este campo
+  serviceType  String
   calendarData Json
   location     String
   phoneNumber  String
@@ -54,6 +54,7 @@ model Order {
   comment      String?
   price        Float
   status       String
+  images       String[] // New field for storing image URLs
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -91,4 +92,3 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
-

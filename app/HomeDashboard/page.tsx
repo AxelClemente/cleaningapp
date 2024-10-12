@@ -8,6 +8,8 @@ import { Calendar } from '../components/Calendar'
 import { HouseAndServiceType } from '../components/House&ServiceType'
 import { CardOrder } from '../components/Card-order'
 import { ServiceSummary } from '../components/ServiceSummary'
+import { ActionButtonCloudinary } from '@/components/ActionButtonCloudinary'
+import { Plus } from 'lucide-react'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
@@ -35,6 +37,7 @@ export default function Component() {
   const [price, setPrice] = useState<number | null>(null)
   const [phoneNumber, setPhoneNumber] = useState('')
   const [comment, setComment] = useState('')
+  const [isWaitlisted, setIsWaitlisted] = useState(false)
 
   useEffect(() => {
     const fetchUserReservations = async () => {
@@ -71,6 +74,20 @@ export default function Component() {
     setLocation(confirmedLocation)
     setIsServiceSummaryOpen(true)
   }
+
+  const handleUpload = (error: any, result: any, widget: any) => {
+    if (error) {
+      console.error('Error uploading image:', error);
+      return;
+    }
+    // Aquí manejas la imagen subida
+    console.log('Imagen subida:', result.info.secure_url);
+    
+    // Lógica para añadir a la lista de espera
+    setIsWaitlisted(true);
+    
+    widget.close();
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -111,12 +128,14 @@ export default function Component() {
               <div className="bg-white shadow rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium flex items-center">
-                    <span className="w-6 h-6 rounded-full border-2 border-gray-300 mr-2" />
-                    Waiting list
+                    
+                    Upload images
                   </h3>
-                  <button className="px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium">
-                    Add to Wait List
-                  </button>
+                  <ActionButtonCloudinary
+                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''}
+                    onUpload={handleUpload}
+                    text="Open Cloudinary"
+                  />
                 </div>
               </div>
             </div>
