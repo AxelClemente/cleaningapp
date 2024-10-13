@@ -55,13 +55,7 @@ export default function HomePage() {
             Watch demo
           </button>
           <span className="ml-2 text-gray-400 text-sm">2 min</span>
-          
-          <ActionButtonCloudinary
-            uploadPreset={uploadPreset ?? ''}
-            onUpload={handleUpload}
-            icon={CloudIcon}
-            text="Open Cloudinary"
-          />
+
         </div>
       </main>
     </div>

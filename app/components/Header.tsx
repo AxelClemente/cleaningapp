@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '../components/Button'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { Avatar, AvatarImage, AvatarFallback } from './avatar'
 
 interface HeaderProps {
   doctorName: string
@@ -116,12 +117,13 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
             className="relative w-8 h-8 rounded-full overflow-hidden focus:outline-none"
             onClick={toggleMenu}
           >
-            <Image
-              src="/images/profile.png" // Reemplaza con la ruta de la imagen de perfil
-              alt="Profile"
-              layout="fill"
-              objectFit="cover"
-            />
+            <Avatar className="w-full h-full">
+              <AvatarImage 
+                src={session?.user?.image || '/images/profile.png'} 
+                alt={session?.user?.name || 'Profile'} 
+              />
+              <AvatarFallback>{session?.user?.name?.[0] || 'U'}</AvatarFallback>
+            </Avatar>
           </button>
         </div>
         {isMenuOpen && (

@@ -7,6 +7,7 @@ import { WorkerProfile } from '@/types/interfaces'
 import { Star, MapPin, Phone, Mail } from 'lucide-react'
 import { Header } from '../components/Header'
 import { CardOrder } from '../components/Card-order'
+import { Avatar, AvatarImage, AvatarFallback } from '../components/avatar'
 
 export default function DashboardWorker() {
   const { data: session } = useSession()
@@ -50,13 +51,13 @@ export default function DashboardWorker() {
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/3 p-6 bg-gray-50">
               <div className="text-center mb-6">
-                <Image
-                  src={workerData.profilePicture || '/images/profile.png'}
-                  alt={workerData.name}
-                  width={120}
-                  height={120}
-                  className="rounded-full mx-auto"
-                />
+                <Avatar className="w-32 h-32 mx-auto">
+                  <AvatarImage 
+                    src={session?.user?.image || workerData?.profilePicture || '/images/profile.png'} 
+                    alt={workerData?.name || 'Worker'} 
+                  />
+                  <AvatarFallback>{workerData?.name?.[0] || 'W'}</AvatarFallback>
+                </Avatar>
                 <h2 className="text-xl font-semibold mt-2">{workerData.name}</h2>
                 <p className="text-gray-600">Cleaning Professional</p>
                 <div className="flex justify-center items-center mt-2">
