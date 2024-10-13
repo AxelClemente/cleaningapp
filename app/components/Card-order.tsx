@@ -70,6 +70,10 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
       })
     : reservations;
 
+  const handleCancelOrder = (orderId: string) => {
+    setReservations(prevReservations => prevReservations.filter(res => res.id !== orderId));
+  };
+
   return (
     <div className="space-y-6">
       {clientName && (
@@ -148,6 +152,7 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
           reservation={selectedReservation} 
           onClose={() => setSelectedReservation(null)}
           isMainPage={isMainPage}
+          onCancelOrder={handleCancelOrder}
         />
       )}
     </div>

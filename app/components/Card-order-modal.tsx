@@ -29,9 +29,10 @@ interface CardOrderModalProps {
   reservation: Reservation;
   onClose: () => void;
   isMainPage: boolean;
+  onCancelOrder: (orderId: string) => void; // Add this line
 }
 
-export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage }: CardOrderModalProps) {
+export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage, onCancelOrder }: CardOrderModalProps) {
   const [reservation, setReservation] = useState(initialReservation);
   const { toast } = useToast();
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
@@ -83,6 +84,7 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
         duration: 3000,
       });
 
+      onCancelOrder(reservation.id); // Call this function to update parent state
       onClose();
     } catch (error) {
       console.error('Error canceling order:', error);
