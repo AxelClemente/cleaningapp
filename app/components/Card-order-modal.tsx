@@ -29,10 +29,11 @@ interface CardOrderModalProps {
   reservation: Reservation;
   onClose: () => void;
   isMainPage: boolean;
-  onCancelOrder: (orderId: string) => void; // Add this line
+  onCancelOrder: (orderId: string) => void;
+  onUpdateOrderStatus: (orderId: string, newStatus: 'Open' | 'Progress' | 'Completed') => void; // Add this line
 }
 
-export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage, onCancelOrder }: CardOrderModalProps) {
+export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage, onCancelOrder, onUpdateOrderStatus }: CardOrderModalProps) {
   const [reservation, setReservation] = useState(initialReservation);
   const { toast } = useToast();
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
@@ -52,8 +53,11 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
       
       if (result.success) {
         setReservation({ ...reservation, status: newStatus });
-        if (newStatus === 'Completed') {
-          setTimeout(onClose, 500);
+        onUpdateOrderStatus(reservation.id, newStatus);
+        
+        // Close the modal after updating the status
+        if (newStatus === 'Progress' || newStatus === 'Completed') {
+          onClose();
         }
       } else {
         throw new Error(result.error);

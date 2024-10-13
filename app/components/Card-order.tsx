@@ -74,6 +74,14 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
     setReservations(prevReservations => prevReservations.filter(res => res.id !== orderId));
   };
 
+  const handleUpdateOrderStatus = (orderId: string, newStatus: 'Open' | 'Progress' | 'Completed') => {
+    setReservations(prevReservations => 
+      prevReservations.map(res => 
+        res.id === orderId ? { ...res, status: newStatus } : res
+      )
+    );
+  };
+
   return (
     <div className="space-y-6">
       {clientName && (
@@ -153,6 +161,7 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
           onClose={() => setSelectedReservation(null)}
           isMainPage={isMainPage}
           onCancelOrder={handleCancelOrder}
+          onUpdateOrderStatus={handleUpdateOrderStatus}
         />
       )}
     </div>
