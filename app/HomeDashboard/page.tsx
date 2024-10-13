@@ -38,6 +38,7 @@ export default function Component() {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [comment, setComment] = useState('')
   const [isWaitlisted, setIsWaitlisted] = useState(false)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserReservations = async () => {
@@ -75,18 +76,16 @@ export default function Component() {
     setIsServiceSummaryOpen(true)
   }
 
-  const handleUpload = (error: any, result: any, widget: any) => {
-    if (error) {
-      console.error('Error uploading image:', error);
-      return;
+  const handleUpload = (result: any) => {
+    console.log('handleUpload called', { result });
+    if (result && result.secure_url) {
+      console.log('Image URL:', result.secure_url);
+      setUploadedImageUrl(result.secure_url);
+      setIsWaitlisted(true);
+      console.log('User added to waitlist');
+    } else {
+      console.error('Error uploading image: No secure_url in result');
     }
-    // Aquí manejas la imagen subida
-    console.log('Imagen subida:', result.info.secure_url);
-    
-    // Lógica para añadir a la lista de espera
-    setIsWaitlisted(true);
-    
-    widget.close();
   };
 
   return (
@@ -128,7 +127,6 @@ export default function Component() {
               <div className="bg-white shadow rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium flex items-center">
-                    
                     Upload images
                   </h3>
                   <ActionButtonCloudinary
@@ -137,6 +135,19 @@ export default function Component() {
                     text="Open Cloudinary"
                   />
                 </div>
+                {uploadedImageUrl ? (
+                  <img
+                    src={uploadedImageUrl}
+                    alt="Uploaded image"
+                    className="w-full h-40 object-cover rounded-md"
+                    onLoad={() => console.log('Image loaded successfully')}
+                    onError={(e) => console.error('Error loading image:', e)}
+                  />
+                ) : (
+                  <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-md">
+                    <span className="text-gray-500">No image uploaded</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

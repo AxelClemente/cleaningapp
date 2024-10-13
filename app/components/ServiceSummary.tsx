@@ -14,6 +14,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import ImageUpload from './ImageUpload';
+import { ActionButtonCloudinary } from './ActionButtonCloudinary';
+import { CldUploadButton } from 'next-cloudinary';
 
 interface ServiceSummaryProps {
   isOpen: boolean;
@@ -118,7 +120,8 @@ export function ServiceSummary({
           comment,
           price: price.toFixed(2), // Ahora siempre será un número
           status: 'Open',
-          serviceType
+          serviceType,
+          image: image, // Add this line
         }),
       });
 
@@ -153,6 +156,16 @@ export function ServiceSummary({
     if (isValid) {
       setPhoneNumber(value);
       console.log("Phone number set:", value);
+    }
+  };
+
+  const handleImageUpload = (result: any) => {
+    console.log('handleImageUpload called with result:', result);
+    if (result && result.secure_url) {
+      console.log('Setting new image URL:', result.secure_url);
+      setImage(result.secure_url);
+    } else {
+      console.error('Error: secure_url not found in upload result');
     }
   };
 
@@ -226,12 +239,31 @@ export function ServiceSummary({
 
             <div>
               <label className="flex items-center space-x-2 mb-1">
-                <span>Subir imagen</span>
+                <span>Imagen subida</span>
               </label>
-              <ImageUpload
-                value={image}
-                onChange={(value) => setImage(value)}
-              />
+              {image ? (
+                <>
+                  <img 
+                    src={image} 
+                    alt="Uploaded image" 
+                    className="w-full h-40 object-cover rounded-md"
+                    onError={(e) => console.error('Error loading image:', e)}
+                  />
+                  <p>Image URL: {image}</p>
+                </>
+              ) : (
+                <CldUploadButton
+                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                  onUpload={(result: any) => {
+                    console.log('Upload result:', result);
+                    if (result.info && result.info.secure_url) {
+                      setImage(result.info.secure_url);
+                    }
+                  }}
+                >
+                  Upload Image
+                </CldUploadButton>
+              )}
             </div>
 
             <div>

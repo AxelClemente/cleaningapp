@@ -63,6 +63,15 @@ export function HouseAndServiceType({
   const [price, setPrice] = useState<number | null>(null)
   const [isServiceInfoOpen, setIsServiceInfoOpen] = useState(false);
   const [selectedServiceInfo, setSelectedServiceInfo] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+
+  const handleUpload = (result: any) => {
+    console.log('handleUpload called in House&ServiceType', result);
+    if (result && result.secure_url) {
+      console.log('Setting image URL:', result.secure_url);
+      setUploadedImageUrl(result.secure_url);
+    }
+  };
 
   useEffect(() => {
     if (houseType && selectedService) {
@@ -291,8 +300,8 @@ export function HouseAndServiceType({
         setComment={setComment}
         price={price || 0}  // Aseguramos que price sea siempre un número
         userId=""  // Añade esta línea
-        image=""   // Añade esta línea
-        setImage={() => {}}  // Añade esta línea
+        image={uploadedImageUrl || ""}
+        setImage={setUploadedImageUrl}
       />
       <Dialog open={isServiceInfoOpen} onOpenChange={setIsServiceInfoOpen}>
         <DialogContent className="sm:max-w-[425px]">
