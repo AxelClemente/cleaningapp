@@ -9,7 +9,6 @@ import { HouseAndServiceType } from '../components/House&ServiceType'
 import { CardOrder } from '../components/Card-order'
 import { ServiceSummary } from '../components/ServiceSummary'
 import { ActionButtonCloudinary } from '@/components/ActionButtonCloudinary'
-import { Plus } from 'lucide-react'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]

@@ -1,12 +1,11 @@
-
 'use client'
 
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { Header } from './components/Header'
-import { PlayIcon, CloudIcon } from 'lucide-react' // Añadimos CloudIcon
-import { ActionButtonCloudinary } from './components/ActionButtonCloudinary'
+import { PlayIcon } from 'lucide-react' // Añadimos CloudIcon
+import { VideoModal } from './components/VideoModal'  // Importamos el nuevo componente
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -55,9 +54,9 @@ export default function HomePage() {
             Watch demo
           </button>
           <span className="ml-2 text-gray-400 text-sm">2 min</span>
-
         </div>
       </main>
+      <VideoModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   )
 }
