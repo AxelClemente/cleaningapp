@@ -118,10 +118,10 @@ export function ServiceSummary({
           phoneNumber,
           entryMethod: entryMethods.join(', '),
           comment,
-          price: price.toFixed(2), // Ahora siempre será un número
+          price: price.toFixed(2),
           status: 'Open',
           serviceType,
-          image: image, // Add this line
+          images: image ? [image] : [], // Asegúrate de que sea un array
         }),
       });
 
@@ -160,12 +160,12 @@ export function ServiceSummary({
   };
 
   const handleImageUpload = (result: any) => {
-    console.log('handleImageUpload called with result:', result);
+    console.log('handleImageUpload called in ServiceSummary with result:', result);
     if (result && result.secure_url) {
-      console.log('Setting new image URL:', result.secure_url);
+      console.log('Setting new image URL in ServiceSummary:', result.secure_url);
       setImage(result.secure_url);
     } else {
-      console.error('Error: secure_url not found in upload result');
+      console.error('Error in ServiceSummary: secure_url not found in upload result');
     }
   };
 
@@ -247,9 +247,10 @@ export function ServiceSummary({
                     src={image} 
                     alt="Uploaded image" 
                     className="w-full h-40 object-cover rounded-md"
-                    onError={(e) => console.error('Error loading image:', e)}
+                    onLoad={() => console.log('Image loaded successfully in ServiceSummary')}
+                    onError={(e) => console.error('Error loading image in ServiceSummary:', e)}
                   />
-                  <p>Image URL: {image}</p>
+                  <p>Image URL in ServiceSummary: {image}</p>
                 </>
               ) : (
                 <CldUploadButton

@@ -50,10 +50,8 @@ export async function POST(req: Request) {
 
     const { userEmail, houseType, calendarData, location, phoneNumber, entryMethod, comment, price, status, serviceType, images } = body;
 
-    // Verifica que serviceType sea un string
-    if (typeof serviceType !== 'string') {
-      return NextResponse.json({ error: 'serviceType must be a string' }, { status: 400 });
-    }
+    // Verifica que images sea un array, si no lo es, conviértelo en uno
+    const imagesArray = Array.isArray(images) ? images : images ? [images] : [];
 
     // Encuentra el usuario por email
     const user = await prisma.user.findUnique({
@@ -77,7 +75,7 @@ export async function POST(req: Request) {
         comment,
         price: price !== null ? parseFloat(price) : null, // Asegúrate de que price sea un número o null
         status,
-        images: images || [], // Add this line
+        images: imagesArray, // Usa el array de imágenes
       },
     });
 

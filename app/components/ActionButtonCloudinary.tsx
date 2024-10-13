@@ -4,33 +4,36 @@ import { Cloud } from 'lucide-react';
 interface ActionButtonCloudinaryProps {
   onUpload: (result: any) => void;
   text: string;
+  uploadPreset: string;
 }
 
-export const ActionButtonCloudinary: React.FC<ActionButtonCloudinaryProps> = ({
-  onUpload,
-  text
-}) => {
+export function ActionButtonCloudinary({ onUpload, text, uploadPreset }: ActionButtonCloudinaryProps) {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Upload started in ActionButtonCloudinary');
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', uploadPreset as string);
+    formData.append('upload_preset', uploadPreset);
 
     try {
+      console.log('Sending request to Cloudinary');
       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
       });
       const data = await response.json();
-      console.log('Upload successful', data);
-      onUpload(data);
+      console.log('Upload successful in ActionButtonCloudinary, full data:', data);
+      console.log('Image URL in ActionButtonCloudinary:', data.secure_url);
+      onUpload(data);  // Asegúrate de pasar todo el objeto data
     } catch (error) {
-      console.error('Upload failed', error);
+      console.error('Upload failed in ActionButtonCloudinary', error);
     }
   }, [onUpload, cloudName, uploadPreset]);
 
@@ -41,4 +44,4 @@ export const ActionButtonCloudinary: React.FC<ActionButtonCloudinaryProps> = ({
       <input type="file" onChange={handleUpload} className="hidden" accept="image/*" />
     </label>
   );
-};
+}

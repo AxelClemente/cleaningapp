@@ -11,3 +11,10 @@ export interface WorkerProfile {
     profilePicture?: string;
     // ... otros campos si los hay
 }
+
+
+interface ActionButtonCloudinaryProps {
+    onUpload: (result: any) => void;
+    text: string;
+    uploadPreset: string;
+  }

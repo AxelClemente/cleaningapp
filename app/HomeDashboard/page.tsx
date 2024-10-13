@@ -77,16 +77,22 @@ export default function Component() {
   }
 
   const handleUpload = (result: any) => {
-    console.log('handleUpload called', { result });
+    console.log('handleUpload called in page component', result);
     if (result && result.secure_url) {
-      console.log('Image URL:', result.secure_url);
+      console.log('Image URL in page component:', result.secure_url);
       setUploadedImageUrl(result.secure_url);
       setIsWaitlisted(true);
       console.log('User added to waitlist');
     } else {
-      console.error('Error uploading image: No secure_url in result');
+      console.error('Error uploading image in page component: No secure_url in result');
     }
   };
+
+  useEffect(() => {
+    console.log('uploadedImageUrl changed:', uploadedImageUrl);
+  }, [uploadedImageUrl]);
+
+  console.log('Component rendering, uploadedImageUrl:', uploadedImageUrl);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -130,19 +136,23 @@ export default function Component() {
                     Upload images
                   </h3>
                   <ActionButtonCloudinary
+                    
                     uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''}
                     onUpload={handleUpload}
                     text="Open Cloudinary"
                   />
                 </div>
                 {uploadedImageUrl ? (
-                  <img
-                    src={uploadedImageUrl}
-                    alt="Uploaded image"
-                    className="w-full h-40 object-cover rounded-md"
-                    onLoad={() => console.log('Image loaded successfully')}
-                    onError={(e) => console.error('Error loading image:', e)}
-                  />
+                  <>
+                    {console.log('Current uploadedImageUrl:', uploadedImageUrl)}
+                    <img
+                      src={uploadedImageUrl}
+                      alt="Uploaded image"
+                      className="w-full h-40 object-cover rounded-md"
+                      onLoad={() => console.log('Image loaded successfully in page component')}
+                      onError={(e) => console.error('Error loading image in page component:', e)}
+                    />
+                  </>
                 ) : (
                   <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-md">
                     <span className="text-gray-500">No image uploaded</span>

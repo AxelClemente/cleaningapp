@@ -68,8 +68,10 @@ export function HouseAndServiceType({
   const handleUpload = (result: any) => {
     console.log('handleUpload called in House&ServiceType', result);
     if (result && result.secure_url) {
-      console.log('Setting image URL:', result.secure_url);
+      console.log('Setting image URL in House&ServiceType:', result.secure_url);
       setUploadedImageUrl(result.secure_url);
+    } else {
+      console.error('Error in House&ServiceType: No secure_url in result');
     }
   };
 
