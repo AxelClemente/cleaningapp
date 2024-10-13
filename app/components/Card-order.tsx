@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { Home, MapPin, Calendar, User } from 'lucide-react'
+import { Home, MapPin, Calendar, Sparkles } from 'lucide-react'
 import { CardOrderModal } from './Card-order-modal'
 
 interface Reservation {
@@ -103,7 +103,7 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
                     <AvatarImage src={reservation.avatarUrl} alt={reservation.userName} />
                     <AvatarFallback>{reservation.userName[0]}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">{reservation.serviceType} Service</span>
+                  <span className="text-sm text-gray-700">{reservation.userName}</span>
                 </div>
                 <div className={`px-2 py-1 rounded-full text-xs font-semibold ${
                   reservation.status === 'Open'
@@ -131,8 +131,8 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
               </div>
               <div className="flex items-center justify-between space-x-1 mb-1 mt-2">
                 <div className="flex items-center space-x-1">
-                  <User className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{reservation.userName}</span>
+                  <Sparkles className="h-4 w-4 text-yellow-400" />
+                  <span className="text-sm font-medium">{reservation.serviceType} Service</span>
                 </div>
               </div>
               <div className="flex justify-between text-sm">
