@@ -13,9 +13,8 @@ import { Home, Building, Castle, Warehouse, Bed, Bath, Phone, Key, MessageSquare
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
-import ImageUpload from './ImageUpload';
-import { ActionButtonCloudinary } from './ActionButtonCloudinary';
 import { CldUploadButton } from 'next-cloudinary';
+import Image from 'next/image';
 
 interface ServiceSummaryProps {
   isOpen: boolean;
@@ -54,6 +53,7 @@ export function ServiceSummary({
   image,
   setImage
 }: ServiceSummaryProps) {
+  console.log("Image URL in ServiceSummary:", image);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -176,6 +176,21 @@ export function ServiceSummary({
           <DialogTitle className="text-xl font-bold">Resumen de tu servicio</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          {/* Mostrar la imagen cargada */}
+          {image ? (
+            <div className="w-full h-40 relative">
+              <img
+                src={image}
+                alt="Uploaded image"
+                className="w-full h-full object-cover rounded-lg"
+                onError={(e) => console.error("Error loading image:", e)}
+              />
+            </div>
+          ) : (
+            <p>No image uploaded</p>
+          )}
+
+          {/* Información del tipo de casa */}
           <div className="bg-green-500 text-white p-4 rounded-lg">
             <div className="flex items-center space-x-3 mb-2">
               <div className="bg-white rounded-full p-2">
@@ -237,35 +252,7 @@ export function ServiceSummary({
               </div>
             </div>
 
-            <div>
-              <label className="flex items-center space-x-2 mb-1">
-                <span>Imagen subida</span>
-              </label>
-              {image ? (
-                <>
-                  <img 
-                    src={image} 
-                    alt="Uploaded image" 
-                    className="w-full h-40 object-cover rounded-md"
-                    onLoad={() => console.log('Image loaded successfully in ServiceSummary')}
-                    onError={(e) => console.error('Error loading image in ServiceSummary:', e)}
-                  />
-                  <p>Image URL in ServiceSummary: {image}</p>
-                </>
-              ) : (
-                <CldUploadButton
-                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                  onUpload={(result: any) => {
-                    console.log('Upload result:', result);
-                    if (result.info && result.info.secure_url) {
-                      setImage(result.info.secure_url);
-                    }
-                  }}
-                >
-                  Upload Image
-                </CldUploadButton>
-              )}
-            </div>
+
 
             <div>
               <label htmlFor="comment" className="flex items-center space-x-2 mb-1">

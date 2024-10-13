@@ -211,6 +211,7 @@ export default function Component() {
           comment={comment}
           setComment={setComment}
           userId={session?.user?.id || ''} // Añade esta línea
+          image={uploadedImageUrl} // Asegúrate de que esta línea esté presente
         />
       </div>
     </div>
