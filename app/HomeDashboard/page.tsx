@@ -132,14 +132,12 @@ export default function Component() {
               </div>
               <div className="bg-white shadow rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium flex items-center">
-                    Upload images
-                  </h3>
+
                   <ActionButtonCloudinary
                     
                     uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''}
                     onUpload={handleUpload}
-                    text="Open Cloudinary"
+                    text="Upload images"
                   />
                 </div>
                 {uploadedImageUrl ? (

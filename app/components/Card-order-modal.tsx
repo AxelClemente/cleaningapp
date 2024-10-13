@@ -22,6 +22,7 @@ interface Reservation {
   calendarData: string;
   entryMethod: string; // New property
   comment: string; // New property
+  images: string[];  // Add this line
 }
 
 interface CardOrderModalProps {
@@ -103,8 +104,10 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
         <Card className="overflow-hidden">
           <div className="relative h-40">
             <img 
-              src="/images/cuarto.jpg" 
-              alt={reservation.houseType} 
+              src={reservation.images && reservation.images.length > 0 
+                ? reservation.images[0] 
+                : "/images/cuarto.jpg"}
+              alt={`${reservation.houseType} image`}
               className="w-full h-full object-cover"
             />
           </div>

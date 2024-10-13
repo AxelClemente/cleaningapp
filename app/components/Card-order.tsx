@@ -20,6 +20,7 @@ interface Reservation {
   calendarData: string;
   entryMethod: string;
   comment: string;
+  images: string[];  // Add this line
 }
 
 interface CardOrderProps {
@@ -85,8 +86,10 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
           >
             <div className="relative">
               <img 
-                src="/images/cuarto.jpg" 
-                alt={reservation.houseType} 
+                src={reservation.images && reservation.images.length > 0 
+                  ? reservation.images[0] 
+                  : "/images/cuarto.jpg"}
+                alt={`${reservation.houseType} image`}
                 className="w-full h-40 object-cover"
               />
               <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded">
@@ -131,7 +134,6 @@ export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterB
                   <User className="h-4 w-4 text-gray-400" />
                   <span className="text-sm text-gray-700">{reservation.userName}</span>
                 </div>
-                <span className="text-xs text-gray-400">ID: {reservation.userId}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{reservation.duration}</span>
