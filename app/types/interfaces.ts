@@ -17,4 +17,10 @@ interface ActionButtonCloudinaryProps {
     onUpload: (result: any) => void;
     text: string;
     uploadPreset: string;
-  }
+}
+
+export interface Order {
+    id: string
+    workerId?: string
+    // Add other relevant fields
+}

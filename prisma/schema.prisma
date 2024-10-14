@@ -25,6 +25,8 @@ model User {
   sessions      Session[]
   image         String?
   orders        Order[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Worker {
@@ -55,6 +57,7 @@ model Order {
   price        Float
   status       String
   images       String[] // New field for storing image URLs
+  messages Message[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -91,4 +94,18 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId  String   @db.ObjectId
+  receiverId String  @db.ObjectId
+  orderId   String   @db.ObjectId
+  content   String
+  timestamp DateTime @default(now())
+  isRead    Boolean  @default(false)
+
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id])
 }

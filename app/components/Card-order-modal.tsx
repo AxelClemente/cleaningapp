@@ -8,7 +8,7 @@ import { Home, MapPin, Calendar, Key, MessageSquare, Sparkles } from 'lucide-rea
 import { Button } from "@/components/Button"
 import { updateReservationStatus } from '@/lib/api';
 import { useToast } from "./ui/use-toast";
-import ChatCard from '../../app/components/chat/chat-card'
+import ChatCard from '@/components/chat/chat-card'
 
 interface Reservation {
   id: string;
@@ -24,6 +24,7 @@ interface Reservation {
   entryMethod: string; // New property
   comment: string; // New property
   images: string[];  // Add this line
+  userId: string; // Add this line
 }
 
 interface CardOrderModalProps {
@@ -183,7 +184,10 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
             </div>
             <div className="mt-6 space-y-4">
               {!isMainPage && reservation.status === 'Progress' && (
-                <ChatCard username={reservation.userName} />
+                <ChatCard 
+                  orderId={reservation.id} 
+                  receiverId={reservation.userId} // This is the client's ID
+                />
               )}
               {(showAcceptButton || showCompleteButton) && (
                 <Button 
