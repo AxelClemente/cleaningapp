@@ -119,7 +119,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
           >
             <Avatar className="w-full h-full">
               <AvatarImage 
-                src={session?.user?.image || '/images/profile.png'} 
+                src={session?.user?.image || '/images/profile.jpg'} 
                 alt={session?.user?.name || 'Profile'} 
               />
               <AvatarFallback>{session?.user?.name?.[0] || 'U'}</AvatarFallback>

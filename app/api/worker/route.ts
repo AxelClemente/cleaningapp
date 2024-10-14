@@ -17,12 +17,6 @@ export async function POST(request: Request) {
 
     const body = await request.json()
 
-    // Verify that the userId from the request matches the session user's id
-    if (body.userId !== session.user.id) {
-      console.log("Worker API - User ID mismatch")
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-    }
-
     // Asegúrate de que todos los campos necesarios estén presentes
     if (!body.phoneNumber || !body.location /* ... otros campos requeridos */) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
