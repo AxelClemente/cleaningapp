@@ -31,11 +31,19 @@ interface CardOrderModalProps {
   reservation: Reservation;
   onClose: () => void;
   isMainPage: boolean;
+  isWorkerPage: boolean; // Añade esta nueva prop
   onCancelOrder: (orderId: string) => void;
-  onUpdateOrderStatus: (orderId: string, newStatus: 'Open' | 'Progress' | 'Completed') => void; // Add this line
+  onUpdateOrderStatus: (orderId: string, newStatus: 'Open' | 'Progress' | 'Completed') => void;
 }
 
-export function CardOrderModal({ reservation: initialReservation, onClose, isMainPage, onCancelOrder, onUpdateOrderStatus }: CardOrderModalProps) {
+export function CardOrderModal({ 
+  reservation: initialReservation, 
+  onClose, 
+  isMainPage, 
+  isWorkerPage, // Añade esta nueva prop
+  onCancelOrder, 
+  onUpdateOrderStatus 
+}: CardOrderModalProps) {
   const [reservation, setReservation] = useState(initialReservation);
   const { toast } = useToast();
   const statusSteps = ['Open', 'Progress', 'Completed'] as const;
@@ -71,7 +79,7 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
   };
 
   const showAcceptButton = !isMainPage && reservation.status === 'Open';
-  const showCompleteButton = reservation.status === 'Progress';
+  const showCompleteButton = isWorkerPage && reservation.status === 'Progress'; // Modifica esta línea
   const showCancelButton = isMainPage && reservation.status === 'Open';
 
   const handleCancel = async () => {
@@ -183,7 +191,7 @@ export function CardOrderModal({ reservation: initialReservation, onClose, isMai
               <span className="text-sm font-semibold">${reservation.price.toFixed(2)}</span>
             </div>
             <div className="mt-6 space-y-4">
-              {!isMainPage && reservation.status === 'Progress' && (
+              {reservation.status === 'Progress' && (
                 <ChatCard 
                   orderId={reservation.id} 
                   receiverId={reservation.userId} // This is the client's ID

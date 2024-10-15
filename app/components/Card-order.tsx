@@ -29,9 +29,17 @@ interface CardOrderProps {
   activeTab: string;
   isMainPage: boolean;
   filterByUserId?: boolean;
+  isWorkerPage?: boolean;
 }
 
-export function CardOrder({ clientName, clientId, activeTab, isMainPage, filterByUserId = false }: CardOrderProps) {
+export function CardOrder({ 
+  clientName, 
+  clientId, 
+  activeTab, 
+  isMainPage, 
+  filterByUserId = false, 
+  isWorkerPage = false 
+}: CardOrderProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 

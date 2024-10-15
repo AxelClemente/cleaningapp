@@ -188,6 +188,7 @@ export default function Component() {
               clientId={session.user.id || ""}
               activeTab={activeTab}
               isMainPage={true}
+              isWorkerPage={false} // Añade esta prop
               filterByUserId={true}
             />
           </div>

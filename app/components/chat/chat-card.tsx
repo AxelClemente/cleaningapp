@@ -1,17 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Button } from "../../components/Button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import React, { useState, useEffect } from 'react'
+import { Button } from "../Button"
 import { Input } from "@/components/ui/input"
-import { Send } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { sendMessage, getMessages } from '@/lib/api'
 
 interface Message {
   id: string;
-  senderId: string;
   content: string;
+  senderId: string;
+  createdAt: Date;
 }
 
 interface ChatCardProps {
@@ -20,8 +19,8 @@ interface ChatCardProps {
 }
 
 export default function ChatCard({ orderId, receiverId }: ChatCardProps) {
-  const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
+  const [newMessage, setNewMessage] = useState('')
   const { data: session } = useSession()
 
   const fetchMessages = async () => {
@@ -44,52 +43,53 @@ export default function ChatCard({ orderId, receiverId }: ChatCardProps) {
     return () => clearInterval(interval);
   }, [orderId]);
 
-  const handleSend = async () => {
-    console.log('handleSend called with message:', message);
-    if (!message.trim()) return
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Previene el comportamiento por defecto del formulario
+    if (!newMessage.trim()) return;
 
     try {
       console.log('Attempting to send message');
-      const response = await sendMessage(receiverId, orderId, message)
+      const response = await sendMessage(receiverId, orderId, newMessage);
       console.log('sendMessage response:', response);
-      setMessage('')
-      fetchMessages()
+      setNewMessage('');
+      fetchMessages();
     } catch (error) {
-      console.error('Failed to send message:', error)
+      console.error('Failed to send message:', error);
     }
-  }
+  };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardContent className="p-4">
-        <div className="h-[200px] overflow-y-auto mb-4">
-          {messages.map((msg) => (
-            <div key={msg.id} className={`p-2 rounded-lg mb-2 ${msg.senderId === session?.user?.id ? 'bg-blue-100 ml-auto' : 'bg-gray-100'}`}>
-              <p className="text-sm">{msg.content}</p>
+    <div className="flex flex-col h-[300px] border rounded-lg overflow-hidden">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.senderId === session?.user?.id ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[70%] rounded-lg p-2 ${
+                message.senderId === session?.user?.id
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {message.content}
             </div>
-          ))}
-        </div>
-      </CardContent>
-      <CardFooter className="flex items-center space-x-2">
-        <Input
-          className="flex-grow"
-          placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              console.log('Enter key pressed');
-              handleSend();
-            }
-          }}
-        />
-        <Button onClick={() => {
-          console.log('Send button clicked');
-          handleSend();
-        }}>
-          <Send className="h-4 w-4" />
-        </Button>
-      </CardFooter>
-    </Card>
+          </div>
+        ))}
+      </div>
+      <div className="p-4 border-t">
+        <form onSubmit={handleSubmit} className="flex space-x-2">
+          <Input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-1"
+          />
+          <Button type="submit">Send</Button>
+        </form>
+      </div>
+    </div>
   )
 }
