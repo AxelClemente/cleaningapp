@@ -91,8 +91,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
           />
         </Link>
         <div>
-          <h2 className="text-sm font-medium">{doctorName}</h2>
-          <p className="text-sm text-gray-500">{clinicName}</p>
+          <p className="text-md text-gray-700">{clinicName}</p>
         </div>
       </div>
       <div className="flex items-center space-x-4 relative" ref={menuRef}>

@@ -5,12 +5,17 @@ import { Button } from "../Button"
 import { Input } from "@/components/ui/input"
 import { useSession } from 'next-auth/react'
 import { sendMessage, getMessages } from '@/lib/api'
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 interface Message {
   id: string;
   content: string;
   senderId: string;
   createdAt: Date;
+  sender?: {
+    image?: string;
+    name?: string;
+  };
 }
 
 interface ChatCardProps {
@@ -59,26 +64,43 @@ export default function ChatCard({ orderId, receiverId }: ChatCardProps) {
   };
 
   return (
-    <div className="flex flex-col h-[300px] border rounded-lg overflow-hidden">
+    <div className="flex flex-col h-[300px] border rounded-lg overflow-hidden bg-[#edecf2]">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.senderId === session?.user?.id ? 'justify-end' : 'justify-start'}`}
-          >
+        {messages.map((message) => {
+          const isCurrentUser = message.senderId === session?.user?.id;
+          const senderName = message.sender?.name || 'User';
+          const senderImage = message.sender?.image || '/default-avatar.png';
+          const senderInitial = senderName[0] || 'U';
+
+          return (
             <div
-              className={`max-w-[70%] rounded-lg p-2 ${
-                message.senderId === session?.user?.id
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-800'
-              }`}
+              key={message.id}
+              className={`flex items-start gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
             >
-              {message.content}
+              {!isCurrentUser && (
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={senderImage} alt={senderName} />
+                  <AvatarFallback>{senderInitial}</AvatarFallback>
+                </Avatar>
+              )}
+              <div
+                className={`max-w-[70%] rounded-lg p-2 ${
+                  isCurrentUser ? 'bg-[#6886e4] text-white' : 'bg-white text-gray-800'
+                }`}
+              >
+                {message.content}
+              </div>
+              {isCurrentUser && (
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={session.user.image || '/default-avatar.png'} alt={session.user.name || 'You'} />
+                  <AvatarFallback>{session.user.name?.[0] || 'Y'}</AvatarFallback>
+                </Avatar>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <div className="p-4 border-t">
+      <div className="p-4 border-t bg-white">
         <form onSubmit={handleSubmit} className="flex space-x-2">
           <Input
             type="text"
