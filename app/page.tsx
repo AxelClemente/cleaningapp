@@ -23,6 +23,7 @@ export default function HomePage() {
         <Header 
           doctorName={`Hi again ${session?.user?.name || "Express Cleaning Mallorca"}`}
           clinicName="Building a community where cleaners and clients come together as a team!"
+          className="font-montserrat-500 text-[#0a2935]"
         />
       </div>
       <div className="flex-grow flex flex-col lg:flex-row items-center justify-between p-4 lg:p-8 max-w-7xl mx-auto w-full">
@@ -41,8 +42,8 @@ export default function HomePage() {
           <h1 className="text-4xl lg:text-5xl font-bold mb-6 font-montserrat-alternates text-[#002c3c]">
             We connect expert cleaners in your <span className="text-[#c83a3f]">neighborhood</span> with you.
           </h1>
-          <h2 className="text-2xl lg:text-3xl font-bold text-[#724fff] mb-8">
-            TidyTeam is here to make life easier
+          <h2 className="text-2xl lg:text-3xl font-bold text-[#002c3c] mb-8">
+            <span className="text-[#f6c03f]">TidyTeam</span> is here to make life easier
           </h2>
           <div className="space-y-4">
             <Link href="/HomeDashboard">

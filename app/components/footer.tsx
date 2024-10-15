@@ -40,27 +40,31 @@ export default function Footer() {
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <Link href="https://apps.apple.com/app/apple-store/id123456789">
-              <AppStoreIcon className="w-[120px] h-[35px]" />
-            </Link>
-            <Link href="https://play.google.com/store/apps/details?id=com.example.app">
-              <PlayStoreIcon className="w-[120px] h-[35px]" />
-            </Link>
-            {[
-              { name: "facebook", url: "https://facebook.com/example" },
-              { name: "linkedin", url: "https://linkedin.com/company/example" },
-              // Añade aquí más redes sociales cuando tengas sus iconos disponibles
-            ].map((social) => {
-              const SocialIcon = socialIcons[social.name as keyof typeof socialIcons]
-              return (
-                <Link key={social.name} href={social.url}>
-                  <div className="w-6 h-6">
-                    <SocialIcon className="w-full h-full" />
-                  </div>
-                </Link>
-              )
-            })}
+          <div className="flex items-center">
+            <div className="flex space-x-4 mr-14">
+              <Link href="https://apps.apple.com/app/apple-store/id123456789">
+                <AppStoreIcon className="w-[120px] h-[35px]" />
+              </Link>
+              <Link href="https://play.google.com/store/apps/details?id=com.example.app">
+                <PlayStoreIcon className="w-[120px] h-[35px]" />
+              </Link>
+            </div>
+            <div className="flex space-x-4">
+              {[
+                { name: "facebook", url: "https://facebook.com/example" },
+                { name: "linkedin", url: "https://linkedin.com/company/example" },
+                // Añade aquí más redes sociales cuando tengas sus iconos disponibles
+              ].map((social) => {
+                const SocialIcon = socialIcons[social.name as keyof typeof socialIcons]
+                return (
+                  <Link key={social.name} href={social.url}>
+                    <div className="w-6 h-6">
+                      <SocialIcon className="w-full h-full" />
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
           </div>
         </div>
       </div>

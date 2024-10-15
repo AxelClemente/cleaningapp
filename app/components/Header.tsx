@@ -13,9 +13,10 @@ import { Avatar, AvatarImage, AvatarFallback } from './avatar'
 interface HeaderProps {
   doctorName: string
   clinicName: string
+  className?: string
 }
 
-export function Header({ doctorName, clinicName }: HeaderProps) {
+export function Header({ doctorName, clinicName, className = '' }: HeaderProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const { data: session, status } = useSession()
@@ -79,7 +80,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
   }, [])
 
   return (
-    <header className="p-4 flex items-center justify-between border-b">
+    <header className={`p-4 flex items-center justify-between border-b ${className}`}>
       <div className="flex items-center space-x-2">
         <Link href="/">
           <Image
@@ -95,7 +96,7 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
         </div>
       </div>
       <div className="flex items-center space-x-4 relative" ref={menuRef}>
-      {status === 'authenticated' && isWorker && (
+        {status === 'authenticated' && isWorker && (
           <Button
             variant="outline"
             size="sm"
@@ -104,12 +105,12 @@ export function Header({ doctorName, clinicName }: HeaderProps) {
             <Link href="/dashboard-worker" className="text-white hover:text-white">Jobs</Link>
           </Button>
         )}
-        <div className="flex items-center border rounded-full p-1">
+        <div className="flex items-center border border-[#002c3c] rounded-full p-1">
           <button 
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={toggleMenu}
           >
-            <Menu className="h-5 w-5 text-gray-500" />
+            <Menu className="h-5 w-5 text-[#002c3c]" />
           </button>
           <div className="w-px h-5 bg-gray-300 mx-1"></div>
           <button 
