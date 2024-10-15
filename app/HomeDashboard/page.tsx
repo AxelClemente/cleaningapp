@@ -98,11 +98,15 @@ export default function Component() {
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
         <Header 
           doctorName={session?.user?.name || "TidyTeam"} 
-          clinicName="we connect expert cleaners with homes in your neighborhood" 
+          clinicName={
+            <span className="font-montserrat font-medium text-[#002b34]">
+              We connect expert cleaners with homes in your neighborhood
+            </span>
+          }
         />
         <div className="p-4">
           <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <span>Select your home type, cleaning service and pick your location!</span>
+            <span>Contact a specific worker for your service needs, or allow multiple workers to propose their offers for the job</span>
             
           </div>
           <h2 className="text-2xl font-bold mt-4 mb-6">Book Now</h2>

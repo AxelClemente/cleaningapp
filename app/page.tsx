@@ -26,6 +26,14 @@ export default function HomePage() {
     }
   }
 
+  const handleScheduleCleaningClick = () => {
+    if (session) {
+      router.push('/dashboard')
+    } else {
+      signIn('google', { callbackUrl: '/dashboard' })
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="mx-8 sm:mx-16 md:mx-24 lg:mx-32">
@@ -55,11 +63,12 @@ export default function HomePage() {
             <span className="text-[#f6c03f]">TidyTeam</span> is here to make life easier
           </h2>
           <div className="space-y-4">
-            <Link href="/HomeDashboard">
-              <Button className="w-full lg:w-auto text-lg py-9 px-8 bg-[#002a34] hover:bg-[#004963] transition-colors duration-300 font-montserrat-700">
-                Schedule a cleaning service
-              </Button>
-            </Link>
+            <Button 
+              className="w-full lg:w-auto text-lg py-9 px-8 bg-[#002a34] hover:bg-[#004963] transition-colors duration-300 font-montserrat-700"
+              onClick={handleScheduleCleaningClick}
+            >
+              Schedule a cleaning service
+            </Button>
             <Button 
               variant="link" 
               className="w-full lg:w-auto text-lg text-[#002a34] hover:text-[#004963] underline transition-colors duration-300 font-montserrat-500" 

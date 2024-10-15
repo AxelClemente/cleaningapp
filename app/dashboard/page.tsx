@@ -57,7 +57,11 @@ const DashboardPage: FC = () => {
     <div>
       <Header 
         doctorName={fullName} 
-        clinicName="Express Cleaning Mallorca"
+        clinicName={
+          <span className="font-montserrat font-medium text-[#002b34]">
+            Building a community where cleaners and clients come together as a team!
+          </span>
+        }
       />
       <div className={`p-6 ${showWorkerForm ? 'text-center' : ''}`}>
         <div className={showWorkerForm ? 'max-w-2xl mx-auto' : ''}>
