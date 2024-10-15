@@ -84,6 +84,18 @@ module.exports = {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
+  		},
+  		fontFamily: {
+  			'montserrat-alternates': ['"Montserrat Alternates"', 'sans-serif'],
+  			'montserrat-custom': [
+  				'"__Montserrat_b1da2a"',
+  				'"__Montserrat_Fallback_b1da2a"',
+  				'"Helvetica Neue"',
+  				'Arial',
+  				'Helvetica',
+  				'sans-serif'
+  			],
+  			'montserrat': ['"Montserrat"', 'sans-serif'],
   		}
   	}
   },

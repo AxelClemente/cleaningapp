@@ -3,9 +3,12 @@
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
+import Image from 'next/image'
+import { PlayIcon, BookOpenIcon } from 'lucide-react'
 import { Header } from './components/Header'
-import { PlayIcon } from 'lucide-react' // Añadimos CloudIcon
-import { VideoModal } from './components/VideoModal'  // Importamos el nuevo componente
+import { VideoModal } from './components/VideoModal'
+import { Button } from "./components/Button"
+import  Footer  from "./components/footer"
 
 export default function HomePage() {
   const { data: session } = useSession()
@@ -14,48 +17,48 @@ export default function HomePage() {
   const handleOpenModal = () => setIsModalOpen(true)
   const handleCloseModal = () => setIsModalOpen(false)
 
-  const handleUpload = (error: any, result: any, widget: any) => {
-    if (error) {
-      console.error("Upload error:", error);
-      return;
-    }
-    console.log("Upload result:", result);
-    console.log("Widget info:", widget);
-  }
-
-  // Obtener el valor del preset desde la variable de entorno
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="flex flex-col min-h-screen bg-white">
       <div className="mx-8 sm:mx-16 md:mx-24 lg:mx-32">
         <Header 
           doctorName={`Hi again ${session?.user?.name || "Express Cleaning Mallorca"}`}
           clinicName="Building a community where cleaners and clients come together as a team!"
         />
       </div>
-      <main className="flex-grow flex flex-col justify-center items-center">
-        <h1 className="text-4xl font-bold mb-6">Welcome to TidyTeam</h1>
-        <p className="text-xl mb-8">We connect expert cleaners with homes in your neighborhood!</p>
-        <div className="flex items-center space-x-4">
-          <Link 
-            href="/HomeDashboard" 
-            className="px-6 py-3 bg-[#724fff] text-white rounded-full font-semibold hover:bg-[#6240e3] transition-colors"
-          >
-            Schedule a Cleaning Service
-          </Link>
-          <button 
-            className="flex items-center text-gray-700 font-semibold hover:text-[#724fff] transition-colors"
-            onClick={handleOpenModal}
-          >
-            <span className="w-8 h-8 bg-[#724fff] text-white rounded-full flex items-center justify-center mr-2">
-              <PlayIcon className="w-4 h-4" />
-            </span>
-            Watch demo
-          </button>
-          <span className="ml-2 text-gray-400 text-sm">2 min</span>
+      <div className="flex-grow flex flex-col lg:flex-row items-center justify-between p-4 lg:p-8 max-w-7xl mx-auto w-full">
+        <div className="lg:w-1/2 relative mb-8 lg:mb-0 lg:mr-8">
+          <div className="relative rounded-3xl overflow-hidden">
+            <Image
+              src="/images/Homepage.webp"
+              width={600}
+              height={600}
+              alt="Cleaning service illustration"
+              className="rounded-2xl"
+            />
+          </div>
         </div>
-      </main>
+        <div className="lg:w-1/2">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-6 font-montserrat-alternates text-[#002c3c]">
+            We connect expert cleaners in your <span className="text-[#c83a3f]">neighborhood</span> with you.
+          </h1>
+          <h2 className="text-2xl lg:text-3xl font-bold text-[#724fff] mb-8">
+            TidyTeam is here to make life easier
+          </h2>
+          <div className="space-y-4">
+            <Link href="/HomeDashboard">
+              <Button className="w-full lg:w-auto text-lg py-9 px-8 bg-[#002a34] hover:bg-[#004963] transition-colors duration-300 font-montserrat-700">
+                Schedule a cleaning service
+              </Button>
+            </Link>
+            <Button variant="link" className="w-full lg:w-auto text-lg text-[#002a34] hover:text-[#004963] underline transition-colors duration-300 font-montserrat-500" onClick={handleOpenModal}>
+              Or Join as a cleaner
+            </Button>
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+      
       <VideoModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   )
