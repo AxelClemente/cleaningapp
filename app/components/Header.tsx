@@ -100,7 +100,7 @@ export function Header({ doctorName, clinicName, className = '' }: HeaderProps) 
           <Button
             variant="outline"
             size="sm"
-            className="bg-[#724fff] hover:bg-[#6240e3] text-white border-none"
+            className="bg-[#002a34] hover:bg-[#004963] text-white border-none"
           >
             <Link href="/dashboard-worker" className="text-white hover:text-white">Jobs</Link>
           </Button>

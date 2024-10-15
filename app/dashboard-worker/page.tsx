@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import Image from 'next/image'
 import { WorkerProfile } from '@/types/interfaces'
 import { Star, MapPin, Phone, Mail } from 'lucide-react'
 import { Header } from '../components/Header'
@@ -44,7 +43,11 @@ export default function DashboardWorker() {
       <div className="max-w-6xl mx-auto">
         <Header 
           doctorName={workerData.name || 'Worker Name'} 
-          clinicName="CleaningApp"
+          clinicName={
+            <span className="font-montserrat font-medium text-[#002b34]">
+              Your hard work brings comfort and joy to every home you touch
+            </span>
+          }
         />
       </div>
       <main className="max-w-6xl mx-auto p-6">
@@ -91,7 +94,7 @@ export default function DashboardWorker() {
             <div className="md:w-2/3 p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Jobs</h3>
-                <button className="bg-blue-500 text-white px-3 py-1 rounded">+ Add</button>
+                <button className="bg-[#eec33d] text-white px-3 py-1 rounded">Contact</button>
               </div>
               <div className="flex border-b mb-4">
                 <button

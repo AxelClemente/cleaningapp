@@ -1,27 +1,36 @@
 'use client'
 
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import { useState } from 'react'
 import Image from 'next/image'
-import { PlayIcon, BookOpenIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Header } from './components/Header'
 import { VideoModal } from './components/VideoModal'
 import { Button } from "./components/Button"
-import  Footer  from "./components/footer"
+import Footer from "./components/footer"
 
 export default function HomePage() {
   const { data: session } = useSession()
+  const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleOpenModal = () => setIsModalOpen(true)
   const handleCloseModal = () => setIsModalOpen(false)
 
+  const handleJoinAsCleanerClick = () => {
+    if (session) {
+      router.push('/dashboard')
+    } else {
+      signIn('google', { callbackUrl: '/dashboard' })
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="mx-8 sm:mx-16 md:mx-24 lg:mx-32">
         <Header 
-          doctorName={`Hi again ${session?.user?.name || "Express Cleaning Mallorca"}`}
+          doctorName={`Hi again ${session?.user?.name || "Welcome to TidyTeam"}`}
           clinicName="Building a community where cleaners and clients come together as a team!"
           className="font-montserrat-500 text-[#0a2935]"
         />
@@ -51,7 +60,11 @@ export default function HomePage() {
                 Schedule a cleaning service
               </Button>
             </Link>
-            <Button variant="link" className="w-full lg:w-auto text-lg text-[#002a34] hover:text-[#004963] underline transition-colors duration-300 font-montserrat-500" onClick={handleOpenModal}>
+            <Button 
+              variant="link" 
+              className="w-full lg:w-auto text-lg text-[#002a34] hover:text-[#004963] underline transition-colors duration-300 font-montserrat-500" 
+              onClick={handleJoinAsCleanerClick}
+            >
               Or Join as a cleaner
             </Button>
           </div>
