@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Location } from './Location'
 import { WorkerProfile } from '@/types/interfaces'
+import { ActionButtonCloudinary } from '@/components/ActionButtonCloudinary'
 
 interface WorkerFormProps {
   existingData?: WorkerProfile | null;
@@ -29,6 +30,7 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
   const [success, setSuccess] = useState<boolean>(false)
   const [description, setDescription] = useState(existingData?.description || '')
   const [hourlyRate, setHourlyRate] = useState(existingData?.hourlyRate?.toString() || '10')
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(existingData?.profilePicture || null);
 
   useEffect(() => {
     if (existingData) {
@@ -83,6 +85,7 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
         accountNumber,
         description,
         hourlyRate: parseFloat(hourlyRate),
+        profilePicture: uploadedImageUrl, // Añadir esta línea
       }
 
       const response = await fetch(url, {
@@ -140,6 +143,17 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
     const newRate = increment ? currentRate + 1 : Math.max(10, currentRate - 1)
     setHourlyRate(newRate.toString())
   }
+
+  const handleUpload = (result: any) => {
+    console.log('handleUpload called in WorkerForm', result);
+    if (result && result.secure_url) {
+      console.log('Image URL in WorkerForm:', result.secure_url);
+      setUploadedImageUrl(result.secure_url);
+      setProfilePictureUrl(result.secure_url);
+    } else {
+      console.error('Error uploading image in WorkerForm: No secure_url in result');
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row max-w-6xl mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
@@ -232,33 +246,28 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="profilePicture" className="block text-left">Profile Picture</Label>
-            {profilePictureUrl && (
-              <Image
-                src={profilePictureUrl}
-                alt="Profile Picture"
-                width={100}
-                height={100}
-                className="mb-2 rounded-full"
-              />
-            )}
-            <div 
-              className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer"
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <p className="text-gray-500">Please upload an image file (jpg, png, or gif).</p>
-              <p className="text-blue-500 hover:underline">Choose file or drop here</p>
-              {profilePictureUrl && <p className="mt-2 text-green-500">Image selected</p>}
+            <div className="bg-white shadow rounded-lg p-4">
+              <div className="flex items-center justify-between mb-4">
+                <ActionButtonCloudinary
+                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''}
+                  onUpload={handleUpload}
+                  text="Upload profile picture"
+                />
+              </div>
+              {uploadedImageUrl ? (
+                <Image
+                  src={uploadedImageUrl}
+                  alt="Profile Picture"
+                  width={100}
+                  height={100}
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              ) : (
+                <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-md">
+                  <span className="text-gray-500">No profile picture uploaded</span>
+                </div>
+              )}
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="profilePicture"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
           </div>
           <Button type="submit" className="w-full mt-4 bg-[#002a34] hover:bg-[#004963]" >
             {existingData ? 'Update Profile' : 'Submit'}

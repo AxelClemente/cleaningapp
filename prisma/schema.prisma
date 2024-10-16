@@ -39,8 +39,11 @@ model Worker {
   accountHolder  String
   accountNumber  String
   profilePicture String?
-  description    String   // New field
-  hourlyRate     Float    // New field (renamed from 'price' for clarity)
+  images         String[] // Nuevo campo para almacenar múltiples URLs de imágenes
+  description    String
+  hourlyRate     Float
+  rating         Float?   @default(0)
+  reviewCount    Int?     @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
