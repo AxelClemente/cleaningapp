@@ -149,7 +149,7 @@ export function CardOrder({
                 <Calendar className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">{reservation.calendarData}</span>
               </div>
-              <div className="flex items-center justify-between space-x-1 mb-1 mt-2">
+              <div className="flex items-center space-x-1 mb-1 mt-2">
                 <div className="flex items-center space-x-1">
                   <Sparkles className="h-4 w-4 text-yellow-400" />
                   <span className="text-sm font-medium">{reservation.serviceType} Service</span>
@@ -168,6 +168,7 @@ export function CardOrder({
           reservation={selectedReservation} 
           onClose={() => setSelectedReservation(null)}
           isMainPage={isMainPage}
+          isWorkerPage={isWorkerPage}
           onCancelOrder={handleCancelOrder}
           onUpdateOrderStatus={handleUpdateOrderStatus}
         />

@@ -9,6 +9,7 @@ import { Button } from "@/components/Button"
 import { updateReservationStatus } from '@/lib/api';
 import { useToast } from "./ui/use-toast";
 import ChatCard from '@/components/chat/chat-card'
+import { useAuth } from '@/hooks/useAuth';
 
 interface Reservation {
   id: string;
@@ -25,6 +26,7 @@ interface Reservation {
   comment: string; // New property
   images: string[];  // Add this line
   userId: string; // Add this line
+  workerId?: string; // Add this line
 }
 
 interface CardOrderModalProps {
@@ -52,20 +54,25 @@ export function CardOrderModal({
   const getStatusColor = (status: StatusType, currentStatus: StatusType) => {
     const index = statusSteps.indexOf(status);
     const currentIndex = statusSteps.indexOf(currentStatus);
-    if (index === currentIndex) return 'bg-yellow-500';
+    if (index === currentIndex) return 'bg-green-500';
     return index < currentIndex ? 'bg-green-500' : 'bg-gray-300';
   };
+
+  const { getCurrentWorkerId } = useAuth();
 
   const handleStatusUpdate = async () => {
     try {
       const newStatus = reservation.status === 'Open' ? 'Progress' : 'Completed';
-      const result = await updateReservationStatus(reservation.id, newStatus);
+      const workerId = getCurrentWorkerId();
+      if (!workerId) {
+        throw new Error('No worker ID found');
+      }
+      const result = await updateReservationStatus(reservation.id, newStatus, workerId);
       
       if (result.success) {
-        setReservation({ ...reservation, status: newStatus });
-        onUpdateOrderStatus(reservation.id, newStatus);
+        setReservation({ ...reservation, status: newStatus, workerId });
+        onUpdateOrderStatus(reservation.id, newStatus, workerId);
         
-        // Close the modal after updating the status
         if (newStatus === 'Progress' || newStatus === 'Completed') {
           onClose();
         }
@@ -74,7 +81,12 @@ export function CardOrderModal({
       }
     } catch (error) {
       console.error('Error updating reservation status:', error);
-      // Aquí podrías mostrar un mensaje de error al usuario
+      toast({
+        title: "Error",
+        description: "Failed to update the reservation status. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
     }
   };
 

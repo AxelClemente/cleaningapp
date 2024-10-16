@@ -1,24 +1,38 @@
-export async function updateReservationStatus(orderId: string, newStatus: 'Open' | 'Progress' | 'Completed') {
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderId, status: newStatus }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update reservation status');
-      }
-  
-      const data = await response.json();
-      return { success: true, data };
-    } catch (error) {
-      console.error('Error updating reservation status:', error);
-      return { success: false, error: error.message };
+export async function updateReservationStatus(
+  orderId: string, 
+  newStatus: 'Open' | 'Progress' | 'Completed',
+  workerId?: string
+) {
+  try {
+    const body: {
+      status: 'Open' | 'Progress' | 'Completed';
+      workerId?: string;
+    } = { status: newStatus };
+
+    // Incluir workerId si se proporciona y el nuevo estado es 'Progress'
+    if (workerId && newStatus === 'Progress') {
+      body.workerId = workerId;
     }
+
+    const response = await fetch(`/api/orders`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderId, status: newStatus, workerId }),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Failed to update order status');
+    }
+  
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
+}
 
 export async function sendMessage(receiverId: string, orderId: string, content: string) {
   console.log('sendMessage called with:', { receiverId, orderId, content });

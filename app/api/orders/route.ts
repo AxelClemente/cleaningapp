@@ -97,15 +97,20 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { orderId, status } = body;
+    const { orderId, status, workerId } = body;
 
     if (!orderId || !status) {
       return NextResponse.json({ error: "orderId and status are required" }, { status: 400 });
     }
 
+    const updateData: any = { status };
+    if (workerId && status === 'Progress') {
+      updateData.workerId = workerId;
+    }
+
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data: { status },
+      data: updateData,
     });
 
     if (!updatedOrder) {
@@ -115,7 +120,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json(updatedOrder);
   } catch (error) {
     console.error('Error updating order:', error);
-    return NextResponse.json({ error: 'Failed to update order', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update order', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
 

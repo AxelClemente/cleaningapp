@@ -71,7 +71,7 @@ export default function WorkerCard({
           <p className="text-xs text-gray-500 mb-1">Reviews</p>
           <span className="flex items-center">
             <Star className="w-4 h-4 text-yellow-400 mr-1 fill-current" />
-            {rating.toFixed(2)} ({reviewCount})
+            {rating.toFixed(1)} ({reviewCount})
           </span>
         </div>
       </CardFooter>

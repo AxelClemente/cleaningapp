@@ -39,19 +39,22 @@ model Worker {
   accountHolder  String
   accountNumber  String
   profilePicture String?
-  images         String[] // Nuevo campo para almacenar múltiples URLs de imágenes
+  images         String[]
   description    String
   hourlyRate     Float
   rating         Float?   @default(0)
   reviewCount    Int?     @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  orders         Order[]  // Nueva relación inversa
 }
 
 model Order {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   user         User     @relation(fields: [userId], references: [id])
   userId       String   @db.ObjectId
+  worker       Worker?  @relation(fields: [workerId], references: [id])
+  workerId     String?
   houseType    String
   serviceType  String
   calendarData Json
@@ -61,8 +64,8 @@ model Order {
   comment      String?
   price        Float
   status       String
-  images       String[] // New field for storing image URLs
-  messages Message[]
+  images       String[]
+  messages     Message[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
