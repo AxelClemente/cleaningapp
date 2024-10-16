@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Button } from "./Button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from 'next/navigation';
 
 interface HireServiceModalProps {
   isOpen: boolean;
@@ -13,6 +14,12 @@ interface HireServiceModalProps {
 
 const HireModal: FC<HireServiceModalProps> = ({ isOpen, onClose }) => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleHire = () => {
+    onClose();
+    router.push('/hire');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -46,7 +53,10 @@ const HireModal: FC<HireServiceModalProps> = ({ isOpen, onClose }) => {
               />
             </CardContent>
             <CardFooter>
-              <Button className="w-full bg-[#002a34] hover:bg-[#004963] text-white font-bold transition-colors duration-200">
+              <Button 
+                className="w-full bg-[#002a34] hover:bg-[#004963] text-white font-bold transition-colors duration-200"
+                onClick={handleHire}
+              >
                 Let's go
               </Button>
             </CardFooter>
