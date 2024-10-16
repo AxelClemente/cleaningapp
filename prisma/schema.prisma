@@ -39,6 +39,8 @@ model Worker {
   accountHolder  String
   accountNumber  String
   profilePicture String?
+  description    String   // New field
+  hourlyRate     Float    // New field (renamed from 'price' for clarity)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

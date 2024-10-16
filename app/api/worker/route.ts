@@ -17,8 +17,8 @@ export async function POST(request: Request) {
 
     const body = await request.json()
 
-    // Asegúrate de que todos los campos necesarios estén presentes
-    if (!body.phoneNumber || !body.location /* ... otros campos requeridos */) {
+    // Update required fields check
+    if (!body.phoneNumber || !body.location || !body.bankName || !body.accountHolder || !body.accountNumber || !body.description || body.hourlyRate === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     const newWorker = await prisma.worker.create({
       data: {
         ...body,
+        hourlyRate: parseFloat(body.hourlyRate), // Ensure hourlyRate is stored as a float
         user: {
           connect: { id: existingUser.id }
         }

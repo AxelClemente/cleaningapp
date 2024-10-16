@@ -147,7 +147,7 @@ export function Header({ doctorName, clinicName, className = '' }: HeaderProps) 
                   <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Account
                   </Link>
-                  <Link href="/HomeDashboard" className="block px-4 py-2 text-sm text-[#724fff] hover:bg-gray-100">
+                  <Link href="/dashboard" className="block px-4 py-2 text-sm text-[#724fff] hover:bg-gray-100">
                     Hire Service
                   </Link>
                   <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

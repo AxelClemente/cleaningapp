@@ -27,6 +27,8 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
   const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
+  const [description, setDescription] = useState(existingData?.description || '')
+  const [hourlyRate, setHourlyRate] = useState(existingData?.hourlyRate?.toString() || '10')
 
   useEffect(() => {
     if (existingData) {
@@ -36,6 +38,8 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
       setAccountHolder(existingData.accountHolder || '')
       setAccountNumber(existingData.accountNumber || '')
       setProfilePictureUrl(existingData.profilePicture || '')
+      setDescription(existingData.description || '')
+      setHourlyRate(existingData.hourlyRate?.toString() || '10')
     }
   }, [existingData]);
 
@@ -56,8 +60,8 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
     setError(null)
     setSuccess(false)
 
-    // Basic validation
-    if (!phoneNumber || !location || !bankName || !accountHolder || !accountNumber) {
+    // Updated validation
+    if (!phoneNumber || !location || !bankName || !accountHolder || !accountNumber || !description || !hourlyRate) {
       setError('Please fill in all required fields')
       return
     }
@@ -77,6 +81,8 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
         bankName,
         accountHolder,
         accountNumber,
+        description,
+        hourlyRate: parseFloat(hourlyRate),
       }
 
       const response = await fetch(url, {
@@ -129,17 +135,25 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
     }
   }
 
+  const handleHourlyRateChange = (increment: boolean) => {
+    const currentRate = parseInt(hourlyRate) || 10
+    const newRate = increment ? currentRate + 1 : Math.max(10, currentRate - 1)
+    setHourlyRate(newRate.toString())
+  }
+
   return (
     <div className="flex flex-col md:flex-row max-w-6xl mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
-      <div className="md:w-1/2">
-        <Image
-          src="/images/logo1.png" // Replace with your actual image path
-          alt="Cleaning community"
-          width={600}
-          height={600}
-          objectFit="cover"
-          className="w-full h-full"
-        />
+      <div className="md:w-1/2 flex items-center justify-center ">
+        <div className="p-8">
+          <Image
+            src="/images/calendario.webp"
+            alt="Cleaning community"
+            width={600}
+            height={600}
+            objectFit="contain"
+            className="max-w-full h-auto"
+          />
+        </div>
       </div>
       <div className="md:w-1/2 p-8">
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -166,7 +180,7 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
               <Input id="location" value={location} readOnly className="flex-grow" />
               <Dialog open={isLocationDialogOpen} onOpenChange={setIsLocationDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button type="button" onClick={handleLocationClick}>Location</Button>
+                  <Button type="button" className="bg-[#002a34] hover:bg-[#004963]" onClick={handleLocationClick}>Location</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <Location 
@@ -188,6 +202,33 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
           <div className="space-y-2">
             <Label htmlFor="accountNumber" className="block text-left">Account Number</Label>
             <Input id="accountNumber" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="description" className="block text-left">Description</Label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Tell us about your interests and skills"
+              className="w-full p-2 border rounded"
+              rows={4}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="hourlyRate" className="block text-left">Hourly Rate (€)</Label>
+            <div className="flex items-center space-x-2">
+              <Button type="button"className="bg-[#002b34] hover:bg-[#002b34]/90 text-white"onClick={() => handleHourlyRateChange(false)}>-</Button>
+              <Input
+                id="hourlyRate"
+                type="number"
+                value={hourlyRate}
+                onChange={(e) => setHourlyRate(e.target.value)}
+                className="text-center"
+                min="10"
+                step="1"
+              />
+              <Button type="button" className="bg-[#002b34]" onClick={() => handleHourlyRateChange(true)}>+</Button>
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="profilePicture" className="block text-left">Profile Picture</Label>
@@ -219,12 +260,12 @@ export const WorkerForm: FC<WorkerFormProps> = ({ existingData }) => {
               onChange={handleFileChange}
             />
           </div>
-          <Button type="submit" className="w-full mt-4">
+          <Button type="submit" className="w-full mt-4 bg-[#002a34] hover:bg-[#004963]" >
             {existingData ? 'Update Profile' : 'Submit'}
           </Button>
         </form>
         {error && <p className="text-red-500 mt-4">{error}</p>}
-        {success && <p className="text-green-500 mt-4">Worker registered successfully!</p>}
+        {success && <p className="text-green-500 mt-4">Worker profile updated successfully!</p>}
       </div>
     </div>
   )
