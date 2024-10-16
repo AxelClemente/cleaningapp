@@ -33,15 +33,19 @@ export default function WorkerCard({
   };
 
   return (
-    <Card className="w-full max-w-[300px] overflow-hidden">
+    <Card className="w-full max-w-[300px] overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
       <CardHeader className="p-0">
         <div className="relative h-48 flex items-center justify-center">
           <button 
             onClick={toggleFavorite}
-            className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full hover:bg-opacity-100 transition-all duration-200"
+            className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full hover:bg-opacity-100 transition-all duration-200 group"
           >
             <Heart 
-              className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-500'}`} 
+              className={`w-6 h-6 transition-all duration-200 group-hover:scale-110 ${
+                isFavorite 
+                  ? 'text-red-500 fill-red-500' 
+                  : 'text-gray-500 group-hover:text-red-400'
+              }`} 
             />
           </button>
           <Avatar className="w-40 h-40">
