@@ -9,12 +9,14 @@ import { Header } from '@/components/Header'; // Importamos el componente Header
 import { WorkerForm } from '@/components/Worker-form';
 import { getWorkerProfile } from '../lib/utils'; // Asumimos que existe esta función
 import { WorkerProfile } from '../types/interfaces'; // Updated import path
+import HireModal from '@/components/HireModal'; // Asegúrate de que la ruta de importación sea correcta
 
 const DashboardPage: FC = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [showWorkerForm, setShowWorkerForm] = useState(false);
   const [workerProfile, setWorkerProfile] = useState<WorkerProfile | null>(null);
+  const [isHireServiceModalOpen, setIsHireServiceModalOpen] = useState(false);
 
   useEffect(() => {
     console.log('useEffect triggered, showWorkerForm:', showWorkerForm);
@@ -37,6 +39,10 @@ const DashboardPage: FC = () => {
 
   const handleJoinAsCleanerClick = () => {
     setShowWorkerForm(true);
+  };
+
+  const handleHireServiceClick = () => {
+    setIsHireServiceModalOpen(true);
   };
 
   if (status === 'loading') {
@@ -82,7 +88,7 @@ const DashboardPage: FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card
               className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => handleCardClick('/HomeDashboard')}
+              onClick={handleHireServiceClick}
             >
               <CardHeader>
                 <PersonIcon className="w-6 h-6" />
@@ -109,6 +115,12 @@ const DashboardPage: FC = () => {
           <WorkerForm existingData={workerProfile ? {...workerProfile, phone: workerProfile.phone || ''} : undefined} />
         )}
       </div>
+      {isHireServiceModalOpen && (
+        <HireModal 
+          isOpen={isHireServiceModalOpen} 
+          onClose={() => setIsHireServiceModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

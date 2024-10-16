@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useSession, signIn } from 'next-auth/react'
 import { useState } from 'react'
 import Image from 'next/image'
@@ -39,7 +38,7 @@ export default function HomePage() {
       <div className="mx-8 sm:mx-16 md:mx-24 lg:mx-32">
         <Header 
           doctorName={`Hi again ${session?.user?.name || "Welcome to TidyTeam"}`}
-          clinicName="Building a community where cleaners and clients come together as a team!"
+          clinicName="Building a community where cleaners and clients come together as a TidyTeam!"
           className="font-montserrat-500 text-[#0a2935]"
         />
       </div>
