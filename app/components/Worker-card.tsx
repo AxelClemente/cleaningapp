@@ -8,7 +8,6 @@ interface WorkerCardProps {
   description?: string;
   hourlyRate?: number;
   profilePicture?: string;
-  image?: string;
   rating?: number;
   reviewCount?: number;
   location?: string;
@@ -19,13 +18,12 @@ export default function WorkerCard({
   description, 
   hourlyRate, 
   profilePicture,
-  image,
   rating = 0,
   reviewCount = 0,
   location = 'Unknown location'
 }: WorkerCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
-  const avatarSrc = image || profilePicture || '/images/default-avatar.jpg';
+  const avatarSrc = profilePicture || '/images/default-avatar.jpg';
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
