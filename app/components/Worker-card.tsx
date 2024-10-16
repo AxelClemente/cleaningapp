@@ -1,87 +1,78 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { SVGProps } from 'react'
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Star, Heart } from 'lucide-react'
+import { useState } from 'react'
 
-export default function ProfileCard() {
+interface WorkerCardProps {
+  name: string;
+  description?: string;
+  hourlyRate?: number;
+  profilePicture?: string;
+  image?: string;
+  rating?: number;
+  reviewCount?: number;
+  location?: string;
+}
+
+export default function WorkerCard({ 
+  name, 
+  description, 
+  hourlyRate, 
+  profilePicture,
+  image,
+  rating = 0,
+  reviewCount = 0,
+  location = 'Unknown location'
+}: WorkerCardProps) {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const avatarSrc = image || profilePicture || '/images/default-avatar.jpg';
+
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    // Aquí puedes agregar la lógica para guardar el favorito en el backend
+  };
+
   return (
-    <Card className="w-[300px] overflow-hidden">
+    <Card className="w-full max-w-[300px] overflow-hidden">
       <CardHeader className="p-0">
-        <div className="relative h-64">
-          <HeartIcon className="absolute top-4 right-4 text-white h-6 w-6 cursor-pointer" />
-          <img
-            alt="Profile picture of Andrew Smith"
-            className="w-full h-full object-cover"
-            height="256"
-            src="/placeholder.svg?height=256&width=300"
-            style={{
-              aspectRatio: "300/256",
-              objectFit: "cover",
-            }}
-            width="300"
-          />
+        <div className="relative h-48 flex items-center justify-center">
+          <button 
+            onClick={toggleFavorite}
+            className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full hover:bg-opacity-100 transition-all duration-200"
+          >
+            <Heart 
+              className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-500'}`} 
+            />
+          </button>
+          <Avatar className="w-40 h-40">
+            <AvatarImage 
+              src={avatarSrc} 
+              alt={`Profile picture of ${name}`}
+            />
+            <AvatarFallback>{name[0]}</AvatarFallback>
+          </Avatar>
         </div>
       </CardHeader>
-      <CardContent className="p-4 pb-0 text-center">
-        <div className="mt-4">
-          <h2 className="text-2xl font-bold">Andrew Smith</h2>
-          <p className="text-sm text-gray-500">Photographer</p>
-          <p className="mt-2 text-sm text-gray-600">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non ligula eu felis.
-          </p>
-        </div>
+      <CardContent className="p-4 text-center">
+        <h2 className="text-xl font-bold mb-1">{name}</h2>
+        <p className="text-sm text-gray-500 mb-3">{location}</p>
+        <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+          {description || "Experienced professional"}
+        </p>
       </CardContent>
-      <CardFooter className="flex flex-col items-stretch p-4">
-        <div className="flex justify-between items-end text-sm">
-          <div>
-            <p className="text-xs text-gray-500 mb-1">Hr/rate</p>
-            <span className="font-bold">€90</span>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-500 mb-1">Reviews</p>
-            <span className="flex items-center">
-              <StarIcon className="w-4 h-4 text-yellow-400 mr-1" />
-              4.85 (54)
-            </span>
-          </div>
+      <CardFooter className="flex justify-between items-center p-4">
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Hr/rate</p>
+          <span className="font-bold">€{hourlyRate || 'N/A'}</span>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 mb-1">Reviews</p>
+          <span className="flex items-center">
+            <Star className="w-4 h-4 text-yellow-400 mr-1 fill-current" />
+            {rating.toFixed(2)} ({reviewCount})
+          </span>
         </div>
       </CardFooter>
     </Card>
-  )
-}
-
-function HeartIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-    </svg>
-  )
-}
-
-function StarIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
   )
 }

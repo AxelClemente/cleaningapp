@@ -1,15 +1,18 @@
 export interface WorkerProfile {
     id?: string;
-    phoneNumber: string;
-    location: string;
-    bankName: string;
-    accountHolder: string;
-    accountNumber: string;
+    name: string;
+    description?: string;
+    hourlyRate?: number;
     profilePicture?: string;
-    description: string; // New field
-    hourlyRate: number; // New field
-    name?: string;
+    image?: string; // Ensure this is present
+    rating?: number;
+    reviewCount?: number;
+    location?: string;
     email?: string;
+    phoneNumber?: string;
+    bankName?: string;
+    accountHolder?: string;
+    accountNumber?: string;
 }
 
 interface ActionButtonCloudinaryProps {
