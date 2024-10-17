@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import WorkerCard from "@/components/Worker-card"
+import { WorkerCard } from "@/components/Worker-card"
 import { Header } from "@/components/Header"
 import { WorkerProfile } from '@/types/interfaces'
 
