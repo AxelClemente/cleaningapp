@@ -3,12 +3,13 @@ import { useSession } from "next-auth/react";
 export function useAuth() {
   const { data: session } = useSession();
 
-  const getCurrentWorkerId = () => {
-    if (session?.user?.id) {
-      return session.user.id;
-    }
-    return null;
+  const getCurrentUserId = () => {
+    return session?.user?.id || null;
   };
 
-  return { getCurrentWorkerId };
+  const getCurrentWorkerId = () => {
+    return session?.user?.id || null;
+  };
+
+  return { getCurrentUserId, getCurrentWorkerId };
 }

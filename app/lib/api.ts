@@ -1,36 +1,25 @@
 export async function updateReservationStatus(
   orderId: string, 
-  newStatus: 'Open' | 'Progress' | 'Completed',
+  newStatus: string,
   workerId?: string
 ) {
   try {
-    const body: {
-      status: 'Open' | 'Progress' | 'Completed';
-      workerId?: string;
-    } = { status: newStatus };
-
-    // Incluir workerId si se proporciona y el nuevo estado es 'Progress'
-    if (workerId && newStatus === 'Progress') {
-      body.workerId = workerId;
-    }
-
-    const response = await fetch(`/api/orders`, {
-      method: 'PATCH',
+    const response = await fetch('/api/orders', {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ orderId, status: newStatus, workerId }),
     });
-  
+
     if (!response.ok) {
-      throw new Error('Failed to update order status');
+      throw new Error('Failed to update reservation status');
     }
-  
-    const data = await response.json();
-    return { success: true, data };
+
+    return { success: true };
   } catch (error) {
-    console.error('Error updating order status:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    console.error('Error updating reservation status:', error);
+    return { success: false, error: 'Failed to update reservation status' };
   }
 }
 

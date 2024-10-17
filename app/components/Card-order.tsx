@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, Sparkles } from 'lucide-react'
 import { CardOrderModal } from './Card-order-modal'
+import { useAuth } from '@/hooks/useAuth';
 
 interface Reservation {
   id: string;
@@ -21,6 +22,7 @@ interface Reservation {
   entryMethod: string;
   comment: string;
   images: string[];  // Add this line
+  workerId: string;
 }
 
 interface CardOrderProps {
@@ -42,6 +44,8 @@ export function CardOrder({
 }: CardOrderProps) {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+
+  const { getCurrentWorkerId, getCurrentUserId } = useAuth();
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -65,11 +69,14 @@ export function CardOrder({
 
   const filteredReservations = activeTab
     ? reservations.filter(reservation => {
+        const currentUserId = getCurrentUserId();
+
         switch (activeTab) {
           case 'open':
             return reservation.status === 'Open';
           case 'inProgress':
-            return reservation.status === 'Progress';
+            return reservation.status === 'Progress' && 
+              (reservation.userId === currentUserId || reservation.workerId === currentUserId);
           case 'completed':
             return reservation.status === 'Completed';
           default:

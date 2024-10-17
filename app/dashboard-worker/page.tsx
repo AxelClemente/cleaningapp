@@ -32,6 +32,7 @@ export default function DashboardWorker() {
     return <CardOrder 
       activeTab={activeTab} 
       clientName={workerData.name || 'Worker Name'}
+      clientId={session?.user?.id}
       isMainPage={false}
       isWorkerPage={true}
       filterByUserId={false}

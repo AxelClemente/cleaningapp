@@ -35,7 +35,7 @@ interface CardOrderModalProps {
   isMainPage: boolean;
   isWorkerPage: boolean; // Añade esta nueva prop
   onCancelOrder: (orderId: string) => void;
-  onUpdateOrderStatus: (orderId: string, newStatus: 'Open' | 'Progress' | 'Completed') => void;
+  onUpdateOrderStatus: (orderId: string, newStatus: 'Open' | 'Progress' | 'Completed', workerId?: string) => void;
 }
 
 export function CardOrderModal({ 
@@ -63,8 +63,8 @@ export function CardOrderModal({
   const handleStatusUpdate = async () => {
     try {
       const newStatus = reservation.status === 'Open' ? 'Progress' : 'Completed';
-      const workerId = getCurrentWorkerId();
-      if (!workerId) {
+      const workerId = getCurrentWorkerId() ?? undefined;
+      if (!workerId && newStatus === 'Progress') {
         throw new Error('No worker ID found');
       }
       const result = await updateReservationStatus(reservation.id, newStatus, workerId);
@@ -91,7 +91,8 @@ export function CardOrderModal({
   };
 
   const showAcceptButton = !isMainPage && reservation.status === 'Open';
-  const showCompleteButton = isWorkerPage && reservation.status === 'Progress'; // Modifica esta línea
+  const showCompleteButton = reservation.status === 'Progress' && 
+    (isWorkerPage || reservation.workerId === getCurrentWorkerId());
   const showCancelButton = isMainPage && reservation.status === 'Open';
 
   const handleCancel = async () => {

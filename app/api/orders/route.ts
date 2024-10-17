@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
+import { PrismaClient } from '@prisma/client';
+
+const prismaClient = new PrismaClient();
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
@@ -19,7 +22,8 @@ export async function GET(request: Request) {
 
       return {
         id: order.id,
-        userId: order.userId, // Add this line
+        userId: order.userId,
+        workerId: order.workerId,
         userName: user?.name || 'Unknown',
         calendarData: order.calendarData,
         houseType: order.houseType,
@@ -30,7 +34,7 @@ export async function GET(request: Request) {
         avatarUrl: user?.image || '',
         entryMethod: order.entryMethod,
         comment: order.comment,
-        images: order.images, // Add this line
+        images: order.images,
       };
     }));
 
@@ -150,5 +154,24 @@ export async function DELETE(req: Request) {
   } catch (error) {
     console.error('Error deleting order:', error);
     return NextResponse.json({ error: 'Failed to delete order', details: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  const { orderId, status, workerId } = await request.json();
+
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: { 
+        status,
+        ...(workerId && { workerId })
+      },
+    });
+
+    return NextResponse.json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order:', error);
+    return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
   }
 }
