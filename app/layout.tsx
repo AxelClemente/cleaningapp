@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import ClientProvider from '../app/actions/client-provider'; // Importar el ClientProvider
 import "./globals.css";
+import { WorkerProvider } from '@/contexts/WorkerContext';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -36,7 +37,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* Aseguramos que SessionProvider solo esté en el lado del cliente */}
-        <ClientProvider>{children}</ClientProvider>
+        <ClientProvider>
+          <WorkerProvider>
+            {children}
+          </WorkerProvider>
+        </ClientProvider>
       </body>
     </html>
   );

@@ -1,10 +1,12 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Star, Heart } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { WorkerCardModal } from './WorkerCard-modal'
+import { useWorkers } from '@/contexts/WorkerContext'
 
 interface WorkerCardProps {
+  id: string;
   name: string;
   description?: string;
   hourlyRate?: number;
@@ -14,7 +16,7 @@ interface WorkerCardProps {
   location?: string;
 }
 
-export function WorkerCard({ 
+export function WorkerCard({ id, 
   name, 
   description, 
   hourlyRate, 
@@ -23,9 +25,17 @@ export function WorkerCard({
   reviewCount = 0,
   location = 'Unknown location'
 }: WorkerCardProps) {
+  const { getWorker } = useWorkers();
+  const [workerData, setWorkerData] = useState<WorkerProfile | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const avatarSrc = profilePicture || '/images/default-avatar.jpg';
+
+  useEffect(() => {
+    getWorker(id).then(setWorkerData);
+  }, [id, getWorker]);
+
+  if (!workerData) return null;
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -86,6 +96,7 @@ export function WorkerCard({
       <WorkerCardModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        id={id}
         name={name}
         description={description}
         hourlyRate={hourlyRate}

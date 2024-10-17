@@ -25,23 +25,23 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log('SignIn callback:', { user, account, profile });
+      //console.log('SignIn callback:', { user, account, profile });
       return true;
     },
     async jwt({ token, user, account }) {
-      console.log('JWT callback - input:', { token, user, account });
+      //console.log('JWT callback - input:', { token, user, account });
       if (user) {
         token.id = user.id;
         token.isWorker = await checkIfUserIsWorker(user.id);
       }
-      console.log('JWT callback - output:', token);
+      //console.log('JWT callback - output:', token);
       return {
         ...token,
         id: token.id
       };
     },
     async session({ session, token, user }: { session: Session; token: JWT | null; user: AdapterUser }): Promise<Session> {
-      console.log('Session callback - input:', { session, token, user });
+      //console.log('Session callback - input:', { session, token, user });
 
       if (session.user) {
         session.user.id = user.id;
@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
         // session.user.permissions = user.permissions;
       }
 
-      console.log('Session callback - output:', session);
+      //console.log('Session callback - output:', session);
       return session;
     },
   },

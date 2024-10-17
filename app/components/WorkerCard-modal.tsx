@@ -1,8 +1,12 @@
+"use client";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Star, Heart } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from "../components/Button"
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface WorkerCardModalProps {
   isOpen: boolean;
@@ -14,6 +18,7 @@ interface WorkerCardModalProps {
   rating?: number;
   reviewCount?: number;
   location?: string;
+  id: string;
 }
 
 export function WorkerCardModal({ 
@@ -25,15 +30,26 @@ export function WorkerCardModal({
   profilePicture,
   rating = 0,
   reviewCount = 0,
-  location = 'Unknown location'
+  location = 'Unknown location',
+  id
 }: WorkerCardModalProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const avatarSrc = profilePicture || '/images/default-avatar.jpg';
+  const router = useRouter();
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
     // Aquí puedes agregar la lógica para guardar el favorito en el backend
+  };
+
+  const handleRequestService = () => {
+    if (!id) {
+      console.error('No worker ID available');
+      return;
+    }
+    console.log('Requesting service for worker:', id);
+    router.push(`/requestService/${id}`);
   };
 
   return (
@@ -78,7 +94,10 @@ export function WorkerCardModal({
               </span>
             </div>
           </div>
-          <Button className="w-full bg-[#002a34] hover:bg-[#004963]">
+          <Button 
+            className="w-full bg-[#002a34] hover:bg-[#004963]"
+            onClick={handleRequestService}
+          >
             Request Service
           </Button>
         </div>

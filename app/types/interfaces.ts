@@ -1,5 +1,6 @@
 export interface WorkerProfile {
     id?: string;
+    userId: string; // Añadimos el campo userId
     name: string;
     description?: string;
     hourlyRate?: number;
