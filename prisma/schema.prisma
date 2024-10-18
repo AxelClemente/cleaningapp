@@ -27,6 +27,7 @@ model User {
   orders        Order[]
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+  properties   Property[]
 }
 
 model Worker {
@@ -116,4 +117,19 @@ model Message {
   sender    User     @relation("SentMessages", fields: [senderId], references: [id])
   receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
   order     Order    @relation(fields: [orderId], references: [id])
+}
+
+model Property {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @db.ObjectId
+  propertyName String
+  propertyType String
+  location     String
+  imageUrl     String?
+  entryMethod  String
+  lockboxPass  String?
+  comment      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

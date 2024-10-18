@@ -2,44 +2,39 @@
 
 
 import { useState } from 'react';
-import { Step1Property } from '../components/formSteps/Step1Property';
-import { Step2CreateProperty } from '../components/formSteps/Step2CreateProperty';
-import { Step2ChooseProperty } from '../components/formSteps/Step2ChooseProperty';
-import { Step3 } from '../components/formSteps/Step3';
-import { Summary } from '../components/formSteps/Summary';
-
-interface FormData {
-    serviceType: string;
-    date: string;
-    address: string;
-    termsAccepted: boolean;
-    newsletterOptIn: boolean;
-    propertyOption?: string;
-    propertyName?: string;
-    propertyAddress?: string;
-    selectedProperty?: string;
-    [key: string]: any;
-}
+import { Step1Property } from './formSteps/Step1Property';
+import { Step2CreateProperty } from './formSteps/Step2CreateProperty';
+import { Step2ChooseProperty } from './formSteps/Step2ChooseProperty';
+import { Step3Calendar } from './formSteps/Step3Calendar';
+import { Step4Price } from './formSteps/Step4price';
+import { Summary } from './formSteps/Summary';
+import { FormData } from '../types/formData'
 
 const initialFormData: FormData = {
   serviceType: '',
-  date: '',
-  address: '',
+  propertyOption: '',
+  selectedProperty: undefined,
+  selectedDate: undefined,
+  hours: 3,
+  workerHourlyRate: 0,
+  totalPrice: 0,
   termsAccepted: false,
   newsletterOptIn: false,
-  propertyOption: '',
 };
 
-export function DynamicForm({ workerId }: { workerId: string }) {
+export function DynamicForm({ workerId, workerHourlyRate }: { workerId: string; workerHourlyRate: number }) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>({
+    ...initialFormData,
+    workerHourlyRate // Inicializar con el valor recibido
+  });
 
   const updateFormData = (newData: Partial<FormData>) => {
-    setFormData(prev => ({ ...prev, ...newData }));
+    setFormData((prev) => ({ ...prev, ...newData }));
   };
 
-  const nextStep = () => setStep(prev => prev + 1);
-  const prevStep = () => setStep(prev => prev - 1);
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => setStep(step - 1);
 
   const renderStep = () => {
     switch (step) {
@@ -49,17 +44,21 @@ export function DynamicForm({ workerId }: { workerId: string }) {
         if (formData.propertyOption === 'create') {
           return <Step2CreateProperty formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
         } else if (formData.propertyOption === 'choose') {
-          return <Step2ChooseProperty 
-            selectedProperty={formData.selectedProperty}
-            updateFormData={updateFormData} 
-            nextStep={nextStep} 
-            prevStep={prevStep} 
-          />;
+          return <Step2ChooseProperty formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
         }
         return null;
       case 3:
-        return <Step3 formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
+        return <Step3Calendar formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 4:
+        return <Step4Price 
+          formData={formData} 
+          updateFormData={updateFormData} 
+          nextStep={nextStep} 
+          prevStep={prevStep}
+          workerHourlyRate={workerHourlyRate}
+        />;
+      case 5:
+        console.log("FormData being passed to Summary:", formData);
         return <Summary formData={formData} workerId={workerId} />;
       default:
         return <div>Form completed</div>;

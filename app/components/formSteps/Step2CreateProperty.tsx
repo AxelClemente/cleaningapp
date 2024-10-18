@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ActionButtonCloudinary } from "@/components/ActionButtonCloudinary";
 import { Textarea } from "../Textarea";
+import { useRouter } from 'next/navigation';
 
 interface Step2CreatePropertyProps {
   formData: {
@@ -25,16 +26,39 @@ interface Step2CreatePropertyProps {
   prevStep: () => void;
 }
 
-export function Step2CreateProperty({ formData, updateFormData, nextStep, prevStep }: Step2CreatePropertyProps) {
+export function Step2CreateProperty({ formData, updateFormData, prevStep }: Step2CreatePropertyProps) {
+  const router = useRouter();
   const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.propertyName && formData.propertyType && formData.location && formData.entryMethod) {
       if (formData.entryMethod === "lockbox" && !formData.lockboxPass) {
         return; // Don't proceed if lockbox is selected but no pass is provided
       }
-      nextStep();
+      
+      try {
+        const response = await fetch('/api/property', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          alert('Property created successfully!');
+          prevStep(); // Go back to step 1
+          // Eliminar la línea de redirección
+        } else {
+          // Handle error
+          const error = await response.json();
+          alert(`Error creating property: ${error.message}`);
+        }
+      } catch (error) {
+        console.error('Error creating property:', error);
+        alert('An error occurred while creating the property.');
+      }
     }
   };
 
@@ -54,7 +78,7 @@ export function Step2CreateProperty({ formData, updateFormData, nextStep, prevSt
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleCreate} className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">Create New Property</h2>
       <div className="space-y-4">
         <div>
@@ -77,10 +101,10 @@ export function Step2CreateProperty({ formData, updateFormData, nextStep, prevSt
               <SelectValue placeholder="Select property type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="small_house">Small House</SelectItem>
-              <SelectItem value="regular_house">Regular House</SelectItem>
-              <SelectItem value="chalet">Chalet</SelectItem>
-              <SelectItem value="finca">Finca</SelectItem>
+              <SelectItem value="Small_house">Small House</SelectItem>
+              <SelectItem value="Regular_house">Regular House</SelectItem>
+              <SelectItem value="Chalet">Chalet</SelectItem>
+              <SelectItem value="fFinca">Finca</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -125,12 +149,12 @@ export function Step2CreateProperty({ formData, updateFormData, nextStep, prevSt
               <SelectValue placeholder="Select entry method" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="lockbox">Lockbox</SelectItem>
-              <SelectItem value="in_person">In Person</SelectItem>
+              <SelectItem value="Lockbox">Lockbox</SelectItem>
+              <SelectItem value="In_Person">In Person</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        {formData.entryMethod === "lockbox" && (
+        {formData.entryMethod === "Lockbox" && (
           <div>
             <Label htmlFor="lockboxPass">Lockbox Pass</Label>
             <Input
@@ -155,7 +179,7 @@ export function Step2CreateProperty({ formData, updateFormData, nextStep, prevSt
       </div>
       <div className="flex justify-between">
         <Button type="button" onClick={prevStep}>Previous</Button>
-        <Button type="submit">Next</Button>
+        <Button type="submit">Create</Button>
       </div>
     </form>
   );

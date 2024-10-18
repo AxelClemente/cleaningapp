@@ -1,8 +1,28 @@
+'use client';
+
 import { SimpleWorkerCard } from '@/components/SimpleWorkerCard';
 import { Header } from "@/components/Header";
 import { DynamicForm } from "../../components/DynamicForm";
+import { useWorkers } from '@/contexts/WorkerContext';
+import { useEffect, useState } from 'react';
+import { WorkerProfile } from '@/types/interfaces';
 
-export default function RequestServicePage({ params }: { params: { workerId: string } }) {
+function RequestServicePage({ params }: { params: { workerId: string } }) {
+  const { getWorker } = useWorkers();
+  const [worker, setWorker] = useState<WorkerProfile | null>(null);
+
+  useEffect(() => {
+    async function fetchWorker() {
+      const fetchedWorker = await getWorker(params.workerId);
+      setWorker(fetchedWorker);
+    }
+    fetchWorker();
+  }, [params.workerId, getWorker]);
+
+  if (!worker) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header 
@@ -13,17 +33,15 @@ export default function RequestServicePage({ params }: { params: { workerId: str
         <h1 className="text-2xl font-bold mb-6">Request Service</h1>
         <div className="flex flex-col items-center gap-8">
           <div className="w-full max-w-[400px]">
-            {params.workerId ? (
-              <SimpleWorkerCard workerId={params.workerId} />
-            ) : (
-              <div>No worker ID provided</div>
-            )}
+            <SimpleWorkerCard workerId={params.workerId} />
           </div>
           <div className="w-full max-w-[400px]">
-            <DynamicForm workerId={params.workerId} />
+            <DynamicForm workerId={params.workerId} workerHourlyRate={worker.hourlyRate ?? 0} />
           </div>
         </div>
       </main>
     </div>
   );
 }
+
+export default RequestServicePage;
