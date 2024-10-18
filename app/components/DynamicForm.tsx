@@ -2,8 +2,9 @@
 
 
 import { useState } from 'react';
-import { Step1 } from '../components/formSteps/Step1';
-import { Step2 } from '../components/formSteps/Step2';
+import { Step1Property } from '../components/formSteps/Step1Property';
+import { Step2CreateProperty } from '../components/formSteps/Step2CreateProperty';
+import { Step2ChooseProperty } from '../components/formSteps/Step2ChooseProperty';
 import { Step3 } from '../components/formSteps/Step3';
 import { Summary } from '../components/formSteps/Summary';
 
@@ -13,8 +14,12 @@ interface FormData {
     address: string;
     termsAccepted: boolean;
     newsletterOptIn: boolean;
-    [key: string]: any; // Keep this for flexibility
-  }
+    propertyOption?: string;
+    propertyName?: string;
+    propertyAddress?: string;
+    selectedProperty?: string;
+    [key: string]: any;
+}
 
 const initialFormData: FormData = {
   serviceType: '',
@@ -22,6 +27,7 @@ const initialFormData: FormData = {
   address: '',
   termsAccepted: false,
   newsletterOptIn: false,
+  propertyOption: '',
 };
 
 export function DynamicForm({ workerId }: { workerId: string }) {
@@ -38,9 +44,19 @@ export function DynamicForm({ workerId }: { workerId: string }) {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <Step1 formData={formData} updateFormData={updateFormData} nextStep={nextStep} />;
+        return <Step1Property formData={formData} updateFormData={updateFormData} nextStep={nextStep} />;
       case 2:
-        return <Step2 formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
+        if (formData.propertyOption === 'create') {
+          return <Step2CreateProperty formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
+        } else if (formData.propertyOption === 'choose') {
+          return <Step2ChooseProperty 
+            selectedProperty={formData.selectedProperty}
+            updateFormData={updateFormData} 
+            nextStep={nextStep} 
+            prevStep={prevStep} 
+          />;
+        }
+        return null;
       case 3:
         return <Step3 formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 4:
