@@ -27,3 +27,13 @@ export interface Order {
     workerId?: string
     // Add other relevant fields
 }
+
+interface FormData {
+    serviceType: string;
+    date: string;
+    address: string;
+    termsAccepted: boolean;
+    newsletterOptIn: boolean;
+    [key: string]: any; // Keep this for flexibility
+}
+  
