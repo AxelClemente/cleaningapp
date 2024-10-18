@@ -5,7 +5,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "../Textarea"
 
-export function Step2({ formData, updateFormData, nextStep, prevStep }) {
+interface Step2Props {
+  formData: {
+    address?: string;
+    instructions?: string;
+  };
+  updateFormData: (data: Partial<Step2Props['formData']>) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+}
+
+export function Step2({ formData, updateFormData, nextStep, prevStep }: Step2Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     nextStep();

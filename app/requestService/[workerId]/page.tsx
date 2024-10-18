@@ -11,15 +11,15 @@ export default function RequestServicePage({ params }: { params: { workerId: str
       />
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Request Service</h1>
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/3">
+        <div className="flex flex-col items-center gap-8">
+          <div className="w-full max-w-[400px]">
             {params.workerId ? (
               <SimpleWorkerCard workerId={params.workerId} />
             ) : (
               <div>No worker ID provided</div>
             )}
           </div>
-          <div className="w-full md:w-2/3">
+          <div className="w-full max-w-[400px]">
             <DynamicForm workerId={params.workerId} />
           </div>
         </div>

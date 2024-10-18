@@ -4,7 +4,17 @@ import { Button } from "../Button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
-export function Step3({ formData, updateFormData, nextStep, prevStep }) {
+interface Step3Props {
+  formData: {
+    termsAccepted?: boolean;
+    newsletterOptIn?: boolean;
+  };
+  updateFormData: (data: Partial<Step3Props['formData']>) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+}
+
+export function Step3({ formData, updateFormData, nextStep, prevStep }: Step3Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     nextStep();
@@ -17,7 +27,7 @@ export function Step3({ formData, updateFormData, nextStep, prevStep }) {
         <Label className="flex items-center">
           <Checkbox
             checked={formData.termsAccepted || false}
-            onCheckedChange={(checked) => updateFormData({ termsAccepted: checked })}
+            onCheckedChange={(checked: boolean) => updateFormData({ termsAccepted: checked })}
             required
           />
           <span className="ml-2">I accept the terms and conditions</span>
@@ -27,7 +37,7 @@ export function Step3({ formData, updateFormData, nextStep, prevStep }) {
         <Label className="flex items-center">
           <Checkbox
             checked={formData.newsletterOptIn || false}
-            onCheckedChange={(checked) => updateFormData({ newsletterOptIn: checked })}
+            onCheckedChange={(checked) => updateFormData({ newsletterOptIn: checked === true })}
           />
           <span className="ml-2">Subscribe to newsletter</span>
         </Label>
