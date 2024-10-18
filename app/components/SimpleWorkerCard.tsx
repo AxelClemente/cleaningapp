@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { WorkerProfile } from '@/types/interfaces' // Asegúrate de que esta importación sea correcta
 import { useWorkers } from '@/contexts/WorkerContext';
+import { Star } from 'lucide-react';
 
 interface SimpleWorkerCardProps {
   workerId: string;
@@ -38,30 +39,39 @@ export function SimpleWorkerCard({ workerId }: SimpleWorkerCardProps) {
     fetchWorker();
   }, [workerId, getWorker]);
 
-  if (error) return <div>{error}</div>;
-  if (!worker) return <div>Loading...</div>;
+  if (error) return <div className="w-full text-center">{error}</div>;
+  if (!worker) return <div className="w-full text-center">Loading...</div>;
 
-  const { name, hourlyRate, profilePicture, location } = worker;
+  const { name, hourlyRate, profilePicture, location, rating } = worker;
   const avatarSrc = profilePicture || '/images/default-avatar.jpg';
 
   return (
-    <Card className="w-full max-w-[250px] overflow-hidden">
-      <CardHeader className="p-4">
-        <Avatar className="w-24 h-24 mx-auto">
-          <AvatarImage 
-            src={avatarSrc} 
-            alt={`Profile picture of ${name}`}
-          />
-          <AvatarFallback>{name ? name[0] : 'U'}</AvatarFallback>
-        </Avatar>
-      </CardHeader>
-      <CardContent className="p-4 text-center">
-        <h2 className="text-lg font-bold mb-1">{name || 'Unknown'}</h2>
-        <p className="text-sm text-gray-500 mb-2">{location || 'Unknown location'}</p>
-        <p className="text-sm font-semibold">
-          Hr/rate: €{hourlyRate?.toFixed(0) || 'N/A'}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="w-full flex justify-center">
+      <Card className="w-full max-w-[400px] overflow-hidden">
+        <CardContent className="p-4 flex items-center">
+          <Avatar className="w-16 h-16 mr-4">
+            <AvatarImage 
+              src={avatarSrc} 
+              alt={`Profile picture of ${name}`}
+            />
+            <AvatarFallback>{name ? name[0] : 'U'}</AvatarFallback>
+          </Avatar>
+          <div className="flex-grow">
+            <h2 className="text-lg font-bold">{name || 'Unknown'}</h2>
+            <p className="text-sm text-gray-500">{location || 'Unknown location'}</p>
+            <div className="flex items-center justify-between mt-1">
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                <span className="text-sm">{rating?.toFixed(1) || '0.0'} ({rating ? '1' : '0'})</span>
+              </div>
+              <div className="text-sm">
+                <span className="font-semibold">Hr/rate: </span>
+                <span className="font-bold text-xs">€{hourlyRate?.toFixed(0) || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
