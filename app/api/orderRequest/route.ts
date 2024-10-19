@@ -32,6 +32,11 @@ export async function GET(request: Request) {
             propertyName: true,
           },
         },
+        worker: {
+          select: {
+            hourlyRate: true,
+          },
+        },
       },
     });
 

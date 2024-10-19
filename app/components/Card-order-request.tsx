@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { Home, MapPin, Calendar, DollarSign } from 'lucide-react'
+import { Home, MapPin, Calendar, DollarSign, Clock } from 'lucide-react'
 
 interface OrderRequest {
   id: string;
@@ -27,6 +27,9 @@ interface OrderRequest {
   };
   property: {
     propertyName: string;
+  };
+  worker: {
+    hourlyRate: number;
   };
 }
 
@@ -56,6 +59,16 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
             key={request.id} 
             className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
           >
+            <div className="relative">
+              <img 
+                src={request.imageUrl || "/images/default-property.jpg"}
+                alt={`${request.property.propertyName} image`}
+                className="w-full h-40 object-cover"
+              />
+              <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded">
+                <span className="text-xs">▶</span>
+              </div>
+            </div>
             <CardContent className="p-4">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center space-x-2">
@@ -85,8 +98,12 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
                 <span className="text-sm text-gray-700">{new Date(request.selectedDate).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-1 mb-1">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-700">${request.worker.hourlyRate.toFixed(2)}/hr</span>
+              </div>
+              <div className="flex items-center space-x-1 mb-1">
                 <DollarSign className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">${request.totalPrice.toFixed(2)}</span>
+                <span className="text-sm text-gray-700">${request.totalPrice.toFixed(2)} total</span>
               </div>
               <div className="mt-2 text-sm text-gray-600">
                 <p>Duration: {request.serviceDuration} hours</p>
