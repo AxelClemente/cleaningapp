@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react'
 import { WorkerCardModal } from './WorkerCard-modal'
 import { useWorkers } from '@/contexts/WorkerContext'
 
-interface WorkerCardProps {
+// Define WorkerProfile interface if not imported from elsewhere
+interface WorkerProfile {
   id: string;
   name: string;
   description?: string;
@@ -16,7 +17,10 @@ interface WorkerCardProps {
   location?: string;
 }
 
-export function WorkerCard({ id, 
+interface WorkerCardProps extends WorkerProfile {}
+
+export function WorkerCard({ 
+  id, 
   name, 
   description, 
   hourlyRate, 
@@ -29,13 +33,34 @@ export function WorkerCard({ id,
   const [workerData, setWorkerData] = useState<WorkerProfile | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const avatarSrc = profilePicture || '/images/default-avatar.jpg';
 
   useEffect(() => {
-    getWorker(id).then(setWorkerData);
+    async function fetchWorkerData() {
+      if (!id) return; // Evita la llamada si no hay ID
+      setIsLoading(true);
+      try {
+        const data = await getWorker(id);
+        setWorkerData(data);
+      } catch (err) {
+        console.error('Error fetching worker data:', err);
+        setError('Failed to load worker data');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchWorkerData();
   }, [id, getWorker]);
 
-  if (!workerData) return null;
+  // Si ya tenemos los datos básicos, los mostramos inmediatamente
+  const displayData = workerData || {
+    id, name, description, hourlyRate, profilePicture, rating, reviewCount, location
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -96,14 +121,7 @@ export function WorkerCard({ id,
       <WorkerCardModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        id={id}
-        name={name}
-        description={description}
-        hourlyRate={hourlyRate}
-        profilePicture={profilePicture}
-        rating={rating}
-        reviewCount={reviewCount}
-        location={location}
+        {...displayData}
       />
     </>
   )

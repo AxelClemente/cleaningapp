@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, DollarSign, Clock } from 'lucide-react'
+import { CardOrderRequestModal } from './Card-order-request-modal'
+import { useToast } from "./ui/use-toast"
 
 interface OrderRequest {
   id: string;
@@ -40,6 +42,8 @@ interface CardOrderRequestProps {
 
 export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
   const [orderRequests, setOrderRequests] = useState<OrderRequest[]>([])
+  const [selectedRequest, setSelectedRequest] = useState<OrderRequest | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchOrderRequests = async () => {
@@ -52,6 +56,54 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
     fetchOrderRequests()
   }, [workerId])
 
+  const handleAcceptRequest = async (orderId: string) => {
+    try {
+      // Here you would typically make an API call to accept the request
+      // For now, we'll just update the local state
+      setOrderRequests(prevRequests =>
+        prevRequests.map(request =>
+          request.id === orderId ? { ...request, status: 'accepted' } : request
+        )
+      );
+      toast({
+        title: "Request Accepted",
+        description: "You have successfully accepted this cleaning request.",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to accept the request. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleRejectRequest = async (orderId: string) => {
+    try {
+      // Here you would typically make an API call to reject the request
+      // For now, we'll just update the local state
+      setOrderRequests(prevRequests =>
+        prevRequests.filter(request => request.id !== orderId)
+      );
+      toast({
+        title: "Request Rejected",
+        description: "You have rejected this cleaning request.",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject the request. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -59,6 +111,7 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
           <Card 
             key={request.id} 
             className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
+            onClick={() => setSelectedRequest(request)}
           >
             <div className="relative">
               <img 
@@ -74,7 +127,7 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center space-x-2">
                   <Avatar className="w-6 h-6">
-                    <AvatarImage src={request.user.image} alt={request.user.name} />
+                    <AvatarImage src={request.user.image ?? "/images/default-avatar.png"} alt={request.user.name} />
                     <AvatarFallback>{request.user.name[0]}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm text-gray-700">{request.user.name}</span>
@@ -104,20 +157,24 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
               </div>
               <div className="flex items-center space-x-1 mb-1">
                 <Clock className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">${request.worker.hourlyRate.toFixed(2)}/hr</span>
+                <span className="text-sm text-gray-700">{request.serviceDuration} hours</span>
               </div>
               <div className="flex items-center space-x-1 mb-1">
                 <DollarSign className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-700">${request.totalPrice.toFixed(2)} total</span>
               </div>
-              <div className="mt-2 text-sm text-gray-600">
-                <p>Duration: {request.serviceDuration} hours</p>
-                <p>Entry Method: {request.entryMethod}</p>
-              </div>
             </CardContent>
           </Card>
         ))}
       </div>
+      {selectedRequest && (
+        <CardOrderRequestModal
+          orderRequest={selectedRequest}
+          onClose={() => setSelectedRequest(null)}
+          onAcceptRequest={handleAcceptRequest}
+          onRejectRequest={handleRejectRequest}
+        />
+      )}
     </div>
   )
 }
