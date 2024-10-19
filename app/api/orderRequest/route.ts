@@ -25,6 +25,7 @@ export async function GET(request: Request) {
           select: {
             name: true,
             email: true,
+            image: true,  // Add this line
           },
         },
         property: {

@@ -24,6 +24,7 @@ interface OrderRequest {
   user: {
     name: string;
     email: string;
+    image?: string;
   };
   property: {
     propertyName: string;
@@ -73,6 +74,7 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center space-x-2">
                   <Avatar className="w-6 h-6">
+                    <AvatarImage src={request.user.image} alt={request.user.name} />
                     <AvatarFallback>{request.user.name[0]}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm text-gray-700">{request.user.name}</span>
@@ -91,7 +93,10 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
               </div>
               <div className="flex items-center space-x-1 mb-1">
                 <MapPin className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">{request.location}</span>
+                <span className="text-sm text-gray-700">
+                  {request.location.split(' ').slice(0, 3).join(' ')}
+                  {request.location.split(' ').length > 3 ? '...' : ''}
+                </span>
               </div>
               <div className="flex items-center space-x-1 mb-1">
                 <Calendar className="h-4 w-4 text-gray-500" />
