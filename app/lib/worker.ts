@@ -32,3 +32,16 @@ export async function getWorkerById(id: string): Promise<WorkerProfile | null> {
     throw error;
   }
 }
+
+export async function getWorkerByUserId(userId: string): Promise<WorkerProfile | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/workers/user/${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching worker by user ID:', error);
+    return null;
+  }
+}

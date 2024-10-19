@@ -27,17 +27,11 @@ export async function GET(request: Request) {
             email: true,
           },
         },
-        worker: {
+        property: {
           select: {
-            user: {
-              select: {
-                name: true,
-                email: true,
-              },
-            },
+            propertyName: true,
           },
         },
-        property: true,
       },
     });
 

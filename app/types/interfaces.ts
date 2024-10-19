@@ -1,5 +1,6 @@
 export interface WorkerProfile {
-    id?: string;
+    _id: string;  // Asegúrate de que este campo esté presente
+    id: string;
     userId: string; // Añadimos el campo userId
     name: string;
     description?: string;

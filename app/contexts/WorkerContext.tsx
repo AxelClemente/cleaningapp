@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { WorkerProfile } from '@/types/interfaces';
 import { getWorkers, getWorkerById } from '@/lib/worker';
 
@@ -10,6 +10,7 @@ interface WorkerContextType {
   error: Error | null;
   refreshWorkers: () => Promise<void>;
   getWorker: (id: string) => Promise<WorkerProfile | null>;
+  getWorkerByUserId: (userId: string) => Promise<WorkerProfile | null>;
 }
 
 const WorkerContext = createContext<WorkerContextType | undefined>(undefined);
@@ -34,7 +35,7 @@ export function WorkerProvider({ children }: { children: ReactNode }) {
 
   const getWorker = async (id: string): Promise<WorkerProfile | null> => {
     console.log('Getting worker with ID:', id);
-    const worker = workers.find(w => w.id === id);
+    const worker = workers.find(w => w._id === id);
     if (worker) {
       console.log('Worker found in context:', worker);
       return worker;
@@ -53,6 +54,27 @@ export function WorkerProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getWorkerByUserId = useCallback(async (userId: string): Promise<WorkerProfile | null> => {
+    console.log('Getting worker with User ID:', userId);
+    const worker = workers.find(w => w.userId === userId);
+    if (worker) {
+      console.log('Worker found in context:', worker);
+      return worker;
+    }
+
+    try {
+      const response = await fetch(`/api/worker?userId=${userId}`);
+      if (!response.ok) throw new Error('Failed to fetch worker');
+      const newWorker = await response.json();
+      console.log('Fetched worker from API:', newWorker); // Log the fetched worker
+      setWorkers(prev => [...prev, newWorker]);
+      return newWorker;
+    } catch (error) {
+      console.error('Error fetching worker:', error);
+      return null;
+    }
+  }, [workers]);
+
   useEffect(() => {
     refreshWorkers();
   }, []);
@@ -63,6 +85,7 @@ export function WorkerProvider({ children }: { children: ReactNode }) {
     error,
     refreshWorkers,
     getWorker,
+    getWorkerByUserId,
   };
 
   return <WorkerContext.Provider value={value}>{children}</WorkerContext.Provider>;
