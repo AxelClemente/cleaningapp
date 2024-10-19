@@ -4,7 +4,7 @@ import { Button } from "../Button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
-import { PrismaClient, Property } from "@prisma/client";
+import { Property } from "@prisma/client";
 
 interface SelectedProperty {
   id: string;

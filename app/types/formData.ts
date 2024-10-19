@@ -16,4 +16,5 @@ export interface FormData {
   entryMethod?: string;
   lockboxPass?: string;
   comment?: string;
+  userId: string;
 }

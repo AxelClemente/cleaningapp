@@ -10,6 +10,12 @@ import { Step4Price } from './formSteps/Step4price';
 import { Summary } from './formSteps/Summary';
 import { FormData } from '../types/formData'
 
+interface DynamicFormProps {
+  workerId: string;
+  workerHourlyRate: number;
+  userId: string;
+}
+
 const initialFormData: FormData = {
   serviceType: '',
   propertyOption: '',
@@ -20,13 +26,15 @@ const initialFormData: FormData = {
   totalPrice: 0,
   termsAccepted: false,
   newsletterOptIn: false,
+  userId: '',
 };
 
-export function DynamicForm({ workerId, workerHourlyRate }: { workerId: string; workerHourlyRate: number }) {
+export function DynamicForm({ workerId, workerHourlyRate, userId }: DynamicFormProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     ...initialFormData,
-    workerHourlyRate // Inicializar con el valor recibido
+    workerHourlyRate, // Inicializar con el valor recibido
+    userId,
   });
 
   const updateFormData = (newData: Partial<FormData>) => {

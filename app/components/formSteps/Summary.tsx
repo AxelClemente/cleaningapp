@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "../Button"
 import { FormData } from '../../types/formData'
 import Image from 'next/image'
@@ -10,11 +12,72 @@ interface SummaryProps {
 }
 
 export function Summary({ formData, workerId }: SummaryProps) {
-  console.log("FormData received in Summary:", formData);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // Aquí iría la lógica para enviar los datos al servidor
-    console.log("Form submitted:", formData);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      if (!formData.userId) {
+        console.error("userId is undefined. Cannot submit order request.");
+        // Puedes mostrar un mensaje de error al usuario aquí
+        return;
+      }
+
+      console.log("Submitting order request with data:", {
+        userId: formData.userId,
+        workerId: workerId,
+        propertyId: formData.selectedProperty?.id,
+        propertyType: formData.selectedProperty?.propertyType,
+        selectedDate: formData.selectedDate,
+        serviceDuration: formData.hours,
+        pricePerHour: formData.workerHourlyRate,
+        totalPrice: formData.totalPrice,
+        comment: formData.selectedProperty?.comment,
+        imageUrl: formData.selectedProperty?.imageUrl,
+        entryMethod: formData.selectedProperty?.entryMethod,
+        location: formData.selectedProperty?.location,
+        lockboxPass: formData.selectedProperty?.lockboxPass,
+      });
+
+      const response = await fetch('/api/orderRequest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: formData.userId,
+          workerId: workerId,
+          propertyId: formData.selectedProperty?.id,
+          propertyType: formData.selectedProperty?.propertyType,
+          selectedDate: formData.selectedDate,
+          serviceDuration: formData.hours,
+          pricePerHour: formData.workerHourlyRate,
+          totalPrice: formData.totalPrice,
+          comment: formData.selectedProperty?.comment,
+          imageUrl: formData.selectedProperty?.imageUrl,
+          entryMethod: formData.selectedProperty?.entryMethod,
+          location: formData.selectedProperty?.location,
+          lockboxPass: formData.selectedProperty?.lockboxPass,
+        }),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response OK:", response.ok);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Order request created successfully:", responseData);
+        router.push('/');
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to create order request:", errorData);
+      }
+    } catch (error) {
+      console.error("Error creating order request:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -49,9 +112,14 @@ export function Summary({ formData, workerId }: SummaryProps) {
         <p><strong>Service Duration:</strong> {formData.hours} hours</p>
         <p><strong>Price per Hour:</strong> ${formData.workerHourlyRate}</p>
         <p><strong>Total Price:</strong> ${formData.totalPrice}</p>
-        {/*<p><strong>Worker ID:</strong> {workerId}</p>*/}
       </div>
-      <Button onClick={handleSubmit} className="w-full">Request Service</Button>
+      <Button 
+        onClick={handleSubmit} 
+        className="w-full"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? 'Submitting...' : 'Request Service'}
+      </Button>
     </div>
   );
 }
