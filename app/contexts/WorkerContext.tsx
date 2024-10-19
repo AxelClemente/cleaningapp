@@ -35,7 +35,7 @@ export function WorkerProvider({ children }: { children: ReactNode }) {
 
   const getWorker = async (id: string): Promise<WorkerProfile | null> => {
     console.log('Getting worker with ID:', id);
-    const worker = workers.find(w => w._id === id);
+    const worker = workers.find(w => w.id === id);
     if (worker) {
       console.log('Worker found in context:', worker);
       return worker;
