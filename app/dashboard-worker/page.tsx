@@ -9,12 +9,12 @@ import { CardOrder } from '../components/Card-order'
 import { Avatar, AvatarImage, AvatarFallback } from '../components/avatar'
 import { useWorkers } from '@/contexts/WorkerContext'
 import { CardOrderRequest } from '@/components/Card-order-request'
-
+//CAMBIO
 export default function DashboardWorker() {
   const { data: session } = useSession()
   const { getWorkerByUserId } = useWorkers()
   const [workerData, setWorkerData] = useState<WorkerProfile | null>(null)
-  const [activeTab, setActiveTab] = useState('open')
+  const [activeTab, setActiveTab] = useState('pending')
   const [workerId, setWorkerId] = useState<string | null>(null)
 
   const fetchWorkerData = useCallback(async () => {
@@ -134,6 +134,12 @@ export default function DashboardWorker() {
               </div>
               <div className="flex border-b mb-4">
                 <button
+                  className={`py-2 px-4 ${activeTab === 'pending' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('pending')}
+                >
+                  Pending
+                </button>
+                <button
                   className={`py-2 px-4 ${activeTab === 'open' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
                   onClick={() => setActiveTab('open')}
                 >
@@ -153,16 +159,10 @@ export default function DashboardWorker() {
                 </button>
               </div>
               <div className="space-y-4">
-                {renderJobs()}
-              </div>
-              {/* Order Requests section */}
-              <div className="mt-8">
-                <h3 className="text-xl font-semibold mb-4">Order Requests</h3>
-                {workerId && (
-                  <>
-                    {console.log("Rendering CardOrderRequest with workerId:", workerId)}
-                    <CardOrderRequest workerId={workerId} />
-                  </>
+                {activeTab === 'pending' ? (
+                  <CardOrderRequest workerId={workerId} activeTab={activeTab} />
+                ) : (
+                  renderJobs()
                 )}
               </div>
             </div>

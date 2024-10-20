@@ -1,5 +1,5 @@
 'use client'
-
+// CAMBIO
 import { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
@@ -38,9 +38,10 @@ interface OrderRequest {
 
 interface CardOrderRequestProps {
   workerId: string;
+  activeTab: string;
 }
 
-export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
+export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps) {
   const [orderRequests, setOrderRequests] = useState<OrderRequest[]>([])
   const [selectedRequest, setSelectedRequest] = useState<OrderRequest | null>(null);
   const { toast } = useToast();
@@ -104,10 +105,25 @@ export function CardOrderRequest({ workerId }: CardOrderRequestProps) {
     }
   };
 
+  const filteredOrderRequests = orderRequests.filter(request => {
+    switch (activeTab) {
+      case 'pending':
+        return request.status === 'pending';
+      case 'open':
+        return request.status === 'accepted';
+      case 'inProgress':
+        return request.status === 'inProgress';
+      case 'completed':
+        return request.status === 'completed';
+      default:
+        return true;
+    }
+  });
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {orderRequests.map((request) => (
+        {filteredOrderRequests.map((request) => (
           <Card 
             key={request.id} 
             className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
