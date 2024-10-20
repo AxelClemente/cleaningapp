@@ -59,18 +59,29 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
 
   const handleAcceptRequest = async (orderId: string) => {
     try {
-      // Here you would typically make an API call to accept the request
-      // For now, we'll just update the local state
-      setOrderRequests(prevRequests =>
-        prevRequests.map(request =>
-          request.id === orderId ? { ...request, status: 'accepted' } : request
-        )
-      );
-      toast({
-        title: "Request Accepted",
-        description: "You have successfully accepted this cleaning request.",
-        duration: 3000,
+      const response = await fetch(`/api/orderRequest?id=${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'Progress' }),
       });
+
+      if (response.ok) {
+        const updatedRequest = await response.json();
+        setOrderRequests(prevRequests =>
+          prevRequests.map(request =>
+            request.id === orderId ? updatedRequest : request
+          )
+        );
+        toast({
+          title: "Request Accepted",
+          description: "The cleaning request has been accepted and is now in progress.",
+          duration: 3000,
+        });
+      } else {
+        throw new Error('Failed to update request status');
+      }
     } catch (error) {
       console.error('Error accepting request:', error);
       toast({
@@ -84,16 +95,26 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
 
   const handleRejectRequest = async (orderId: string) => {
     try {
-      // Here you would typically make an API call to reject the request
-      // For now, we'll just update the local state
-      setOrderRequests(prevRequests =>
-        prevRequests.filter(request => request.id !== orderId)
-      );
-      toast({
-        title: "Request Rejected",
-        description: "You have rejected this cleaning request.",
-        duration: 3000,
+      const response = await fetch(`/api/orderRequest?id=${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'Rejected' }),
       });
+
+      if (response.ok) {
+        setOrderRequests(prevRequests =>
+          prevRequests.filter(request => request.id !== orderId)
+        );
+        toast({
+          title: "Request Rejected",
+          description: "You have rejected this cleaning request.",
+          duration: 3000,
+        });
+      } else {
+        throw new Error('Failed to update request status');
+      }
     } catch (error) {
       console.error('Error rejecting request:', error);
       toast({
@@ -112,9 +133,9 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
       case 'open':
         return request.status === 'accepted';
       case 'inProgress':
-        return request.status === 'inProgress';
+        return request.status === 'Progress';
       case 'completed':
-        return request.status === 'completed';
+        return request.status === 'Completed';
       default:
         return true;
     }

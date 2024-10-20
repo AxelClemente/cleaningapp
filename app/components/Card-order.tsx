@@ -69,14 +69,13 @@ export function CardOrder({
 
   const filteredReservations = activeTab
     ? reservations.filter(reservation => {
-        const currentUserId = getCurrentUserId();
-
         switch (activeTab) {
+          case 'pending':
+            return reservation.status === 'pending';
           case 'open':
             return reservation.status === 'Open';
           case 'inProgress':
-            return reservation.status === 'Progress' && 
-              (reservation.userId === currentUserId || reservation.workerId === currentUserId);
+            return reservation.status === 'Progress';
           case 'completed':
             return reservation.status === 'Completed';
           default:
@@ -101,7 +100,7 @@ export function CardOrder({
     <div className="space-y-6">
       {clientName && (
         <div>
-          <h2 className="text-2xl font-bold mb-1">Welcome back, {clientName}!</h2>
+          <h2 className="text-2xl font-bold mb-1">{clientName.split(' ')[0]}'s Direct orders!</h2>
         </div>
       )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

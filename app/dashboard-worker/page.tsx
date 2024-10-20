@@ -158,12 +158,15 @@ export default function DashboardWorker() {
                   Completed
                 </button>
               </div>
-              <div className="space-y-4">
-                {activeTab === 'pending' ? (
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Order Requests</h3>
                   <CardOrderRequest workerId={workerId} activeTab={activeTab} />
-                ) : (
-                  renderJobs()
-                )}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Confirmed Orders</h3>
+                  {renderJobs()}
+                </div>
               </div>
             </div>
           </div>

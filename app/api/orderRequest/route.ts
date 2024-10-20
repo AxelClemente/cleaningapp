@@ -119,3 +119,36 @@ export async function POST(req: Request) {
     await prisma.$disconnect();
   }
 }
+
+export async function PATCH(request: Request) {
+  console.log("PATCH request received in /api/orderRequest");
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json({ error: 'Order request ID is required' }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const { status } = body;
+
+    if (!status) {
+      return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+    }
+
+    const updatedOrderRequest = await prisma.orderRequest.update({
+      where: { id },
+      data: { status },
+    });
+
+    console.log("OrderRequest updated:", updatedOrderRequest);
+
+    return NextResponse.json(updatedOrderRequest);
+  } catch (error) {
+    console.error('Error updating order request:', error);
+    return NextResponse.json({ error: 'Failed to update order request', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
