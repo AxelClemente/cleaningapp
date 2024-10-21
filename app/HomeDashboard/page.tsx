@@ -9,6 +9,7 @@ import { HouseAndServiceType } from '../components/House&ServiceType'
 import { CardOrder } from '../components/Card-order'
 import { ServiceSummary } from '../components/ServiceSummary'
 import { ActionButtonCloudinary } from '@/components/ActionButtonCloudinary'
+import { CardOrderRequestClient } from '../components/Card-order-request-client'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
@@ -92,6 +93,11 @@ export default function Component() {
   }, [uploadedImageUrl]);
 
   console.log('Component rendering, uploadedImageUrl:', uploadedImageUrl);
+
+  useEffect(() => {
+    console.log('Session data:', session);
+    console.log('User ID:', session?.user?.id);
+  }, [session]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -195,6 +201,13 @@ export default function Component() {
               isWorkerPage={false} // Añade esta prop
               filterByUserId={true}
             />
+          </div>
+        )}
+        
+        {/* Añadir el nuevo componente CardOrderRequestClient */}
+        {session?.user?.id && (
+          <div className="mt-8 px-4 pb-4">
+            <CardOrderRequestClient userId={session.user.id} />
           </div>
         )}
         
