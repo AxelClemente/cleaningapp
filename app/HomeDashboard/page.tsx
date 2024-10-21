@@ -39,6 +39,7 @@ export default function Component() {
   const [comment, setComment] = useState('')
   const [isWaitlisted, setIsWaitlisted] = useState(false)
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [activeRequestTab, setActiveRequestTab] = useState('pending')
 
   useEffect(() => {
     const fetchUserReservations = async () => {
@@ -198,16 +199,36 @@ export default function Component() {
               clientId={session.user.id || ""}
               activeTab={activeTab}
               isMainPage={true}
-              isWorkerPage={false} // Añade esta prop
+              isWorkerPage={false}
               filterByUserId={true}
             />
           </div>
         )}
         
-        {/* Añadir el nuevo componente CardOrderRequestClient */}
+        {/* Nuevas pestañas y componente CardOrderRequestClient */}
         {session?.user?.id && (
           <div className="mt-8 px-4 pb-4">
-            <CardOrderRequestClient userId={session.user.id} />
+            <div className="flex border-b mb-4">
+              <button
+                className={`py-2 px-4 ${activeRequestTab === 'pending' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                onClick={() => setActiveRequestTab('pending')}
+              >
+                Pending
+              </button>
+              <button
+                className={`py-2 px-4 ${activeRequestTab === 'progress' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                onClick={() => setActiveRequestTab('progress')}
+              >
+                Progress
+              </button>
+              <button
+                className={`py-2 px-4 ${activeRequestTab === 'completed' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+                onClick={() => setActiveRequestTab('completed')}
+              >
+                Completed
+              </button>
+            </div>
+            <CardOrderRequestClient userId={session.user.id} activeTab={activeRequestTab} />
           </div>
         )}
         

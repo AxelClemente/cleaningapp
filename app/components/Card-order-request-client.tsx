@@ -30,9 +30,10 @@ interface OrderRequest {
 
 interface CardOrderRequestClientProps {
   userId: string;
+  activeTab: string;
 }
 
-export function CardOrderRequestClient({ userId }: CardOrderRequestClientProps) {
+export function CardOrderRequestClient({ userId, activeTab }: CardOrderRequestClientProps) {
   const [orderRequests, setOrderRequests] = useState<OrderRequest[]>([]);
 
   useEffect(() => {
@@ -65,11 +66,24 @@ export function CardOrderRequestClient({ userId }: CardOrderRequestClientProps) 
     return words.slice(0, 4).join(' ') + (words.length > 4 ? '...' : '');
   };
 
+  const filteredOrderRequests = orderRequests.filter(request => {
+    switch (activeTab) {
+      case 'pending':
+        return request.status === 'pending';
+      case 'progress':
+        return request.status === 'Progress';
+      case 'completed':
+        return request.status === 'Completed';
+      default:
+        return true;
+    }
+  });
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-4">Your Order Requests</h2>
+      <h2 className="text-2xl font-bold mb-4">Order Requested</h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {orderRequests.map((request, index) => (
+        {filteredOrderRequests.map((request, index) => (
           <Card key={index} className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer">
             <div className="relative">
               <Image 
@@ -97,7 +111,7 @@ export function CardOrderRequestClient({ userId }: CardOrderRequestClientProps) 
                     ? 'bg-green-100 text-green-800 border border-green-300'
                     : request.status === 'Progress'
                     ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                    : 'bg-red-100 text-red-800 border border-red-300'
+                    : 'bg-green-100 text-green-800 border border-green-300'
                 }`}>
                   {request.status}
                 </div>
