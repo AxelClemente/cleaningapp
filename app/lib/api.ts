@@ -41,9 +41,18 @@ export async function sendMessage(receiverId: string, orderId: string, content: 
   }
 }
 
-export async function getMessages(reservationId: string) {
-  const response = await fetch(`/api/messages?reservationId=${reservationId}`)
-  return response.json()
+export const getMessages = async (orderId: string) => {
+  try {
+    const response = await fetch(`/api/messages?orderId=${orderId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    return [];
+  }
 }
 
 export async function markMessageAsRead(messageId: string) {

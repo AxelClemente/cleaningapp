@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useSession } from 'next-auth/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
@@ -8,6 +9,7 @@ import { Home, MapPin, Calendar, Key, MessageSquare, Clock, DollarSign } from 'l
 import { Button } from "@/components/Button"
 import { useToast } from "./ui/use-toast"
 import { useAuth } from '@/hooks/useAuth'
+import ChatCard from '@/components/chat/chat-card'
 
 interface OrderRequest {
   id: string;
@@ -54,25 +56,20 @@ export function CardOrderRequestModal({
   const [orderRequest, setOrderRequest] = useState(initialOrderRequest);
   const { toast } = useToast();
   const { getCurrentWorkerId } = useAuth();
+  const { data: session, status } = useSession();
+
+  const isWorker = session?.user?.id === orderRequest.workerId;
+
+  console.log('CardOrderRequestModal rendered', { orderRequest, isWorker });
+  console.log('Accepting order, current status:', orderRequest.status);
 
   const handleAccept = async () => {
     try {
       await onAcceptRequest(orderRequest.id);
+      console.log('Order accepted, updating state to Progress');
       setOrderRequest({ ...orderRequest, status: 'Progress' });
-      toast({
-        title: "Request Accepted",
-        description: "You have successfully accepted this cleaning request.",
-        duration: 3000,
-      });
-      onClose(); // Cerrar el modal después de aceptar
     } catch (error) {
       console.error('Error accepting request:', error);
-      toast({
-        title: "Error",
-        description: "Failed to accept the request. Please try again.",
-        variant: "destructive",
-        duration: 3000,
-      });
     }
   };
 
@@ -170,10 +167,17 @@ export function CardOrderRequestModal({
                   </Button>
                 </>
               )}
-              {orderRequest.status === 'Progress' && (
-                <p className="text-center text-green-600 font-semibold">
-                  This request has been accepted and is in progress.
-                </p>
+              {orderRequest.status === 'Progress' && session?.user?.id && (
+                <>
+                  <ChatCard 
+                    orderId={orderRequest.id}
+                    workerId={orderRequest.workerId}
+                    clientId={orderRequest.userId}
+                  />
+                  <p className="text-center text-green-600 font-semibold">
+                    This request has been accepted and is in progress.
+                  </p>
+                </>
               )}
             </div>
           </CardContent>

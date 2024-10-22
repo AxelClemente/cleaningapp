@@ -1,12 +1,14 @@
 'use client'
 
 import React from 'react'
+import { useSession } from 'next-auth/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, Clock, DollarSign, Key } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from "@/components/Button"
+import ChatCard from '@/components/chat/chat-card'
 
 interface OrderRequestClientModal {
   id: string;
@@ -38,6 +40,7 @@ interface CardOrderRequestClientModalProps {
 
 export function CardOrderRequestClientModal({ orderRequest, onClose, onCancelOrder }: CardOrderRequestClientModalProps) {
   console.log('CardOrderRequestClientModal rendered', { orderRequest });
+  const { data: session } = useSession();
 
   const handleCancelOrder = async () => {
     await onCancelOrder(orderRequest.id);
@@ -122,6 +125,13 @@ export function CardOrderRequestClientModal({ orderRequest, onClose, onCancelOrd
               >
                 Cancel Order
               </Button>
+            )}
+            {orderRequest.status === 'Progress' && session?.user?.id && (
+              <ChatCard 
+                orderId={orderRequest.id}
+                workerId={orderRequest.workerId}
+                clientId={session.user.id}
+              />
             )}
           </CardContent>
         </Card>

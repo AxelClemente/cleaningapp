@@ -11,6 +11,8 @@ export async function POST(req: Request) {
 
   const { receiverId, orderId, content } = await req.json()
   
+  console.log('POST request for new message', { senderId: session.user.id, receiverId, orderId, content });
+
   try {
     const message = await prisma.message.create({
       data: {
@@ -20,8 +22,10 @@ export async function POST(req: Request) {
         content,
       },
     })
+    console.log('Created message:', message);
     return NextResponse.json(message)
   } catch (error) {
+    console.error('Error creating message:', error);
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
   }
 }
@@ -43,13 +47,20 @@ export async function GET(req: Request) {
     const messages = await prisma.message.findMany({
       where: {
         orderId: orderId,
-        OR: [
-          { senderId: session.user.id },
-          { receiverId: session.user.id },
-        ],
       },
-      orderBy: { timestamp: 'asc' },
+      orderBy: {
+        timestamp: 'asc',
+      },
+      include: {
+        sender: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
     })
+
     return NextResponse.json(messages)
   } catch (error) {
     console.error('Error fetching messages:', error)
