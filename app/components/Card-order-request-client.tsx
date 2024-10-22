@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Home, MapPin, Calendar, Clock, DollarSign, Key } from 'lucide-react';
+import { Button } from "../components/Button";
 
 interface OrderRequest {
   id: string;
@@ -90,10 +91,7 @@ export function CardOrderRequestClient({ userId, activeTab, onOrderRequestClick 
           <Card 
             key={index} 
             className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
-            onClick={() => {
-              console.log('Order request clicked', request);
-              onOrderRequestClick(request);
-            }}
+            onClick={() => onOrderRequestClick(request)}
           >
             <div className="relative">
               <Image 

@@ -136,6 +136,25 @@ export default function Component() {
 
   console.log('HomeDashboard rendering, selectedOrderRequest:', selectedOrderRequest);
 
+  const handleCancelOrder = async (orderId: string) => {
+    console.log('Cancelling order', orderId);
+    try {
+      const response = await fetch(`/api/orderRequest?id=${orderId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        console.log('Order cancelled successfully');
+        // Actualizar el estado local para reflejar la cancelación
+        setSelectedOrderRequest(null);
+        // También deberías actualizar el estado de orderRequests si lo tienes en este componente
+      } else {
+        console.error('Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
@@ -296,6 +315,7 @@ export default function Component() {
         <CardOrderRequestClientModal
           orderRequest={selectedOrderRequest}
           onClose={handleCloseModal}
+          onCancelOrder={handleCancelOrder}
         />
       )}
     </div>

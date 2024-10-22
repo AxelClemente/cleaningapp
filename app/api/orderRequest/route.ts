@@ -152,3 +152,42 @@ export async function PATCH(request: Request) {
     await prisma.$disconnect();
   }
 }
+
+export async function DELETE(request: Request) {
+  console.log("DELETE request received in /api/orderRequest");
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json({ error: 'Order request ID is required' }, { status: 400 });
+    }
+
+    // Verificar si la orden existe y está en estado 'pending'
+    const orderRequest = await prisma.orderRequest.findUnique({
+      where: { id },
+    });
+
+    if (!orderRequest) {
+      return NextResponse.json({ error: 'Order request not found' }, { status: 404 });
+    }
+
+    if (orderRequest.status !== 'pending') {
+      return NextResponse.json({ error: 'Only pending orders can be cancelled' }, { status: 400 });
+    }
+
+    // Eliminar la orden
+    const deletedOrderRequest = await prisma.orderRequest.delete({
+      where: { id },
+    });
+
+    console.log("OrderRequest deleted:", deletedOrderRequest);
+
+    return NextResponse.json({ message: 'Order request cancelled successfully' });
+  } catch (error) {
+    console.error('Error deleting order request:', error);
+    return NextResponse.json({ error: 'Failed to delete order request', details: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}

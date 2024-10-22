@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, Clock, DollarSign, Key } from 'lucide-react'
 import Image from 'next/image'
+import { Button } from "@/components/Button"
 
 interface OrderRequestClientModal {
   id: string;
@@ -32,10 +33,16 @@ interface OrderRequestClientModal {
 interface CardOrderRequestClientModalProps {
   orderRequest: OrderRequestClientModal;
   onClose: () => void;
+  onCancelOrder: (orderId: string) => Promise<void>;
 }
 
-export function CardOrderRequestClientModal({ orderRequest, onClose }: CardOrderRequestClientModalProps) {
+export function CardOrderRequestClientModal({ orderRequest, onClose, onCancelOrder }: CardOrderRequestClientModalProps) {
   console.log('CardOrderRequestClientModal rendered', { orderRequest });
+
+  const handleCancelOrder = async () => {
+    await onCancelOrder(orderRequest.id);
+    onClose();
+  };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -105,6 +112,16 @@ export function CardOrderRequestClientModal({ orderRequest, onClose }: CardOrder
                 <p className="text-sm font-medium">Comment:</p>
                 <p className="text-sm text-gray-700">{orderRequest.comment}</p>
               </div>
+            )}
+            
+            {orderRequest.status === 'pending' && (
+              <Button 
+                variant="destructive" 
+                className="mt-4 w-full"
+                onClick={handleCancelOrder}
+              >
+                Cancel Order
+              </Button>
             )}
           </CardContent>
         </Card>
