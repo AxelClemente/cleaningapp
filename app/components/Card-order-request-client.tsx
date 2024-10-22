@@ -33,42 +33,11 @@ interface CardOrderRequestClientProps {
   userId: string;
   activeTab: string;
   onOrderRequestClick: (request: OrderRequest) => void;
+  orderRequests: OrderRequest[];
 }
 
-export function CardOrderRequestClient({ userId, activeTab, onOrderRequestClick }: CardOrderRequestClientProps) {
+export function CardOrderRequestClient({ userId, activeTab, onOrderRequestClick, orderRequests }: CardOrderRequestClientProps) {
   console.log('CardOrderRequestClient rendered', { userId, activeTab });
-
-  const [orderRequests, setOrderRequests] = useState<OrderRequest[]>([]);
-
-  useEffect(() => {
-    const fetchOrderRequests = async () => {
-      console.log('Fetching order requests for userId:', userId);
-      try {
-        const response = await fetch(`/api/orderRequest?userId=${userId}`);
-        console.log('Response status:', response.status);
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Fetched order requests:', data);
-          setOrderRequests(data);
-        } else {
-          console.error('Failed to fetch order requests');
-        }
-      } catch (error) {
-        console.error('Error fetching order requests:', error);
-      }
-    };
-
-    if (userId) {
-      fetchOrderRequests();
-    } else {
-      console.log('No userId provided');
-    }
-  }, [userId]);
-
-  const truncateLocation = (location: string) => {
-    const words = location.split(' ');
-    return words.slice(0, 4).join(' ') + (words.length > 4 ? '...' : '');
-  };
 
   const filteredOrderRequests = orderRequests.filter(request => {
     switch (activeTab) {
@@ -82,6 +51,11 @@ export function CardOrderRequestClient({ userId, activeTab, onOrderRequestClick 
         return true;
     }
   });
+
+  const truncateLocation = (location: string) => {
+    const words = location.split(' ');
+    return words.slice(0, 4).join(' ') + (words.length > 4 ? '...' : '');
+  };
 
   return (
     <div className="space-y-6">

@@ -64,6 +64,7 @@ export default function Component() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [activeRequestTab, setActiveRequestTab] = useState('pending')
   const [selectedOrderRequest, setSelectedOrderRequest] = useState<OrderRequestClientModal | null>(null)
+  const [orderRequests, setOrderRequests] = useState<OrderRequestClientModal[]>([]);
 
   useEffect(() => {
     const fetchUserReservations = async () => {
@@ -136,6 +137,27 @@ export default function Component() {
 
   console.log('HomeDashboard rendering, selectedOrderRequest:', selectedOrderRequest);
 
+  const fetchOrderRequests = async () => {
+    if (session?.user?.id) {
+      try {
+        const response = await fetch(`/api/orderRequest?userId=${session.user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setOrderRequests(data);
+        } else {
+          console.error('Failed to fetch order requests');
+        }
+      } catch (error) {
+        console.error('Error fetching order requests:', error);
+      }
+    }
+  };
+
+  // Llama a fetchOrderRequests cuando el componente se monta o cuando cambia el usuario
+  useEffect(() => {
+    fetchOrderRequests();
+  }, [session?.user?.id]);
+
   const handleCancelOrder = async (orderId: string) => {
     console.log('Cancelling order', orderId);
     try {
@@ -146,7 +168,8 @@ export default function Component() {
         console.log('Order cancelled successfully');
         // Actualizar el estado local para reflejar la cancelación
         setSelectedOrderRequest(null);
-        // También deberías actualizar el estado de orderRequests si lo tienes en este componente
+        // Actualizar la lista de solicitudes de orden
+        setOrderRequests(prevRequests => prevRequests.filter(request => request.id !== orderId));
       } else {
         console.error('Failed to cancel order');
       }
@@ -287,6 +310,7 @@ export default function Component() {
               userId={session.user.id} 
               activeTab={activeRequestTab} 
               onOrderRequestClick={handleOrderRequestClick}
+              orderRequests={orderRequests}
             />
           </div>
         )}
