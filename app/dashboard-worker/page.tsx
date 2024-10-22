@@ -159,10 +159,12 @@ export default function DashboardWorker() {
                 </button>
               </div>
               <div className="space-y-8">
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Requested Services by Clients</h3>
-                  <CardOrderRequest workerId={workerId} activeTab={activeTab} />
-                </div>
+                {activeTab !== 'open' && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Requested Services by Clients</h3>
+                    <CardOrderRequest workerId={workerId} activeTab={activeTab} />
+                  </div>
+                )}
                 <div>
                   {renderJobs()}
                 </div>

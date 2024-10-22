@@ -98,7 +98,9 @@ export function CardOrder({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-4">Open Orders</h2>
+      {activeTab === 'open' && (
+        <h2 className="text-2xl font-bold mb-4">Open Orders</h2>
+      )}
       {clientName && activeTab !== 'pending' && activeTab !== 'open' && activeTab !== 'completed' && (
         <div>
           <h2 className="text-2xl font-bold mb-1">{clientName.split(' ')[0]}'s choosed orders!</h2>
