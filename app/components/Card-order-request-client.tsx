@@ -31,9 +31,12 @@ interface OrderRequest {
 interface CardOrderRequestClientProps {
   userId: string;
   activeTab: string;
+  onOrderRequestClick: (request: OrderRequest) => void;
 }
 
-export function CardOrderRequestClient({ userId, activeTab }: CardOrderRequestClientProps) {
+export function CardOrderRequestClient({ userId, activeTab, onOrderRequestClick }: CardOrderRequestClientProps) {
+  console.log('CardOrderRequestClient rendered', { userId, activeTab });
+
   const [orderRequests, setOrderRequests] = useState<OrderRequest[]>([]);
 
   useEffect(() => {
@@ -84,7 +87,14 @@ export function CardOrderRequestClient({ userId, activeTab }: CardOrderRequestCl
       <h2 className="text-2xl font-bold mb-4">Order Requested</h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredOrderRequests.map((request, index) => (
-          <Card key={index} className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer">
+          <Card 
+            key={index} 
+            className="overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
+            onClick={() => {
+              console.log('Order request clicked', request);
+              onOrderRequestClick(request);
+            }}
+          >
             <div className="relative">
               <Image 
                 src={request.imageUrl || "/images/cuarto.jpg"}

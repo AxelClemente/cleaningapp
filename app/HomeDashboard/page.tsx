@@ -10,6 +10,7 @@ import { CardOrder } from '../components/Card-order'
 import { ServiceSummary } from '../components/ServiceSummary'
 import { ActionButtonCloudinary } from '@/components/ActionButtonCloudinary'
 import { CardOrderRequestClient } from '../components/Card-order-request-client'
+import { CardOrderRequestClientModal } from '@/components/Card-order-request-client-modal'
 
 const houseTypes = ['small', 'regular', 'chalet', 'finca'] as const
 type HouseType = typeof houseTypes[number]
@@ -17,6 +18,28 @@ type HouseType = typeof houseTypes[number]
 interface Reservation {
   userId: string;
   // Add other properties as needed
+}
+
+interface OrderRequestClientModal {
+  id: string;
+  propertyType: string;
+  selectedDate: string;
+  pricePerHour: number;
+  totalPrice: number;
+  comment?: string;
+  imageUrl?: string;
+  entryMethod: string;
+  location: string;
+  lockboxPass?: string;
+  status: string;
+  workerId: string;
+  serviceDuration: string;
+  serviceType: string;
+  user: {
+    name: string;
+    email: string;
+    image?: string;
+  };
 }
 
 export default function Component() {
@@ -40,6 +63,7 @@ export default function Component() {
   const [isWaitlisted, setIsWaitlisted] = useState(false)
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [activeRequestTab, setActiveRequestTab] = useState('pending')
+  const [selectedOrderRequest, setSelectedOrderRequest] = useState<OrderRequestClientModal | null>(null)
 
   useEffect(() => {
     const fetchUserReservations = async () => {
@@ -99,6 +123,18 @@ export default function Component() {
     console.log('Session data:', session);
     console.log('User ID:', session?.user?.id);
   }, [session]);
+
+  const handleOrderRequestClick = (orderRequest: OrderRequestClientModal) => {
+    console.log('handleOrderRequestClick called', orderRequest);
+    setSelectedOrderRequest(orderRequest);
+  };
+
+  const handleCloseModal = () => {
+    console.log('handleCloseModal called');
+    setSelectedOrderRequest(null);
+  };
+
+  console.log('HomeDashboard rendering, selectedOrderRequest:', selectedOrderRequest);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -228,7 +264,11 @@ export default function Component() {
                 Completed
               </button>
             </div>
-            <CardOrderRequestClient userId={session.user.id} activeTab={activeRequestTab} />
+            <CardOrderRequestClient 
+              userId={session.user.id} 
+              activeTab={activeRequestTab} 
+              onOrderRequestClick={handleOrderRequestClick}
+            />
           </div>
         )}
         
@@ -250,6 +290,14 @@ export default function Component() {
           image={uploadedImageUrl} // Asegúrate de que esta línea esté presente
         />
       </div>
+      
+      {/* Añadir el modal */}
+      {selectedOrderRequest && (
+        <CardOrderRequestClientModal
+          orderRequest={selectedOrderRequest}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   )
 }
