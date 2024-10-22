@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 import { Home, MapPin, Calendar, DollarSign, Clock } from 'lucide-react'
 import { CardOrderRequestModal } from './Card-order-request-modal'
 import { useToast } from "./ui/use-toast"
+import { useRouter } from 'next/navigation'; // Añade esta importación
 
 interface OrderRequest {
   id: string;
@@ -28,7 +29,7 @@ interface OrderRequest {
     email: string;
     image?: string;
   };
-  property: {
+  property?: {
     propertyName: string;
   };
   worker: {
@@ -45,6 +46,7 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
   const [orderRequests, setOrderRequests] = useState<OrderRequest[]>([])
   const [selectedRequest, setSelectedRequest] = useState<OrderRequest | null>(null);
   const { toast } = useToast();
+  const router = useRouter(); // Añade esta línea
 
   useEffect(() => {
     const fetchOrderRequests = async () => {
@@ -55,7 +57,7 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
       }
     }
     fetchOrderRequests()
-  }, [workerId])
+  }, [workerId, activeTab]) // Añadimos activeTab como dependencia
 
   const handleAcceptRequest = async (orderId: string) => {
     try {
@@ -71,14 +73,16 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
         const updatedRequest = await response.json();
         setOrderRequests(prevRequests =>
           prevRequests.map(request =>
-            request.id === orderId ? updatedRequest : request
+            request.id === orderId ? { ...request, ...updatedRequest } : request
           )
         );
+        setSelectedRequest(null);
         toast({
           title: "Request Accepted",
           description: "The cleaning request has been accepted and is now in progress.",
           duration: 3000,
         });
+        router.refresh();
       } else {
         throw new Error('Failed to update request status');
       }
@@ -153,7 +157,7 @@ export function CardOrderRequest({ workerId, activeTab }: CardOrderRequestProps)
             <div className="relative">
               <img 
                 src={request.imageUrl || "/images/default-property.jpg"}
-                alt={`${request.property.propertyName} image`}
+                alt={`${request.property?.propertyName || request.propertyType || 'Property'} image`}
                 className="w-full h-40 object-cover"
               />
               <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded">

@@ -57,15 +57,14 @@ export function CardOrderRequestModal({
 
   const handleAccept = async () => {
     try {
-      // Here you would typically make an API call to accept the request
-      // For now, we'll just call the onAcceptRequest function
-      onAcceptRequest(orderRequest.id);
+      await onAcceptRequest(orderRequest.id);
+      setOrderRequest({ ...orderRequest, status: 'Progress' });
       toast({
         title: "Request Accepted",
         description: "You have successfully accepted this cleaning request.",
         duration: 3000,
       });
-      onClose();
+      onClose(); // Cerrar el modal después de aceptar
     } catch (error) {
       console.error('Error accepting request:', error);
       toast({
@@ -79,9 +78,7 @@ export function CardOrderRequestModal({
 
   const handleReject = async () => {
     try {
-      // Here you would typically make an API call to reject the request
-      // For now, we'll just call the onRejectRequest function
-      onRejectRequest(orderRequest.id);
+      await onRejectRequest(orderRequest.id);
       toast({
         title: "Request Rejected",
         description: "You have rejected this cleaning request.",
@@ -157,18 +154,27 @@ export function CardOrderRequestModal({
               )}
             </div>
             <div className="mt-6 space-y-4">
-              <Button 
-                className="w-full bg-green-500 hover:bg-green-600" 
-                onClick={handleAccept}
-              >
-                Accept Request
-              </Button>
-              <Button 
-                className="w-full bg-red-500 hover:bg-red-600" 
-                onClick={handleReject}
-              >
-                Reject Request
-              </Button>
+              {orderRequest.status === 'pending' && (
+                <>
+                  <Button 
+                    className="w-full bg-green-500 hover:bg-green-600" 
+                    onClick={handleAccept}
+                  >
+                    Accept Request
+                  </Button>
+                  <Button 
+                    className="w-full bg-red-500 hover:bg-red-600" 
+                    onClick={handleReject}
+                  >
+                    Reject Request
+                  </Button>
+                </>
+              )}
+              {orderRequest.status === 'Progress' && (
+                <p className="text-center text-green-600 font-semibold">
+                  This request has been accepted and is in progress.
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
