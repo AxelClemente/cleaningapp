@@ -5,7 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Star, Heart } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from "../components/Button"
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 interface WorkerCardModalProps {

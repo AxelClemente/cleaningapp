@@ -18,6 +18,11 @@ function RequestServicePage({ params }: { params: { workerId: string } }) {
 
   useEffect(() => {
     async function fetchWorker() {
+      if (params.workerId === 'open') {
+        setIsLoading(false);
+        return;
+      }
+      
       if (!params.workerId) return;
       
       setIsLoading(true);
@@ -42,10 +47,6 @@ function RequestServicePage({ params }: { params: { workerId: string } }) {
     return <div>Error: {error}</div>;
   }
 
-  if (!worker) {
-    return <div>Worker not found.</div>;
-  }
-
   if (!userId) {
     return <div>Please log in to request a service.</div>;
   }
@@ -57,15 +58,16 @@ function RequestServicePage({ params }: { params: { workerId: string } }) {
         clinicName="Request your Service"
       />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Request Service</h1>
         <div className="flex flex-col items-center gap-8">
-          <div className="w-full max-w-[400px]">
-            <SimpleWorkerCard workerId={params.workerId} />
-          </div>
+          {params.workerId !== 'open' && worker && (
+            <div className="w-full max-w-[400px]">
+              <SimpleWorkerCard workerId={params.workerId} />
+            </div>
+          )}
           <div className="w-full max-w-[400px]">
             <DynamicForm 
-              workerId={params.workerId} 
-              workerHourlyRate={worker.hourlyRate ?? 0} 
+              workerId={params.workerId === 'open' ? '' : params.workerId} 
+              workerHourlyRate={worker?.hourlyRate ?? 0} 
               userId={userId}
             />
           </div>

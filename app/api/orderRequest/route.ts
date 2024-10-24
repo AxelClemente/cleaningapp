@@ -93,7 +93,7 @@ export async function POST(req: Request) {
     const orderRequest = await prisma.orderRequest.create({
       data: {
         user: { connect: { id: userId } },
-        worker: { connect: { id: workerId } },
+        ...(workerId && { worker: { connect: { id: workerId } } }),
         property: { connect: { id: propertyId } },
         propertyType,
         selectedDate: new Date(selectedDate),

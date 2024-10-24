@@ -7,43 +7,62 @@ import { FormData } from '../../types/formData';
 
 interface Step4PriceProps {
   formData: FormData;
-  updateFormData: (data: Partial<FormData>) => void;
+  updateFormData: (newData: Partial<FormData>) => void;
   nextStep: () => void;
   prevStep: () => void;
-  workerHourlyRate: number;
+  workerHourlyRate?: number;
 }
 
 export function Step4Price({ formData, updateFormData, nextStep, prevStep, workerHourlyRate }: Step4PriceProps) {
-  const [hours, setHours] = useState(formData.hours || 3);
+  const [hourlyRate, setHourlyRate] = useState(workerHourlyRate || formData.workerHourlyRate);
 
   useEffect(() => {
-    const totalPrice = hours * (workerHourlyRate || 0);
-    updateFormData({ hours, totalPrice });
-  }, [hours, workerHourlyRate, updateFormData]);
+    const calculatedPrice = formData.hours * hourlyRate;
+    updateFormData({ totalPrice: calculatedPrice });
+  }, [formData.hours, hourlyRate, updateFormData]);
 
   const handleHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newHours = Math.max(3, parseInt(e.target.value) || 3);
-    setHours(newHours);
+    const hours = parseInt(e.target.value, 10) || 0;
+    updateFormData({ hours });
+  };
+
+  const handleHourlyRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rate = parseFloat(e.target.value) || 0;
+    setHourlyRate(rate);
+    updateFormData({ workerHourlyRate: rate });
   };
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Selecciona las horas de servicio</h2>
-      <div className="flex items-center space-x-2">
-        <Input
-          type="number"
-          min="3"
-          value={hours}
-          onChange={handleHoursChange}
-          className="w-20"
-        />
-        <span>horas</span>
+      <h2 className="text-2xl font-bold">Select Service Hours</h2>
+      <div className="space-y-2">
+        <div>
+          <label htmlFor="hourlyRate">Hourly Rate:</label>
+          <input
+            type="number"
+            id="hourlyRate"
+            value={hourlyRate}
+            onChange={handleHourlyRateChange}
+            className="border rounded p-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="hours">Hours:</label>
+          <input
+            type="number"
+            id="hours"
+            value={formData.hours}
+            onChange={handleHoursChange}
+            className="border rounded p-2"
+          />
+        </div>
+        <div className="flex items-center space-x-2">
+          <p>Total Price: €{formData.totalPrice}</p>
+        </div>
       </div>
-      <p>Precio por hora: ${workerHourlyRate}</p>
-      <p className="text-lg font-semibold">Total: ${formData.totalPrice}</p>
       <div className="flex justify-between">
-        <Button onClick={prevStep}>Anterior</Button>
-        <Button onClick={nextStep}>Siguiente</Button>
+        <Button onClick={prevStep}>Back</Button>
+        <Button onClick={nextStep}>Next</Button>
       </div>
     </div>
   );

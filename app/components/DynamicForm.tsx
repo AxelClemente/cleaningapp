@@ -33,7 +33,7 @@ export function DynamicForm({ workerId, workerHourlyRate, userId }: DynamicFormP
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     ...initialFormData,
-    workerHourlyRate, // Inicializar con el valor recibido
+    workerHourlyRate: workerId ? workerHourlyRate : 0, // Inicializar con el valor recibido o 0 si es una solicitud abierta
     userId,
   });
 
@@ -58,13 +58,15 @@ export function DynamicForm({ workerId, workerHourlyRate, userId }: DynamicFormP
       case 3:
         return <Step3Calendar formData={formData} updateFormData={updateFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 4:
-        return <Step4Price 
-          formData={formData} 
-          updateFormData={updateFormData} 
-          nextStep={nextStep} 
-          prevStep={prevStep}
-          workerHourlyRate={workerHourlyRate}
-        />;
+        return (
+          <Step4Price 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            nextStep={nextStep} 
+            prevStep={prevStep}
+            workerHourlyRate={workerId ? workerHourlyRate : undefined} // Pasar undefined si es una solicitud abierta
+          />
+        );
       case 5:
         console.log("FormData being passed to Summary:", formData);
         return <Summary formData={formData} workerId={workerId} />;

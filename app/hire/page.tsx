@@ -5,11 +5,13 @@ import { WorkerCard } from "@/components/Worker-card";
 import { Header } from "@/components/Header";
 import { WorkerProfile } from '@/types/interfaces';
 import { getWorkers } from '@/lib/worker';
+import { useRouter } from 'next/navigation';
 
 export default function HirePage() {
   const [workers, setWorkers] = useState<WorkerProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchWorkers() {
@@ -46,8 +48,31 @@ export default function HirePage() {
       />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 font-['Montserrat'] text-[#002b34]">
-          New Members ({workers.length})
+          Create an open request 
         </h1>
+
+        <div 
+          className="w-full max-w-[300px] mb-6 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => router.push('/requestService/open')}
+        >
+          <div className="p-0">
+            <div className="relative h-48 flex items-center justify-center">
+              <div className="w-40 h-40 flex items-center justify-center bg-gray-200 rounded-full">
+                <span className="text-6xl text-gray-500">+</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-4 text-center">
+            <h2 className="text-xl font-bold mb-1">New request</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Make your cleaning offer to all members
+            </p>
+          </div>
+        </div>
+
+        <h2 className="text-3xl font-bold mb-6 font-['Montserrat'] text-[#002b34]">
+          Find a TidyTeam worker
+        </h2>
         <div className="mb-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {workers.map((worker) => (
             <WorkerCard
@@ -63,10 +88,6 @@ export default function HirePage() {
             />
           ))}
         </div>
-        <h2 className="text-3xl font-bold mb-6 font-['Montserrat'] text-[#002b34]">
-          All the TidyTeam
-        </h2>
-        {/* Here you can add the content for "All the TidyTeam" */}
       </div>
     </>
   );
